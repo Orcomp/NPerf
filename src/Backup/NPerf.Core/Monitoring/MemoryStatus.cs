@@ -16,8 +16,8 @@ namespace NPerf.Core.Monitoring
 
 		public MemoryStatus(Process p)
 		{
-            this.workingSet = p.WorkingSet64;
-			this.peakWorkingSet = p.PeakWorkingSet64;
+			this.workingSet = p.WorkingSet;
+			this.peakWorkingSet = p.PeakWorkingSet;
 			this.totalmemory = GC.GetTotalMemory(false);
 		}
 

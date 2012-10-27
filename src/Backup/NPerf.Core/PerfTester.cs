@@ -211,34 +211,6 @@ namespace NPerf.Core
 			}
 		}
 
-        public void LoadTestedTypesFromInner(Assembly a)
-        {
-            if (a == null)
-                throw new ArgumentNullException("a");
-
-            if (this.testedType.IsInterface)
-            {
-                foreach (Type t in a.GetTypes())
-                {
-                    if (
-                        t.GetInterface(this.testedType.ToString()) != null
-                        && !t.IsAbstract
-                        )
-                        this.testedTypes.Add(t);
-                }
-            }
-            else
-            {
-                foreach (Type t in a.GetTypes())
-                {
-                    if (t.IsInstanceOfType(TestedType)
-                        && !t.IsAbstract
-                        )
-                        this.testedTypes.Add(t);
-                }
-            }
-        }
-
 		public PerfTestSuite RunTests()
 		{	
 			PerfTestSuite suite = new PerfTestSuite(this.TesterType, this.Description, this.FeatureDescription);
@@ -327,7 +299,6 @@ namespace NPerf.Core
 
 		public static void FromAssembly(PerfTesterCollection testers, Assembly a)
 		{
-            Console.WriteLine("FromAssembly enter");
 			if (testers==null)
 				throw new ArgumentNullException("testers");
 			if (a==null)
@@ -335,21 +306,17 @@ namespace NPerf.Core
 
 			foreach(Type t in a.GetExportedTypes())
 			{
-                if (TypeHelper.HasCustomAttribute(t, typeof(PerfTesterAttribute)))
-                {
-                    Console.WriteLine("PerfTesterAttribute {0}", t);
-                    PerfTesterAttribute attr =
-                        (PerfTesterAttribute)TypeHelper.GetFirstCustomAttribute(
-                        t,
-                        typeof(PerfTesterAttribute)
-                        );
-                    Console.WriteLine("PerfTesterAttribute {0}", attr.Description);
-                    PerfTester tester = new PerfTester(t, attr);
+				if (TypeHelper.HasCustomAttribute(t,typeof(PerfTesterAttribute)))
+				{
+					PerfTesterAttribute attr = 
+						(PerfTesterAttribute)TypeHelper.GetFirstCustomAttribute(
+						t,
+						typeof(PerfTesterAttribute)
+						);
+					PerfTester tester = new PerfTester(t,attr);
 
-                    testers.Add(tester);
-                }
-                else
-                    Console.WriteLine("No custom attr");
+					testers.Add(tester);
+				}
 			}
 		}
 
