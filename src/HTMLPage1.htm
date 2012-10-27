@@ -1,0 +1,140 @@
+
+<UL class=download>
+<LI><A href="nperf/nperf_src.zip">Download source files - 49 Kb</A> 
+<LI><A href="nperf/nperf_demo.zip">Download demo project - 186 Kb</A> 
+<LI>Download latest at <A 
+href="http://www.dotnetwiki.org/">dotnetwiki.org&nbsp;</A></LI></UL><!-- Add the rest of your HTML here -->
+<H2>Introduction</H2>
+<P>This article present <STRONG>NPerf</STRONG>&nbsp;a flexible performance 
+benchmark framework. The framework provides custom attributes that the user uses 
+the tag benchmark&nbsp;classes and methods. If you are familiar with NUnit, this 
+is similar to the custom attributes they provide.&nbsp;&nbsp; 
+<P>The framework uses reflection to gather the benchmark testers, the tested 
+types, runs the tests and output the results. The user just have to write the 
+benchmark methods. 
+<P>At the end of the article, I illustrate NPerf with some metaphysic .Net 
+question: interface vs delegates, string concatanation race, fastest dictionary. 
+
+<H2>QuickStart: Benchmarking IDictionary</H2>
+<P>Let's start with a small introductory example: benchmarking the <CODE>[] 
+assignement</CODE> for the different implementation of <CODE>IDictionary</CODE>. 
+To do so, we would like to test the assignment on a growing number of assignment 
+calls. 
+<H3>PerfTester attribute: defining testers</H3>
+<P>First, you need to create a tester class that will contains method to do the 
+benchmark. This tester method has to be decorated with the 
+<CODE>PerfTester</CODE> attribute.<PRE lang=cs>using NPerf.Framework;
+
+<STRONG>[PerfTester(typeof(IDictionary),10)]</STRONG>
+public class DictionaryTester
+{
+   ...
+}</PRE>
+<P>The PerfTesterAttribute constructor takes two argument:</P>
+<UL>
+<LI>the <CODE>Type </CODE>of the tested <CODE>class</CODE>, <CODE>interface 
+</CODE>or <CODE>struct</CODE>, 
+<LI>the number of test runs.&nbsp;The&nbsp;framework will use this value to call 
+test methods&nbsp;multiple times&nbsp;(explained below).</LI></UL>
+<H3>PerfTest attribute: adding benchmark tests</H3>The <CODE>PerfTest 
+</CODE>attribute marks a specific method inside a class that has already been 
+marked with the <CODE>PerfTester</CODE> attribute<SEE cref="PerfTesterAttribute" 
+/>, as a performance test method. </PARA><PARA>The method should take the tested 
+type as parameter,&nbsp;<CODE>IDictionary&nbsp;</CODE>here, &nbsp;and the return 
+type should be&nbsp;<CODE>void</CODE>: <PRE lang=cs>[PerfTester(typeof(<STRONG>IDictionary</STRONG>),10)] 
+public DictionaryTester 
+{ 
+    // explained below
+    private int count;
+    private Random rnd = new Random();
+
+    <STRONG>[PerfTest]</STRONG> 
+    public void ItemAssign(<STRONG>IDictionary</STRONG> dic) 
+    {
+         for(int i=0;i&lt;this.count;++i) 
+             dic[rnd.Next()]=null;
+    }
+}</PRE>
+<H3>PerfSetUp and PerfTearDown Attributes</H3>
+<P>Often, you will need to set up you tester and tested class before actually 
+starting the benchmark test. In our example, we want to update the number of 
+insertion depending the test repetition number. The <CODE>PerfSetUp</CODE> 
+attribute can be used to tag a method that will be called before each test 
+repetition. In our test case, we use this method to update the 
+<CODE>DictionaryTester.count</CODE> member:</P><PRE lang=cs>[PerfTester(typeof(IDictionary),10)] 
+public DictionaryTester 
+{     
+    private int count;
+    private Random rnd = new Random();
+
+<STRONG>    [PerfSetUp] 
+</STRONG>    public void SetUp(int index, IDictionary dic) 
+    {
+        this.count = index * 1000;
+    }
+}</PRE>
+<P></P>
+<P>The set-up method must return <CODE>void </CODE>and take two arguments:</P>
+<UL>
+<LI><CODE>index</CODE>, current test repetition index. This value can be used to 
+modify the number of elements tested, collection size, etc... 
+<LI><CODE>dic</CODE>, the tested class instance</LI></UL>
+<P>If you need to clean up resources after the tests are run, you can use the 
+<CODE>PerfTearDown </CODE>attribute to tag a cleaning method:</P><PRE lang=cs>[PerfTester(typeof(IDictionary),10)] 
+public DictionaryTester 
+{     
+    ...
+
+    [PerfTearDown] 
+    public void TearDown(IDictionary dic) 
+    {
+       ...
+    }
+}</PRE>
+<P></P>
+<H3>PerfRunDescriptor attribute: giving some information to the framework</H3>
+<P>In our example, we test the IDictionary object with an increasing number of 
+elements. It would be nice to store this number in the results, and not store 
+just the test index: we would like to store 1000,2000,.... and not 1,2,...</P>
+<P>The <CODE>PerfRunDescriptor </CODE>attribute can be used to tag a method that 
+returns a double from the test index. This double is typically used for charting 
+the results, as x coordinate.</P><PRE lang=cs>[PerfTester(typeof(IDictionary),10)] 
+public DictionaryTester 
+{     
+    <STRONG>[PerfRunDescriptor]</STRONG> 
+    public double Count(int index) 
+    {
+       return index*1000;
+    }
+}</PRE>
+<P></P>
+<H3>Full example source.</H3>
+<P>The full source of the example is as follows:</P><PRE lang=cs>using System;
+using System.Collections;
+using NPerf.Framework;
+
+[PerfTester(typeof(IDictionary),10)] 
+public DictionaryTester 
+{     
+    private int count = 0;
+    private Random rnd = new Random();
+    [PerfRunDescriptor] 
+    public double Count(int index) 
+    {
+       return index*1000;
+    }
+
+    [PerfTearSetUp]
+    public void SetUp(int index, IDictionary dic)
+    {
+        this.count = Count(index);
+    }
+
+    [PerfTest]
+    public ItemAssign(IDictionary dic)
+    {
+        for(int i =0;i&lt;this.count;++i)
+           dic[rnd.Next()]=null;
+    }
+}
+</PRE><p></p>
