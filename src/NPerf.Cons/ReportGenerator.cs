@@ -96,6 +96,73 @@ namespace NPerf.Cons
             }
         }
 
+
+        /// <summary>
+        /// Gets the report data for test Type.
+        /// </summary>
+        /// <param name="type">The type of tested object.</param>
+        public static PerfTestSuite GetReportDataWithType(Type type)
+        {
+            try
+            {
+                // loading testers
+                if (type == null)
+                    throw new Exception("You did not specify a tester assembly");
+
+                // load testers from current assembly
+                PerfTesterCollection testers = new PerfTesterCollection();
+                Console.WriteLine("Load tester assembly: {0}", Assembly.GetCallingAssembly().GetName());
+                PerfTester.FromAssembly(
+                      testers,
+                      Assembly.GetCallingAssembly()
+                      );
+
+                if (testers.Count == 0)
+                    throw new Exception("Could not find any tester class");
+
+                // load tested
+                foreach (PerfTester tester in testers)
+                {
+                    if (tester.IsIgnored)
+                        continue;
+
+                    Console.WriteLine("Load tested assembly: {0}", Assembly.GetCallingAssembly().FullName);
+                    //Looking inside current
+                    tester.LoadTestedTypesFromInner(Assembly.GetCallingAssembly());
+                    //Looking inside referenced
+                    foreach (var asm in Assembly.GetCallingAssembly().GetReferencedAssemblies())
+                    {
+                        tester.LoadTestedTypesFromInner(Assembly.Load(asm));
+                    }
+
+                    Console.WriteLine("Tested types:");
+                    Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
+                    foreach (Type t in tester.TestedTypes)
+                    {
+                        Console.WriteLine("\t{0}", t.Name);
+                    }
+
+                }
+
+                foreach (PerfTester tester in testers)
+                {
+                    if (tester.IsIgnored)
+                        continue;
+
+                    TextWriterTracer tracer = new TextWriterTracer();
+                    tracer.Attach(tester);
+
+                    PerfTestSuite suite = tester.RunTests();
+                    return suite;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return null;
+        }
+
         /// <summary>
         /// Generates the report.
         /// </summary>
