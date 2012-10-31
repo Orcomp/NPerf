@@ -140,7 +140,7 @@ namespace NPerf.Cons.WPFTest
     #endregion
 
     //Main tests
-    [PerfTester(typeof(IDateSorter), 5, Description = "Sort Algorithm benchmark for StartTimes and EndTimes", FeatureDescription = "Collection size")]
+    [PerfTester(typeof(IDateSorter), 2, Description = "Sort Algorithm benchmark for StartTimes and EndTimes", FeatureDescription = "Collection size")]
     public class DateTimesSortTester
     {
         int numberOfDateRanges = 4000; // Must be square rootable
@@ -232,7 +232,7 @@ namespace NPerf.Cons.WPFTest
             sorter.Sort(this.list1);
         }
 
-        /*[PerfTest]
+        [PerfTest]
         public void EndTimesSorted(IDateSorter sorter)
         {
             if (list2.Count != 0)
@@ -251,6 +251,6 @@ namespace NPerf.Cons.WPFTest
         {
             if (list4.Count != 0)
                 sorter.Sort(this.list4);
-        }*/
+        }
     }
 }
