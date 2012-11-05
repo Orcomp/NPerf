@@ -234,14 +234,12 @@ namespace NPerf.Cons
                     tracer.Attach(tester);
 
                     PerfTestSuite suite = tester.RunTests();
-                    return;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            return;
         }
 
         public class ResultsChangedEventArgs : EventArgs

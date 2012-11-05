@@ -228,7 +228,7 @@ namespace NPerf.Cons.WPFTest
 
         private void runTests()
         {
-            if (AxisParameter != null && AxisParameter.IsChecked.HasValue)
+            if (YAxisParameter != null && YAxisParameter.IsChecked.HasValue)
             {
                 //Getting Tests data
                 if (!Int32.TryParse(StartField.Text, out startValue))
@@ -252,7 +252,7 @@ namespace NPerf.Cons.WPFTest
                 ChartsGrid.Children.Clear();
                 ChartsGrid.RowDefinitions.Clear();
                 //Starting Worker
-                _backgroundWorker.RunWorkerAsync(AxisParameter.IsChecked.Value ? "true" : "false");
+                _backgroundWorker.RunWorkerAsync(YAxisParameter.IsChecked.Value ? "true" : "false");
                 testsInProgress = true;
                 StartTestsBtn.Content = "Cancel Tests";
             }
@@ -281,16 +281,54 @@ namespace NPerf.Cons.WPFTest
 
         private void AxisParameter_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            if ((sender as RadioButton).IsChecked.HasValue)
+            //If no tests currently running
+            if (!testsInProgress)
             {
-                if (!testsInProgress)
+                var radioButton = sender as RadioButton;
+                if (YAxisParameter != null && XAxisParameter != null && radioButton.IsChecked.HasValue)
                 {
-                    runTests();
-                }
-                else
-                {
-                    _backgroundWorker.CancelAsync();
-                    runTests();
+                    //If Logarithmic Selected
+                    if (YAxisParameter.IsChecked != null && YAxisParameter.IsChecked.Value)
+                    {
+                        //Adding Logarithmic Axis
+                        foreach (var chart in ChartsGrid.Children)
+                        {
+                            if (chart is OxyPlot.Wpf.Plot)
+                            {
+                                //Getting Model
+                                var model = (chart as OxyPlot.Wpf.Plot).Model;
+                                //Removing all axes
+                                model.Axes.Clear();
+                                //Adding X-Axis
+                                model.Axes.Add(new LinearAxis(AxisPosition.Bottom));
+                                //Adding Y-Axis
+                                model.Axes.Add(new LogarithmicAxis(AxisPosition.Right, "Logarithmic"));
+                                (chart as OxyPlot.Wpf.Plot).Model = model;
+                                (chart as OxyPlot.Wpf.Plot).RefreshPlot(true);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //Removing Logarithmic Axis
+                        foreach (var chart in ChartsGrid.Children)
+                        {
+                            if (chart is OxyPlot.Wpf.Plot)
+                            {
+                                //Getting Model
+                                var model = (chart as OxyPlot.Wpf.Plot).Model;
+                                //Removing all axes
+                                model.Axes.Clear();
+                                //Adding X-Axis
+                                model.Axes.Add(new LinearAxis(AxisPosition.Bottom));
+                                //Adding Y-Axis
+                                model.Axes.Add(new LinearAxis(AxisPosition.Left));
+                                (chart as OxyPlot.Wpf.Plot).Model = model;
+                                (chart as OxyPlot.Wpf.Plot).RefreshPlot(true);
+                            }
+                        }
+                    }
+                    SettingsExp.IsExpanded = false;
                 }
             }
         }
