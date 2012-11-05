@@ -7,7 +7,7 @@ namespace NPerf.Cons.Test
         [STAThread]
         public static void Main(string[] args)
         {
-            NPerf.Cons.ReportGenerator.GenerateReportWithType(typeof(IDateSorter));
+            new NPerf.Cons.ReportGenerator().GenerateReportWithType(typeof(IDateSorter));
             Console.WriteLine("Report generated from inner class...");
             Console.ReadLine();
         }

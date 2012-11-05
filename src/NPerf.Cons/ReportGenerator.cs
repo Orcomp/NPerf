@@ -19,11 +19,13 @@ namespace NPerf.Cons
     /// </summary>
     public class ReportGenerator
     {
+        private int currentTestNumber;
+
         /// <summary>
         /// Generates the report.
         /// </summary>
         /// <param name="args">The arguments to parse. Like in console application before.</param>
-        public static void GenerateReportWithType(Type type)
+        public void GenerateReportWithType(Type type)
         {
             try
             {
@@ -45,6 +47,7 @@ namespace NPerf.Cons
                 // load tested
                 foreach (PerfTester tester in testers)
                 {
+                    tester.IsRunDescriptorValueOveridden = false;
                     if (tester.IsIgnored)
                         continue;
 
@@ -96,12 +99,11 @@ namespace NPerf.Cons
             }
         }
 
-
         /// <summary>
         /// Gets the report data for test Type.
         /// </summary>
         /// <param name="type">The type of tested object.</param>
-        public static PerfTestSuite GetReportDataWithType(Type type)
+        public PerfTestSuite GetReportDataWithType(Type type)
         {
             try
             {
@@ -123,6 +125,7 @@ namespace NPerf.Cons
                 // load tested
                 foreach (PerfTester tester in testers)
                 {
+                    tester.IsRunDescriptorValueOveridden = false;
                     if (tester.IsIgnored)
                         continue;
 
@@ -164,10 +167,124 @@ namespace NPerf.Cons
         }
 
         /// <summary>
+        /// Gets the report data for test Type.
+        /// </summary>
+        /// <param name="type">The type of tested object.</param>
+        /// <param name="startValue">The start value.</param>
+        /// <param name="step">The step.</param>
+        /// <param name="countOfRuns">The count of runs.</param>
+        /// <returns></returns>
+        public void GetReportDataWithType(Type type,int startValue, int step,  int countOfRuns)
+        {
+            try
+            {
+                // loading testers
+                if (type == null)
+                    throw new Exception("You did not specify a tester assembly");
+
+                // load testers from current assembly
+                PerfTesterCollection testers = new PerfTesterCollection();
+                Console.WriteLine("Load tester assembly: {0}", Assembly.GetCallingAssembly().GetName());
+                PerfTester.FromAssembly(
+                      testers,
+                      Assembly.GetCallingAssembly()
+                      );
+
+                if (testers.Count == 0)
+                    throw new Exception("Could not find any tester class");
+
+                // load tested
+                foreach (PerfTester tester in testers)
+                {
+                    tester.IsRunDescriptorValueOveridden = false;
+                    if (tester.IsIgnored)
+                        continue;
+
+                    Console.WriteLine("Load tested assembly: {0}", Assembly.GetCallingAssembly().FullName);
+                    //Looking inside current
+                    tester.LoadTestedTypesFromInner(Assembly.GetCallingAssembly());
+                    //Looking inside referenced
+                    foreach (var asm in Assembly.GetCallingAssembly().GetReferencedAssemblies())
+                    {
+                        tester.LoadTestedTypesFromInner(Assembly.Load(asm));
+                    }
+
+                    Console.WriteLine("Tested types:");
+                    Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
+                    foreach (Type t in tester.TestedTypes)
+                    {
+                        Console.WriteLine("\t{0}", t.Name);
+                    }
+
+                }
+
+                foreach (PerfTester tester in testers)
+                {
+                    tester.IsRunDescriptorValueOveridden = true;
+                    if (tester.IsIgnored)
+                        continue;
+                    if (startValue > 0)
+                        tester.TestStart = startValue;
+                    if (step > 0)
+                        tester.TestStep = step;
+                    if (countOfRuns > 0)
+                        tester.TestCount = countOfRuns;
+                    tester.ResultsChange += new PerfTester.ResultsChangeHandler(tester_ResultsChange);
+                    TextWriterTracer tracer = new TextWriterTracer();
+                    tracer.Attach(tester);
+
+                    PerfTestSuite suite = tester.RunTests();
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return;
+        }
+
+        public class ResultsChangedEventArgs : EventArgs
+        {
+            public PerfTestSuite CurrentResults { get; internal set; }
+            public ResultsChangedEventArgs(PerfTestSuite results)
+            {
+                CurrentResults = results;
+            }
+        }
+
+        //Delegate
+        public delegate void ResultsChangedHandler(object sender, ResultsChangedEventArgs results);
+
+        //Event
+        public event ResultsChangedHandler ResultsChange;
+
+        //Method for firing Event
+        protected void OnResultsChange(object sender, ResultsChangedEventArgs results)
+        {
+            // Check if there are any Subscribers  
+            if (ResultsChange != null)
+            {      // Call the Event   
+                ResultsChange(this, results);
+            }
+        }
+
+        void tester_ResultsChange(object sender, PerfTester.ResultsChangeEventArgs results)
+        {
+            //Updating Charts
+            OnResultsChange(this, new ResultsChangedEventArgs(results.CurrentResults));
+        }
+
+        public double customRun(int testIndex)
+        {
+            return currentTestNumber*(testIndex+1);
+        }
+
+        /// <summary>
         /// Generates the report.
         /// </summary>
         /// <param name="args">The arguments to parse. Like in console application before.</param>
-        public static void GenerateReport(string[] args)
+        public void GenerateReport(string[] args)
         {
             try
             {

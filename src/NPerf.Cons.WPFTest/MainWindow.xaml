@@ -3,19 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="NPerf.Cons.WPFTest.MainWindow"
-        Title="NPerf Benchmark Test" Height="640" Width="600">
+        Title="NPerf Benchmark Test" Height="800" Width="840">
     <Grid Margin="0,0,252,40" x:Name="LayoutRoot">
-        <ScrollViewer Margin="8,8,-243,28">
-    	<Grid x:Name="ChartsGrid">    		
-    		<Grid.ColumnDefinitions>
-    			<ColumnDefinition />
-    			<ColumnDefinition/>
-    		</Grid.ColumnDefinitions>
+        <Grid Margin="8,8,-243,32.04">
+    		<ScrollViewer x:Name="MainScroll" MinWidth="513" HorizontalContentAlignment="Right" Margin="0,0,50,0">
+    			<Grid x:Name="ChartsGrid">    		
+    				<Grid.ColumnDefinitions>
+    					<ColumnDefinition />
+    					<ColumnDefinition x:Name="RightColumn"/>
+    				</Grid.ColumnDefinitions>
+    			</Grid>
+    		</ScrollViewer>
+    		<Expander x:Name="SettingsExp" Header="Settings" ExpandDirection="Left" HorizontalContentAlignment="Right" MinWidth="50" HorizontalAlignment="Right" Width="Auto" Margin="0,-0.98,0,0">
+    			<Border BorderBrush="Black" BorderThickness="1" Background="#FFE5E5E5">
+				<Grid Width="200">
+    				<TextBlock Text="Y-Axis" Height="23.96" VerticalAlignment="Top" Margin="0,8,0,0" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+    				<RadioButton Content="Linear" Height="18.04" Margin="43,51.961,29,0" VerticalAlignment="Top" GroupName="axis" IsChecked="True" FontSize="16" Checked="AxisParameter_Checked"/>
+    				<RadioButton x:Name="AxisParameter" Content="Logarithmic" Height="24.04" Margin="43,72.001,29,0" VerticalAlignment="Top" GroupName="axis" FontSize="16" Checked="AxisParameter_Checked"/>
+    				<TextBlock Text="(charts will be regenerated)" Height="23.96" VerticalAlignment="Top" Margin="0,28.001,0,0" HorizontalAlignment="Center"/>
+    				<TextBlock Text="X-Axis" Height="23.96" VerticalAlignment="Top" Margin="0,118,0,0" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+    				<TextBlock Text="Start value:" Height="23.96" VerticalAlignment="Top" Margin="15.686,148,0,0" FontSize="16" HorizontalAlignment="Left"/>
+					<TextBox x:Name="StartField" Margin="15.686,175.96,8,0" Height="24.98" VerticalAlignment="Top" Text="4000" FontSize="16"/>
+					<TextBlock Text="Step:" Height="23.96" VerticalAlignment="Top" Margin="15.686,213,0,0" FontSize="16" HorizontalAlignment="Left"/>
+					<TextBox x:Name="StepField" Margin="15.686,240.96,8,253" Text="4000" FontSize="16" VerticalAlignment="Top"/>
+					<TextBlock Text="End Value:" Margin="19.892,278,0,0" FontSize="16" HorizontalAlignment="Left" Height="23.96" VerticalAlignment="Top"/>
+					<TextBox x:Name="EndField" Margin="15.686,305.96,8,0" Text="16000" FontSize="16" VerticalAlignment="Top" d:LayoutOverrides="VerticalAlignment"/>
+    			</Grid>
+				</Border>
+    		</Expander>
     	</Grid>
-        </ScrollViewer>
         <TextBox x:Name="OutputTextbox" Margin="8,0,-109,-36" TextWrapping="Wrap" VerticalAlignment="Bottom" Height="58" />
-    	<Button Content="Start Tests" HorizontalAlignment="Right" Height="21.96" Margin="0,0,-243,-36" VerticalAlignment="Bottom" Width="128" Click="Button_Click"/>
-        <RadioButton Content="Linear Y-Axis" HorizontalAlignment="Right" Height="18.04" Margin="0,0,-243,10" VerticalAlignment="Bottom" Width="128" GroupName="axis" IsChecked="True"/>
-        <RadioButton x:Name="AxisParameter" Content="Logarithmic Y-Axis" HorizontalAlignment="Right" Height="18.04" Margin="0,0,-243,-10.04" VerticalAlignment="Bottom" Width="128" GroupName="axis"/>
+    	<Button x:Name="StartTestsBtn" Content="Start Tests" HorizontalAlignment="Right" Height="21.96" Margin="0,0,-243,-36" VerticalAlignment="Bottom" Width="128" Click="Button_Click"/>
     </Grid>
 </Window>

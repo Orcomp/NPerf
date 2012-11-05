@@ -17,8 +17,7 @@ namespace NPerf.Core
 		
 		private Type testerType;
 		private Type testedType;
-		private int testCount;
-		private ConstructorInfo constructor = null;
+	    private ConstructorInfo constructor = null;
 		private MethodInfo runDescriptor = null;
 		private MethodInfo setUp = null;
 		private MethodInfo tearDown = null;
@@ -39,7 +38,7 @@ namespace NPerf.Core
 
 			this.testerType = testerType;
 			this.testedType = attr.TestedType;
-			this.testCount = attr.TestCount;
+			this.TestCount = attr.TestCount;
 			this.description = attr.Description;
 			this.featureDescription = attr.FeatureDescription;
 			
@@ -106,16 +105,17 @@ namespace NPerf.Core
 				return this.featureDescription;
 			}
 		}
-		
-		public int TestCount
-		{
-			get
-			{
-				return this.testCount;
-			}
-		}
 
-		public TypeCollection TestedTypes
+        #region Custom Runs
+        public int TestCount { get; set; }
+        public int TestStart { get; set; }
+        public int TestStep { get; set; }
+
+        public bool IsRunDescriptorValueOveridden { get; set; }
+        #endregion
+
+
+	    public TypeCollection TestedTypes
 		{
 			get
 			{
@@ -239,54 +239,98 @@ namespace NPerf.Core
             }
         }
 
-		public PerfTestSuite RunTests()
+        #region Custom Event
+
+        /// <summary>
+        /// Our Cutsom Events arguments that has current Results of the Tests.
+        /// </summary>
+        public class ResultsChangeEventArgs : EventArgs
+        {
+            public PerfTestSuite CurrentResults { get; internal set; }
+            public ResultsChangeEventArgs(PerfTestSuite results)
+            {
+                CurrentResults = results;
+            }
+        }
+
+        //Delegate
+        public delegate void ResultsChangeHandler(object sender, ResultsChangeEventArgs results);
+
+        //Event
+        public event ResultsChangeHandler ResultsChange;
+
+        //Method for firing Event
+        protected void OnResultsChange(object sender, ResultsChangeEventArgs results)
+        {
+            // Check if there are any Subscribers  
+            if (ResultsChange != null)   
+            {      // Call the Event   
+                ResultsChange(this, results);  
+            } 
+        }
+        #endregion
+
+        public PerfTestSuite RunTests()
 		{	
 			PerfTestSuite suite = new PerfTestSuite(this.TesterType, this.Description, this.FeatureDescription);
-			
-			foreach(MethodInfo test in this.methods)
-			{
-				PerfTest testResult = new PerfTest(test);
-				if (testResult.IsIgnored)
-				{
-					OnIgnoredTest(testResult);
-					suite.Tests.Add(testResult);
-					continue;
-				}
-				
-				OnStartTest(testResult);
-				
-				for(int testIndex = 0;testIndex<this.TestCount;++testIndex)
-				{
-					PerfTestRun run = new PerfTestRun(RunDescription(testIndex));
-					
-					OnStartRun(run);
-					
-					// for each instanced type,
-					foreach(Type t in this.testedTypes)
-					{
-						try
-						{
-							//jitting if first run of the test
-							if (testIndex==0)
-								RunTest(-1,t,test,false);
-	
-							// calling
-							RunTest(testIndex,t,test,true);
-	
-							// save results
-							run.Results.Add(new PerfResult(t,this.timer.Duration,this.memorizer.Usage));
-						}
-						catch(Exception ex)
-						{
-							run.FailedResults.Add(new PerfFailedResult(t,ex));
-						}
-					}									
-					OnFinishRun(run);
-					testResult.Runs.Add(run);
-				}
-				OnFinishTest(testResult);
-				suite.Tests.Add(testResult);
-			}
+
+            for (int testIndex = 0; testIndex < this.methods.Count;testIndex++)
+            {
+                MethodInfo test = methods[testIndex];
+                PerfTest testResult = new PerfTest(test);
+                //Adding from the start
+                suite.Tests.Add(testResult);
+
+                if (testResult.IsIgnored)
+                {
+                    OnIgnoredTest(testResult);
+                    suite.Tests.Add(testResult);
+                    continue;
+                }
+
+                OnStartTest(testResult);
+
+                for (int runIndex = 0; runIndex < this.TestCount; ++runIndex)
+                {
+
+                    PerfTestRun run = new PerfTestRun(IsRunDescriptorValueOveridden ? TestStart + runIndex * TestStep : RunDescription(runIndex));
+
+                    OnStartRun(run);
+
+                    // for each instanced type,
+                    foreach (Type t in this.testedTypes)
+                    {
+                        try
+                        {
+                            //jitting if first run of the test
+                            if (runIndex == 0)
+                                RunTest(-1, t, test, false);
+
+                            // calling
+                            RunTest(runIndex, t, test, true);
+
+                            // save results
+                            run.Results.Add(new PerfResult(t, this.timer.Duration, this.memorizer.Usage));
+                        }
+                        catch (Exception ex)
+                        {
+                            run.FailedResults.Add(new PerfFailedResult(t, ex));
+                        }
+                    }
+                    OnFinishRun(run);
+                    testResult.Runs.Add(run);
+
+                    //Adding to suite
+                    suite.Tests[testIndex] = testResult;
+                    //Invoking Event Handler
+                    OnResultsChange(this, new ResultsChangeEventArgs(suite));
+                }
+                OnFinishTest(testResult);
+
+                //suite.Tests[testIndex] = testResult;
+
+                
+            }
 			return suite;
 		}
 
