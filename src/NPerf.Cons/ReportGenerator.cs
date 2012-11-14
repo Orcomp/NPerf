@@ -306,10 +306,7 @@ namespace NPerf.Cons
         private static void LoadTesters(PerfTesterCollection testers, Assembly testerAssembly)
         {
             Console.WriteLine("Load tester assembly: {0}", testerAssembly.GetName());
-            PerfTester.FromAssembly(
-                testers,
-                Assembly.GetCallingAssembly()
-                );
+            PerfTester.FromAssembly(testers, testerAssembly);
         }
 
         public class ResultsChangedEventArgs : EventArgs
