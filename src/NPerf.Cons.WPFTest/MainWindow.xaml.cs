@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Win32;
 using NPerf.Cons.WPFTest.Types;
 using NPerf.Core;
 using OxyPlot;
@@ -25,12 +27,16 @@ namespace NPerf.Cons.WPFTest
         private int stepValue;
         private int endValue;
         private int runsValue;
+        private Assembly testerAssembly;
+        private Assembly testedAssembly;
+        private OpenFileDialog openFileDialog;
 
         public MainWindow()
         {
             InitializeComponent();
             //CreateModel();
             //OxyPlotChartTime.Model = model1;
+            openFileDialog = new OpenFileDialog();
             // Instantiate the writer  
             TextWriter _writer = new TextBoxStreamWriter(OutputTextbox);
             // Redirect the out Console stream  
@@ -246,6 +252,17 @@ namespace NPerf.Cons.WPFTest
                     MessageBox.Show("Invalid End Value.");
                     return;
                 }
+                if (testerAssembly == null)
+                {
+                    MessageBox.Show("Please select assembly with tests.");
+                    return;
+                }
+                if (testedAssembly == null)
+                {
+                    MessageBox.Show("Please select assembly with tested types.");
+                    return;
+                }
+
                 runsValue = (endValue - startValue) / stepValue + 1;
 
                 //Removing charts
@@ -276,7 +293,7 @@ namespace NPerf.Cons.WPFTest
         void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             isLogarithmic = (e.Argument as string).Equals("true");
-            reportGenerator.GetReportDataWithType(typeof(IDateRange), startValue, stepValue, runsValue);
+            reportGenerator.GetReportDataWithAssemblies(new[] {testerAssembly}, new[] {testedAssembly}, startValue, stepValue, runsValue);
         }
 
         private void AxisParameter_Checked(object sender, System.Windows.RoutedEventArgs e)
@@ -329,6 +346,44 @@ namespace NPerf.Cons.WPFTest
                         }
                     }
                     SettingsExp.IsExpanded = false;
+                }
+            }
+        }
+
+        private void btnTestsAssembly_Click(object sender, RoutedEventArgs e)
+        {            
+            if (openFileDialog.ShowDialog().Value)
+            {
+                string assemblyPath = openFileDialog.FileName;
+                
+                try
+                {
+                    lblTesterAssembly.Text = string.Empty;
+                    testerAssembly = Assembly.LoadFrom(assemblyPath);
+                    lblTesterAssembly.Text = testerAssembly.GetName().Name;
+                }
+                catch(Exception)
+                {
+                    MessageBox.Show("Cannot load tests.");
+                }
+            }
+        }
+
+        private void btnTestedTypesAssembly_Click(object sender, RoutedEventArgs e)
+        {
+            if (openFileDialog.ShowDialog().Value)
+            {
+                string assemblyPath = openFileDialog.FileName;
+                
+                try
+                {
+                    lblTestedTypesAssembly.Text = string.Empty;
+                    testedAssembly = Assembly.LoadFrom(assemblyPath);
+                    lblTestedTypesAssembly.Text = testedAssembly.GetName().Name;
+                }
+                catch(Exception)
+                {
+                    MessageBox.Show("Cannot load tested types.");
                 }
             }
         }

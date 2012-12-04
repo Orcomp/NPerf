@@ -193,7 +193,7 @@ namespace NPerf.Core
 				foreach(Type t in a.GetExportedTypes())
 				{
 					if (
-						t.GetInterface(this.testedType.ToString())!=null
+						testedType.IsAssignableFrom(t)
 						&& !t.IsAbstract
 						)
 						this.testedTypes.Add(t);
@@ -221,7 +221,7 @@ namespace NPerf.Core
                 foreach (Type t in a.GetTypes())
                 {
                     if (
-                        t.GetInterface(this.testedType.ToString()) != null
+                        testedType.IsAssignableFrom(t)
                         && !t.IsAbstract
                         )
                         this.testedTypes.Add(t);

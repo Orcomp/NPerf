@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
@@ -35,11 +36,7 @@ namespace NPerf.Cons
 
                 // load testers from current assembly
                 PerfTesterCollection testers = new PerfTesterCollection();
-                Console.WriteLine("Load tester assembly: {0}", Assembly.GetCallingAssembly().GetName());
-                PerfTester.FromAssembly(
-                      testers,
-                      Assembly.GetCallingAssembly()
-                      );
+                LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
                     throw new Exception("Could not find any tester class");
@@ -113,11 +110,7 @@ namespace NPerf.Cons
 
                 // load testers from current assembly
                 PerfTesterCollection testers = new PerfTesterCollection();
-                Console.WriteLine("Load tester assembly: {0}", Assembly.GetCallingAssembly().GetName());
-                PerfTester.FromAssembly(
-                      testers,
-                      Assembly.GetCallingAssembly()
-                      );
+                LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
                     throw new Exception("Could not find any tester class");
@@ -184,11 +177,7 @@ namespace NPerf.Cons
 
                 // load testers from current assembly
                 PerfTesterCollection testers = new PerfTesterCollection();
-                Console.WriteLine("Load tester assembly: {0}", Assembly.GetCallingAssembly().GetName());
-                PerfTester.FromAssembly(
-                      testers,
-                      Assembly.GetCallingAssembly()
-                      );
+                LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
                     throw new Exception("Could not find any tester class");
@@ -215,31 +204,109 @@ namespace NPerf.Cons
                     {
                         Console.WriteLine("\t{0}", t.Name);
                     }
-
                 }
 
-                foreach (PerfTester tester in testers)
-                {
-                    tester.IsRunDescriptorValueOveridden = true;
-                    if (tester.IsIgnored)
-                        continue;
-                    if (startValue > 0)
-                        tester.TestStart = startValue;
-                    if (step > 0)
-                        tester.TestStep = step;
-                    if (countOfRuns > 0)
-                        tester.TestCount = countOfRuns;
-                    tester.ResultsChange += new PerfTester.ResultsChangeHandler(tester_ResultsChange);
-                    TextWriterTracer tracer = new TextWriterTracer();
-                    tracer.Attach(tester);
-
-                    PerfTestSuite suite = tester.RunTests();
-                }
+                RunTests(testers, startValue, step, countOfRuns);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        /// <summary>
+        /// Gets the report data for specified assemblies.
+        /// </summary>
+        /// <param name="testerAssemblies">The assemblies tester types.</param>
+        /// <param name="testedAssemblies">The assemblies tested types.</param>
+        /// <param name="startValue">The start value.</param>
+        /// <param name="step">The step.</param>
+        /// <param name="countOfRuns">The count of runs.</param>
+        /// <exception cref="System.Exception">You did not specify a tester assembly(s)</exception>
+        public void GetReportDataWithAssemblies(Assembly[] testerAssemblies, Assembly[] testedAssemblies, int startValue, int step, int countOfRuns)
+        {
+            try
+            {
+                if ((testerAssemblies == null) || (testerAssemblies.Length == 0))
+                    throw new Exception("You did not specify a tester assembly(s)");
+
+                if ((testedAssemblies == null) || (testedAssemblies.Length == 0))
+                    throw new Exception("You did not specify a tested assembly(s)");
+
+                PerfTesterCollection testers = new PerfTesterCollection();
+                LoadTesters(testers, testerAssemblies);
+
+                if (testers.Count == 0)
+                    throw new Exception("Could not find any tester class");
+                
+                LoadTestedTypes(testedAssemblies, testers);
+
+                RunTests(testers, startValue, step, countOfRuns);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void RunTests(PerfTesterCollection testers, int startValue, int step, int countOfRuns)
+        {
+            foreach (PerfTester tester in testers)
+            {
+                tester.IsRunDescriptorValueOveridden = true;
+                if (tester.IsIgnored)
+                    continue;
+                if (startValue > 0)
+                    tester.TestStart = startValue;
+                if (step > 0)
+                    tester.TestStep = step;
+                if (countOfRuns > 0)
+                    tester.TestCount = countOfRuns;
+                tester.ResultsChange += new PerfTester.ResultsChangeHandler(tester_ResultsChange);
+                TextWriterTracer tracer = new TextWriterTracer();
+                tracer.Attach(tester);
+
+                PerfTestSuite suite = tester.RunTests();
+            }
+        }
+
+        private static void LoadTestedTypes(Assembly[] testedAssemblies, PerfTesterCollection testers)
+        {
+            foreach (PerfTester tester in testers)
+            {
+                tester.IsRunDescriptorValueOveridden = false;
+                if (tester.IsIgnored)
+                    continue;
+
+                Console.WriteLine("Loading tested types for: {0}", tester.TesterType);
+
+                foreach (Assembly testedAssembly in testedAssemblies)
+                {
+                    Console.WriteLine("Load tested assembly: {0}", testedAssembly);
+                    tester.LoadTestedTypesFromInner(testedAssembly);
+                }
+
+                Console.WriteLine("Tested types:");
+                Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
+                foreach (Type t in tester.TestedTypes)
+                {
+                    Console.WriteLine("\t{0}", t.Name);
+                }
+            }
+        }
+
+        private static void LoadTesters(PerfTesterCollection testers, Assembly[] testerAssemblies)
+        {
+            foreach (Assembly testerAssembly in testerAssemblies)
+            {
+                LoadTesters(testers, testerAssembly);
+            }
+        }
+
+        private static void LoadTesters(PerfTesterCollection testers, Assembly testerAssembly)
+        {
+            Console.WriteLine("Load tester assembly: {0}", testerAssembly.GetName());
+            PerfTester.FromAssembly(testers, testerAssembly);
         }
 
         public class ResultsChangedEventArgs : EventArgs

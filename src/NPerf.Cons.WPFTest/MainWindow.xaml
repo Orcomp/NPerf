@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="NPerf.Cons.WPFTest.MainWindow"
-        Title="NPerf Benchmark Test" Height="800" Width="840">
+        Title="NPerf Benchmark Test" Height="800" Width="840" WindowStartupLocation="CenterScreen">
     <Grid Margin="0,0,252,40" x:Name="LayoutRoot">
         <Grid Margin="8,8,-243,32.04">
     		<ScrollViewer x:Name="MainScroll" MinWidth="513" HorizontalContentAlignment="Right" Margin="0,0,50,0">
@@ -28,7 +28,13 @@
 					<TextBox x:Name="StepField" Margin="15.686,240.96,8,253" Text="4000" FontSize="16" VerticalAlignment="Top"/>
 					<TextBlock Text="End Value:" Margin="19.892,278,0,0" FontSize="16" HorizontalAlignment="Left" Height="23.96" VerticalAlignment="Top"/>
 					<TextBox x:Name="EndField" Margin="15.686,305.96,8,0" Text="16000" FontSize="16" VerticalAlignment="Top" d:LayoutOverrides="VerticalAlignment"/>
-    			</Grid>
+					<TextBlock Text="Tests Assembly" Height="23.96" VerticalAlignment="Top" Margin="16,352,0,0" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16"/>
+					<Button Content="Select..." Height="23" HorizontalAlignment="Left" Margin="16,383,0,0" Name="btnTestsAssembly" VerticalAlignment="Top" Width="80" Click="btnTestsAssembly_Click" />
+					<TextBlock x:Name="lblTesterAssembly" Height="23.96" VerticalAlignment="Top" Margin="15.686,410,0,0" FontSize="16" HorizontalAlignment="Left"/>
+					<TextBlock Text="Tested Assembly" Height="23.96" VerticalAlignment="Top" Margin="16,440,0,0" HorizontalAlignment="Left" FontWeight="Bold" FontSize="16"/>
+					<Button Content="Select..." Height="23" HorizontalAlignment="Left" Margin="16,470,0,0" Name="btnTestedTypesAssembly" VerticalAlignment="Top" Width="80" Click="btnTestedTypesAssembly_Click" />
+					<TextBlock x:Name="lblTestedTypesAssembly" Height="23.96" VerticalAlignment="Top" Margin="15.686,495,0,0" FontSize="16" HorizontalAlignment="Left"/>
+				</Grid>
 				</Border>
     		</Expander>
     	</Grid>
