@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using Fasterflect;
 
 namespace NPerf.Core.Collections
 {
@@ -57,10 +58,7 @@ namespace NPerf.Core.Collections
 				if (!success)
 					break;
 				
-				if (TypeHelper.HasCustomAttribute(
-					(MethodInfo)this.methodEnumerator.Current,
-					this.customAttributeType
-					))
+				if (((MethodInfo)this.methodEnumerator.Current).HasAttribute(this.customAttributeType))
 				{
 					success=true;
 					break;

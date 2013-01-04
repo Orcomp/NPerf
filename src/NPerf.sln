@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Core", "NPerf.Core\NPerf.Core.csproj", "{D5C567E3-253E-411A-A520-8C82CEAC96D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Framework", "NPerf.Framework\NPerf.Framework.csproj", "{E22BF9BC-3A12-4FFD-96FD-1C2253118CA2}"
@@ -10,7 +10,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Report", "NPerf.Repor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Perf", "System.Perf\System.Perf.csproj", "{3E9FD121-6463-4BE9-893F-FAC43B5AE8E0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5EA441A3-A1D4-4911-9113-C46C9ACDCD44}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E744DAEA-3E4A-4460-8399-78F4D61215C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPref.Tests", "NPref.Tests\NPref.Tests.csproj", "{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0DFA0A57-E602-4EAF-8CFE-9AE1CBAE4760}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		NPerf.vsmdi = NPerf.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = NPerf.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -70,8 +91,21 @@ Global
 		{3E9FD121-6463-4BE9-893F-FAC43B5AE8E0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3E9FD121-6463-4BE9-893F-FAC43B5AE8E0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3E9FD121-6463-4BE9-893F-FAC43B5AE8E0}.Release|x86.ActiveCfg = Release|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3FACD1B0-D885-4FFF-BE9F-24396D7AAB3A} = {E744DAEA-3E4A-4460-8399-78F4D61215C7}
 	EndGlobalSection
 EndGlobal
