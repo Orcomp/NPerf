@@ -97,6 +97,7 @@
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll</HintPath>
     </Reference>
     <Reference Include="System.Data">
       <Name>System.Data</Name>
@@ -112,33 +113,6 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\AttributedMethodCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\AttributedMethodEnumerator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\MethodInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\PerfFailedResultCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\PerfResultCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\PerfTestCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\PerfTesterCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\PerfTestRunCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\TypeCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Monitoring\MemoryMonitor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -148,7 +122,7 @@
     <Compile Include="Monitoring\TimeMonitor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NPref.cs" />
+    <Compile Include="TestManager.cs" />
     <Compile Include="PerfFailedResult.cs">
       <SubType>Code</SubType>
     </Compile>

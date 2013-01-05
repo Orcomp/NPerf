@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Collections;
-using System.IO;
-
 namespace NPerf.Cons
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
     using NPerf.Core;
-    using NPerf.Core.Collections;
-    using NPerf.Report;
     using NPerf.Core.Tracer;
+    using NPerf.Report;
+
+    using ColorMap = NPerf.Report.ColorMap;
 
     /// <summary>
     /// Summary description for Class1.
@@ -32,26 +31,34 @@ namespace NPerf.Cons
             {
                 // loading testers
                 if (type == null)
+                {
                     throw new Exception("You did not specify a tester assembly");
+                }
 
                 // load testers from current assembly
-                PerfTesterCollection testers = new PerfTesterCollection();
+                IList<PerfTester> testers = new List<PerfTester>();
                 LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
+                {
                     throw new Exception("Could not find any tester class");
+                }
 
                 // load tested
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers)
                 {
                     tester.IsRunDescriptorValueOveridden = false;
                     if (tester.IsIgnored)
+                    {
                         continue;
+                    }
 
                     Console.WriteLine("Load tested assembly: {0}", Assembly.GetCallingAssembly().FullName);
-                    //Looking inside current
+
+                    // Looking inside current
                     tester.LoadTestedTypesFromInner(Assembly.GetCallingAssembly());
-                    //Looking inside referenced
+
+                    // Looking inside referenced
                     foreach (var asm in Assembly.GetCallingAssembly().GetReferencedAssemblies())
                     {
                         tester.LoadTestedTypesFromInner(Assembly.Load(asm));
@@ -59,33 +66,34 @@ namespace NPerf.Cons
 
                     Console.WriteLine("Tested types:");
                     Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
-                    foreach (Type t in tester.TestedTypes)
+                    foreach (var t in tester.TestedTypes)
                     {
                         Console.WriteLine("\t{0}", t.Name);
                     }
-
                 }
 
                 // run test
-                ChartReport chart = new ChartReport(800, 400);
+                var chart = new ChartReport(800, 400);
                 chart.Colors.Map = ColorMap.Jet;
-                ImageFormat im = ImageFormat.Png;
+                var im = ImageFormat.Png;
 
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers)
                 {
                     if (tester.IsIgnored)
+                    {
                         continue;
+                    }
 
-                    TextWriterTracer tracer = new TextWriterTracer();
+                    var tracer = new TextWriterTracer();
                     tracer.Attach(tester);
 
-                    PerfTestSuite suite = tester.RunTests();
+                    var suite = tester.RunTests();
 
-                    IDictionary bmps = chart.Render(suite);
+                    var bmps = chart.Render(suite);
                     foreach (DictionaryEntry de in bmps)
                     {
-                        PerfTest test = (PerfTest)de.Key;
-                        Bitmap bmp = (Bitmap)de.Value;
+                        var test = (PerfTest)de.Key;
+                        var bmp = (Bitmap)de.Value;
                         bmp.Save(tester.TestedType.Name + "." + test.Name + "." + im.ToString().ToLower(), im);
                     }
                 }
@@ -106,26 +114,34 @@ namespace NPerf.Cons
             {
                 // loading testers
                 if (type == null)
+                {
                     throw new Exception("You did not specify a tester assembly");
+                }
 
                 // load testers from current assembly
-                PerfTesterCollection testers = new PerfTesterCollection();
+                IList<PerfTester> testers = new List<PerfTester>();
                 LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
+                {
                     throw new Exception("Could not find any tester class");
+                }
 
                 // load tested
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers)
                 {
                     tester.IsRunDescriptorValueOveridden = false;
                     if (tester.IsIgnored)
+                    {
                         continue;
+                    }
 
                     Console.WriteLine("Load tested assembly: {0}", Assembly.GetCallingAssembly().FullName);
-                    //Looking inside current
+
+                    // Looking inside current
                     tester.LoadTestedTypesFromInner(Assembly.GetCallingAssembly());
-                    //Looking inside referenced
+
+                    // Looking inside referenced
                     foreach (var asm in Assembly.GetCallingAssembly().GetReferencedAssemblies())
                     {
                         tester.LoadTestedTypesFromInner(Assembly.Load(asm));
@@ -133,22 +149,24 @@ namespace NPerf.Cons
 
                     Console.WriteLine("Tested types:");
                     Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
-                    foreach (Type t in tester.TestedTypes)
+                    foreach (var t in tester.TestedTypes)
                     {
                         Console.WriteLine("\t{0}", t.Name);
                     }
 
                 }
 
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers)
                 {
                     if (tester.IsIgnored)
+                    {
                         continue;
+                    }
 
-                    TextWriterTracer tracer = new TextWriterTracer();
+                    var tracer = new TextWriterTracer();
                     tracer.Attach(tester);
 
-                    PerfTestSuite suite = tester.RunTests();
+                    var suite = tester.RunTests();
                     return suite;
                 }
             }
@@ -156,6 +174,7 @@ namespace NPerf.Cons
             {
                 Console.WriteLine(ex.ToString());
             }
+
             return null;
         }
 
@@ -173,26 +192,34 @@ namespace NPerf.Cons
             {
                 // loading testers
                 if (type == null)
+                {
                     throw new Exception("You did not specify a tester assembly");
+                }
 
                 // load testers from current assembly
-                PerfTesterCollection testers = new PerfTesterCollection();
+                IList<PerfTester> testers = new List<PerfTester>();
                 LoadTesters(testers, Assembly.GetCallingAssembly());
 
                 if (testers.Count == 0)
+                {
                     throw new Exception("Could not find any tester class");
+                }
 
                 // load tested
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers)
                 {
                     tester.IsRunDescriptorValueOveridden = false;
                     if (tester.IsIgnored)
+                    {
                         continue;
+                    }
 
                     Console.WriteLine("Load tested assembly: {0}", Assembly.GetCallingAssembly().FullName);
-                    //Looking inside current
+
+                    // Looking inside current
                     tester.LoadTestedTypesFromInner(Assembly.GetCallingAssembly());
-                    //Looking inside referenced
+
+                    // Looking inside referenced
                     foreach (var asm in Assembly.GetCallingAssembly().GetReferencedAssemblies())
                     {
                         tester.LoadTestedTypesFromInner(Assembly.Load(asm));
@@ -200,13 +227,13 @@ namespace NPerf.Cons
 
                     Console.WriteLine("Tested types:");
                     Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
-                    foreach (Type t in tester.TestedTypes)
+                    foreach (var t in tester.TestedTypes)
                     {
                         Console.WriteLine("\t{0}", t.Name);
                     }
                 }
 
-                RunTests(testers, startValue, step, countOfRuns);
+                this.RunTests(testers, startValue, step, countOfRuns);
             }
             catch (Exception ex)
             {
@@ -228,20 +255,26 @@ namespace NPerf.Cons
             try
             {
                 if ((testerAssemblies == null) || (testerAssemblies.Length == 0))
+                {
                     throw new Exception("You did not specify a tester assembly(s)");
+                }
 
                 if ((testedAssemblies == null) || (testedAssemblies.Length == 0))
+                {
                     throw new Exception("You did not specify a tested assembly(s)");
+                }
 
-                PerfTesterCollection testers = new PerfTesterCollection();
+                IList<PerfTester> testers = new List<PerfTester>();
                 LoadTesters(testers, testerAssemblies);
 
                 if (testers.Count == 0)
+                {
                     throw new Exception("Could not find any tester class");
+                }
                 
                 LoadTestedTypes(testedAssemblies, testers);
 
-                RunTests(testers, startValue, step, countOfRuns);
+                this.RunTests(testers, startValue, step, countOfRuns);
             }
             catch (Exception ex)
             {
@@ -249,38 +282,52 @@ namespace NPerf.Cons
             }
         }
 
-        private void RunTests(PerfTesterCollection testers, int startValue, int step, int countOfRuns)
+        private void RunTests(IEnumerable<PerfTester> testers, int startValue, int step, int countOfRuns)
         {
-            foreach (PerfTester tester in testers)
+            foreach (var tester in testers)
             {
                 tester.IsRunDescriptorValueOveridden = true;
                 if (tester.IsIgnored)
+                {
                     continue;
+                }
+
                 if (startValue > 0)
+                {
                     tester.TestStart = startValue;
+                }
+
                 if (step > 0)
+                {
                     tester.TestStep = step;
+                }
+
                 if (countOfRuns > 0)
+                {
                     tester.TestCount = countOfRuns;
-                tester.ResultsChange += new PerfTester.ResultsChangeHandler(tester_ResultsChange);
-                TextWriterTracer tracer = new TextWriterTracer();
+                }
+
+                tester.ResultsChange += this.tester_ResultsChange;
+                var tracer = new TextWriterTracer();
                 tracer.Attach(tester);
 
-                PerfTestSuite suite = tester.RunTests();
+                var suite = tester.RunTests();
             }
         }
 
-        private static void LoadTestedTypes(Assembly[] testedAssemblies, PerfTesterCollection testers)
+        private static void LoadTestedTypes(Assembly[] testedAssemblies, IEnumerable<PerfTester> testers)
         {
-            foreach (PerfTester tester in testers)
+            foreach (var tester in testers)
             {
                 tester.IsRunDescriptorValueOveridden = false;
                 if (tester.IsIgnored)
+                {
                     continue;
+                }
 
                 Console.WriteLine("Loading tested types for: {0}", tester.TesterType);
 
-                foreach (Assembly testedAssembly in testedAssemblies)
+                foreach (var testedAssembly in testedAssemblies)
                 {
                     Console.WriteLine("Load tested assembly: {0}", testedAssembly);
                     tester.LoadTestedTypesFromInner(testedAssembly);
@@ -288,22 +335,22 @@ namespace NPerf.Cons
 
                 Console.WriteLine("Tested types:");
                 Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
-                foreach (Type t in tester.TestedTypes)
+                foreach (var t in tester.TestedTypes)
                 {
                     Console.WriteLine("\t{0}", t.Name);
                 }
             }
         }
 
-        private static void LoadTesters(PerfTesterCollection testers, Assembly[] testerAssemblies)
+        private static void LoadTesters(IList<PerfTester> testers, Assembly[] testerAssemblies)
         {
-            foreach (Assembly testerAssembly in testerAssemblies)
+            foreach (var testerAssembly in testerAssemblies)
             {
                 LoadTesters(testers, testerAssembly);
             }
         }
 
-        private static void LoadTesters(PerfTesterCollection testers, Assembly testerAssembly)
+        private static void LoadTesters(IList<PerfTester> testers, Assembly testerAssembly)
         {
             Console.WriteLine("Load tester assembly: {0}", testerAssembly.GetName());
             PerfTester.FromAssembly(testers, testerAssembly);
@@ -311,10 +358,11 @@ namespace NPerf.Cons
 
         public class ResultsChangedEventArgs : EventArgs
         {
-            public PerfTestSuite CurrentResults { get; internal set; }
+            public PerfTestSuite CurrentResults { get; private set; }
+
             public ResultsChangedEventArgs(PerfTestSuite results)
             {
-                CurrentResults = results;
+                this.CurrentResults = results;
             }
         }
 
@@ -328,21 +376,21 @@ namespace NPerf.Cons
         protected void OnResultsChange(object sender, ResultsChangedEventArgs results)
         {
             // Check if there are any Subscribers  
-            if (ResultsChange != null)
+            if (this.ResultsChange != null)
             {      // Call the Event   
-                ResultsChange(this, results);
+                this.ResultsChange(this, results);
             }
         }
 
         void tester_ResultsChange(object sender, PerfTester.ResultsChangeEventArgs results)
         {
             //Updating Charts
-            OnResultsChange(this, new ResultsChangedEventArgs(results.CurrentResults));
+            this.OnResultsChange(this, new ResultsChangedEventArgs(results.CurrentResults));
         }
 
-        public double customRun(int testIndex)
+        public double CustomRun(int testIndex)
         {
-            return currentTestNumber*(testIndex+1);
+            return this.currentTestNumber * (testIndex + 1);
         }
 
         /// <summary>
@@ -353,7 +401,7 @@ namespace NPerf.Cons
         {
             try
             {
-                ClArguments cl = new ClArguments();
+                var cl = new ClArguments();
                 cl.AddParameter(new ClParameter("testera", "ta", "Tester Assembly", false, false));
                 cl.AddParameter(new ClParameter("testeda", "tdfa", "Tested Assembly", false, false));
                 cl.AddParameter(new ClParameter("testedapartial", "tdfap", "Tested Assembly Parital Name", false, false));
@@ -368,30 +416,29 @@ namespace NPerf.Cons
 
                 // loading testers
                 if (!cl.ContainsDuplicate("ta"))
+                {
                     throw new Exception("You did not specify a tester assembly");
+                }
 
                 // load testers
-                PerfTesterCollection testers = new PerfTesterCollection();
-                foreach (String name in cl.Duplicates("ta"))
+                IList<PerfTester> testers = new List<PerfTester>();
+                foreach (var name in cl.Duplicates("ta"))
                 {
                     Console.WriteLine("Load tester assembly: {0}", name);
-                    PerfTester.FromAssembly(
-                          testers,
-                          Assembly.LoadFrom(name)
-                          );
+                    PerfTester.FromAssembly(testers, Assembly.LoadFrom(name));
                 }
+
                 if (testers.Count == 0)
+                {
                     throw new Exception("Could not find any tester class");
+                }
 
                 // load tested
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers.Where(tester => !tester.IsIgnored))
                 {
-                    if (tester.IsIgnored)
-                        continue;
-
                     if (cl.ContainsDuplicate("tdfa"))
                     {
-                        foreach (String name in cl.Duplicates("tdfa"))
+                        foreach (string name in cl.Duplicates("tdfa"))
                         {
                             Console.WriteLine("Load tested assembly: {0}", name);
                             tester.LoadTestedTypes(Assembly.LoadFrom(name));
@@ -400,7 +447,7 @@ namespace NPerf.Cons
 
                     if (cl.ContainsDuplicate("tdfap"))
                     {
-                        foreach (String name in cl.Duplicates("tdfap"))
+                        foreach (string name in cl.Duplicates("tdfap"))
                         {
                             Console.WriteLine("Load tested assembly: {0}", name);
                             tester.LoadTestedTypes(Assembly.Load(name));
@@ -409,38 +456,44 @@ namespace NPerf.Cons
 
                     Console.WriteLine("Tested types:");
                     Console.WriteLine(tester.TestedTypes.Count + " " + tester.TesterType);
-                    foreach (Type t in tester.TestedTypes)
+                    foreach (var t in tester.TestedTypes)
                     {
                         Console.WriteLine("\t{0}", t.Name);
                     }
 
                     // removing types
-                    if (cl.ContainsDuplicate("it"))
+                    if (!cl.ContainsDuplicate("it"))
                     {
-                        foreach (String name in cl.Duplicates("it"))
+                        continue;
+                    }
+
+                    foreach (var name in cl.Duplicates("it"))
+                    {
+                        Console.Write("Ignoring type: <{0}>", name);
+                        var t = Type.GetType(name);
+                        if (t == null)
                         {
-                            Console.Write("Ignoring type: <{0}>", name);
-                            Type t = Type.GetType(name);
-                            if (t == null)
-                                Console.WriteLine(" - could not load type.");
+                            Console.WriteLine(" - could not load type.");
+                        }
+                        else
+                        {
+                            if (tester.TestedTypes.Contains(t))
+                            {
+                                Console.WriteLine(" removed");
+                                tester.TestedTypes.Remove(t);
+                            }
                             else
                             {
-                                if (tester.TestedTypes.Contains(t))
-                                {
-                                    Console.WriteLine(" removed");
-                                    tester.TestedTypes.Remove(t);
-                                }
-                                else
-                                    Console.WriteLine("-- could not remove {0}", t.Name);
+                                Console.WriteLine("-- could not remove {0}", t.Name);
                             }
                         }
                     }
                 }
 
                 // run test
-                ChartReport chart = new ChartReport(800, 400);
+                var chart = new ChartReport(800, 400);
                 chart.Colors.Map = ColorMap.Jet;
-                ImageFormat im = ImageFormat.Png;
+                var im = ImageFormat.Png;
 
                 if (cl.ContainsUnique("ot"))
                 {
@@ -464,32 +517,30 @@ namespace NPerf.Cons
                     }
                 }
 
-                foreach (PerfTester tester in testers)
+                foreach (var tester in testers.Where(tester => !tester.IsIgnored))
                 {
-                    if (tester.IsIgnored)
-                        continue;
-
-                    TextWriterTracer tracer = new TextWriterTracer();
+                    var tracer = new TextWriterTracer();
                     tracer.Attach(tester);
 
-                    PerfTestSuite suite = tester.RunTests();
+                    var suite = tester.RunTests();
 
                     if (cl.ContainsUnique("xml"))
                     {
-                        using (FileStream file = File.OpenWrite(tester.TestedType.Name + "." + suite.Name + ".xml"))
+                        using (var file = File.OpenWrite(tester.TestedType.Name + "." + suite.Name + ".xml"))
                         {
-                            StreamWriter writer = new StreamWriter(file);
+                            var writer = new StreamWriter(file);
                             suite.ToXml(writer);
                             writer.Close();
                         }
                     }
 
-                    IDictionary bmps = chart.Render(suite);
+                    var bmps = chart.Render(suite);
                     foreach (DictionaryEntry de in bmps)
                     {
-                        PerfTest test = (PerfTest)de.Key;
-                        Bitmap bmp = (Bitmap)de.Value;
-                        bmp.Save(tester.TestedType.Name + "." + test.Name + "." + im.ToString().ToLower(), im);
+                        var test = (PerfTest)de.Key;
+                        var bmp = (Bitmap)de.Value;
+                        bmp.Save(
+                            string.Format("{0}.{1}.{2}", tester.TestedType.Name, test.Name, im.ToString().ToLower()), im);
                     }
                 }
             }

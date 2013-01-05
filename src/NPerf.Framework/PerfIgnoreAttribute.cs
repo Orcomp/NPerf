@@ -24,7 +24,6 @@ namespace NPerf.Framework
 	]
 	public class PerfIgnoreAttribute : System.Attribute
 	{
-		private string message;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
@@ -32,17 +31,11 @@ namespace NPerf.Framework
 		{
 			if(message==null)
 				throw new ArgumentNullException("message");
-			this.message = message;
+            this.Message = message;
 		}
-		
-		/// <summary>Gets the reason why the test is ignored</summary>
-		/// <value>Explanation of the test ignore</value>
-		public string Message
-		{
-			get 
-			{
-				return this.message;
-			}
-		}
+
+	    /// <summary>Gets the reason why the test is ignored</summary>
+	    /// <value>Explanation of the test ignore</value>
+        public string Message { get; private set; }
 	}
 }

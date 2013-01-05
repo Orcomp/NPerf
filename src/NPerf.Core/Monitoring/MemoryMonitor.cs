@@ -1,54 +1,34 @@
-using System;
-using System.Diagnostics;
-
 namespace NPerf.Core.Monitoring
 {
+    using System;
+    using System.Diagnostics;
 
+    /// <summary>
+    /// Summary description for MemoryTracker.
+    /// </summary>
+    public class MemoryMonitor
+    {
+        public MemoryStatus StartStatus { get; private set; }
 
-	/// <summary>
-	/// Summary description for MemoryTracker.
-	/// </summary>
-	public class MemoryMonitor
-	{
-		private MemoryStatus startStatus = null;
-		private MemoryStatus endStatus = null;
+        public MemoryStatus EndStatus { get; private set; }
 
-		public MemoryMonitor()
-		{}
+        public long Usage
+        {
+            get
+            {
+                return this.EndStatus.TotalMemory - this.StartStatus.TotalMemory;
+            }
+        }
 
-		public MemoryStatus StartStatus
-		{
-			get
-			{
-				return this.startStatus;
-			}
-		}
+        public void Start()
+        {
+            this.StartStatus = new MemoryStatus(Process.GetCurrentProcess());
+            this.EndStatus = null;
+        }
 
-		public MemoryStatus EndStatus
-		{
-			get
-			{
-				return this.endStatus;
-			}
-		}
-
-		public long Usage
-		{
-			get
-			{
-				return EndStatus.TotalMemory - StartStatus.TotalMemory; 
-			}
-		}
-
-		public void Start()
-		{
-			this.startStatus = new MemoryStatus(Process.GetCurrentProcess());
-			this.endStatus = null;
-		}
-
-		public void Stop()
-		{
-			this.endStatus = new MemoryStatus(Process.GetCurrentProcess());
-		}
-	}
+        public void Stop()
+        {
+            this.EndStatus = new MemoryStatus(Process.GetCurrentProcess());
+        }
+    }
 }

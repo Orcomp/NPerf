@@ -1,14 +1,11 @@
 namespace NPerf.Core
 {
     using System;
-    using System.Reflection;
     using System.Xml;
     using System.Xml.Serialization;
-
     using Fasterflect;
-
-    using NPerf.Core.Collections;
     using NPerf.Framework;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Summary description for PerfTest.
@@ -20,25 +17,23 @@ namespace NPerf.Core
         public PerfTest()
         {
             this.Name = null;
-            this.Runs = new PerfTestRunCollection();
+            this.Runs = new List<PerfTestRun>();
             this.IsIgnored = false;
             this.IgnoredMessage = null;
         }
 
-        public PerfTest(MethodInfo mi)
+        public PerfTest(System.Reflection.MethodInfo mi)
         {
-            if (mi == null) throw new ArgumentNullException("mi");
+            if (mi == null)
+            {
+                throw new ArgumentNullException("mi");
+            }
 
             this.Name = mi.Name;
-            this.Runs = new PerfTestRunCollection();
+            this.Runs = new List<PerfTestRun>();
 
             this.IsIgnored = mi.HasAttribute<PerfIgnoreAttribute>();
-            if (this.IsIgnored)
-            {
-                var attr = mi.Attribute<PerfIgnoreAttribute>();
-                this.IgnoredMessage = attr.Message;
-            }
-            else this.IgnoredMessage = null;
+            this.IgnoredMessage = this.IsIgnored ? mi.Attribute<PerfIgnoreAttribute>().Message : null;
         }
 
         [XmlAttribute("name")]
@@ -52,6 +47,6 @@ namespace NPerf.Core
 
         [XmlArrayItem(ElementName = "run", Type = typeof(PerfTestRun))]
         [XmlArray(ElementName = "runs")]
-        public PerfTestRunCollection Runs { get; set; }
+        public IList<PerfTestRun> Runs { get; set; }
     }
 }

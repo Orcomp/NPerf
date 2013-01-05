@@ -1,48 +1,26 @@
-using System;
-using System.Diagnostics;
-using System.Xml;
-using System.Xml.Serialization;
-
 namespace NPerf.Core.Monitoring
 {
-	/// <summary>
-	/// Summary description for MemoryStatus.
-	/// </summary>
-	public class MemoryStatus
-	{
-		private long workingSet;
-		private long peakWorkingSet;
-		private long totalmemory;
+    using System;
+    using System.Diagnostics;
+    using System.Xml;
+    using System.Xml.Serialization;
 
-		public MemoryStatus(Process p)
-		{
-            this.workingSet = p.WorkingSet64;
-			this.peakWorkingSet = p.PeakWorkingSet64;
-			this.totalmemory = GC.GetTotalMemory(false);
-		}
+    /// <summary>
+    /// Summary description for MemoryStatus.
+    /// </summary>
+    public class MemoryStatus
+    {
+        public MemoryStatus(Process p)
+        {
+            this.WorkingSet = p.WorkingSet64;
+            this.PeakWorkingSet = p.PeakWorkingSet64;
+            this.TotalMemory = GC.GetTotalMemory(false);
+        }
 
-		public long WorkingSet
-		{
-			get
-			{
-				return this.workingSet;
-			}
-		}
+        public long WorkingSet { get; private set; }
 
-		public long PeakWorkingSet
-		{
-			get
-			{
-				return this.peakWorkingSet;
-			}
-		}
-		
-		public long TotalMemory
-		{
-			get
-			{
-				return this.totalmemory;
-			}
-		}
-	}
+        public long PeakWorkingSet { get; private set; }
+
+        public long TotalMemory { get; private set; }
+    }
 }

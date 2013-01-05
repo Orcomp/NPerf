@@ -22,8 +22,6 @@ namespace NPerf.Core
 	/// </remarks>
 	public class PerfTestRunEventArgs : System.EventArgs
 	{
-		private PerfTestRun run;
-		
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
@@ -31,16 +29,10 @@ namespace NPerf.Core
 		{
 			if (run==null)
 				throw new ArgumentNullException("run");
-			this.run = run;
+            this.Run = run;
 		}
-		
-		public PerfTestRun Run
-		{
-			get
-			{
-				return this.run;
-			}
-		}
+
+        public PerfTestRun Run { get; private set; }
 	}
 	
 	public delegate void PerfTestRunEventHandler(Object sender,PerfTestRunEventArgs e); 

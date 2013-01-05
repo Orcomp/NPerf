@@ -1,34 +1,33 @@
 namespace NPerf.Core
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Reflection;
     using Fasterflect;
-    using NPerf.Core.Collections;
     using NPerf.Core.Monitoring;
     using NPerf.Framework;
+    using System.Collections.Generic;
+using System.Diagnostics;
 
     /// <summary>
     /// Summary description for PerfTester.
     /// </summary>
     public class PerfTester
     {
-        private ConstructorInfo constructor = null;
+        private readonly System.Reflection.MethodInfo runDescriptor = null;
 
-        private MethodInfo runDescriptor = null;
+        private readonly System.Reflection.MethodInfo setUp = null;
 
-        private MethodInfo setUp = null;
+        private readonly System.Reflection.MethodInfo tearDown = null;
 
-        private MethodInfo tearDown = null;
+        private readonly System.Reflection.MethodInfo[] methods;
 
-        private MethodInfoCollection methods;
+        private readonly TimeMonitor timer;        
 
-        private TypeCollection testedTypes;
+        private readonly MemoryMonitor memorizer;
 
-        private TimeMonitor timer;
+        private PerformanceCounter cpuCounter;
 
-        private MemoryMonitor memorizer;
+        private PerformanceCounter memCounter;
 
         public PerfTester(Type testerType, PerfTesterAttribute attr)
         {
@@ -48,8 +47,8 @@ namespace NPerf.Core
             this.Description = attr.Description;
             this.FeatureDescription = attr.FeatureDescription;
 
-            // get constructor
-            this.constructor = this.TesterType.GetConstructor(Type.EmptyTypes);
+            this.cpuCounter = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName);
+            this.memCounter = new PerformanceCounter("Process", "Working Set", Process.GetCurrentProcess().ProcessName);
 
             // get run descriptor
             this.runDescriptor =
@@ -69,14 +68,13 @@ namespace NPerf.Core
                     .FirstOrDefault(
                         m => m.ReturnType == typeof(void) && m.HasParameterSignature(new[] { this.TestedType }));
 
-            // get test method			
-            this.methods = new MethodInfoCollection();
-            methods.AddRange(
+            // get test method
+            this.methods =
                 this.TesterType.MethodsWith(Flags.AllMembers, typeof(PerfTestAttribute))
                     .Where(m => m.ReturnType == typeof(void) && m.HasParameterSignature(new[] { this.TestedType }))
-                    .ToArray());
+                    .ToArray();
 
-            this.testedTypes = new TypeCollection();
+            this.TestedTypes = new List<Type>();
             this.timer = new TimeMonitor();
             this.memorizer = new MemoryMonitor();
         }
@@ -102,13 +100,7 @@ namespace NPerf.Core
         #endregion
 
 
-        public TypeCollection TestedTypes
-        {
-            get
-            {
-                return this.testedTypes;
-            }
-        }
+        public IList<Type> TestedTypes { get; private set; }
 
         public bool IsIgnored
         {
@@ -188,10 +180,10 @@ namespace NPerf.Core
                 throw new ArgumentNullException("a");
             }
 
-            this.testedTypes.AddRange(
+            this.TestedTypes =
                 (this.TestedType.IsInterface
                      ? a.GetExportedTypes().Where(t => this.TestedType.IsAssignableFrom(t) && !t.IsAbstract)
-                     : a.GetExportedTypes().Where(t => t.IsInstanceOfType(this.TestedType) && !t.IsAbstract)).ToArray());
+                     : a.GetExportedTypes().Where(t => t.IsInstanceOfType(this.TestedType) && !t.IsAbstract)).ToList();
         }
 
         public void LoadTestedTypesFromInner(System.Reflection.Assembly a)
@@ -201,10 +193,10 @@ namespace NPerf.Core
                 throw new ArgumentNullException("a");
             }
 
-            this.testedTypes.AddRange(
+            this.TestedTypes =
                 (this.TestedType.IsInterface
                      ? a.GetTypes().Where(t => this.TestedType.IsAssignableFrom(t) && !t.IsAbstract)
-                     : a.GetTypes().Where(t => t.IsInstanceOfType(this.TestedType) && !t.IsAbstract)).ToArray());
+                     : a.GetTypes().Where(t => t.IsInstanceOfType(this.TestedType) && !t.IsAbstract)).ToList();
         }
 
         #region Custom Event
@@ -228,7 +220,7 @@ namespace NPerf.Core
         //Event
         public event ResultsChangeHandler ResultsChange;
 
-        //Method for firing Event
+        // Method for firing Event
         protected void OnResultsChange(object sender, ResultsChangeEventArgs results)
         {
             // Check if there are any Subscribers  
@@ -245,41 +237,46 @@ namespace NPerf.Core
         {
             var suite = new PerfTestSuite(this.TesterType, this.Description, this.FeatureDescription);
 
-            for (int testIndex = 0; testIndex < this.methods.Count; testIndex++)
+            for (var testIndex = 0; testIndex < this.methods.Length; testIndex++)
             {
-                MethodInfo test = methods[testIndex];
-                PerfTest testResult = new PerfTest(test);
-                //Adding from the start
+                var test = this.methods[testIndex];
+                var testResult = new PerfTest(test);
+
+                // Adding from the start
                 suite.Tests.Add(testResult);
 
                 if (testResult.IsIgnored)
                 {
-                    OnIgnoredTest(testResult);
+                    this.OnIgnoredTest(testResult);
                     suite.Tests.Add(testResult);
                     continue;
                 }
 
-                OnStartTest(testResult);
+                this.OnStartTest(testResult);
 
-                for (int runIndex = 0; runIndex < this.TestCount; ++runIndex)
+                for (var runIndex = 0; runIndex < this.TestCount; ++runIndex)
                 {
-
-                    PerfTestRun run =
+                    var run =
                         new PerfTestRun(
-                            IsRunDescriptorValueOveridden ? TestStart + runIndex * TestStep : RunDescription(runIndex));
+                            this.IsRunDescriptorValueOveridden
+                                ? this.TestStart + runIndex * this.TestStep
+                                : this.RunDescription(runIndex));
 
-                    OnStartRun(run);
+                    this.OnStartRun(run);
 
                     // for each instanced type,
-                    foreach (Type t in this.testedTypes)
+                    foreach (var t in this.TestedTypes)
                     {
                         try
                         {
-                            //jitting if first run of the test
-                            if (runIndex == 0) RunTest(-1, t, test, false);
+                            // jitting if first run of the test
+                            if (runIndex == 0)
+                            {
+                                this.RunTest(-1, t, test, false);
+                            }
 
                             // calling
-                            RunTest(runIndex, t, test, true);
+                            this.RunTest(runIndex, t, test, true);
 
                             // save results
                             run.Results.Add(new PerfResult(t, this.timer.Duration, this.memorizer.Usage));
@@ -289,32 +286,33 @@ namespace NPerf.Core
                             run.FailedResults.Add(new PerfFailedResult(t, ex));
                         }
                     }
-                    OnFinishRun(run);
+
+                    this.OnFinishRun(run);
                     testResult.Runs.Add(run);
 
-                    //Adding to suite
+                    // Adding to suite
                     suite.Tests[testIndex] = testResult;
-                    //Invoking Event Handler
-                    OnResultsChange(this, new ResultsChangeEventArgs(suite));
+                    
+                    // Invoking Event Handler
+                    this.OnResultsChange(this, new ResultsChangeEventArgs(suite));
                 }
-                OnFinishTest(testResult);
 
-                //suite.Tests[testIndex] = testResult;
-
-
+                this.OnFinishTest(testResult);
+                
+                // suite.Tests[testIndex] = testResult;
             }
+
             return suite;
         }
 
-        internal void RunTest(int testIndex, Type testedType, MethodInfo method, bool monitor)
+        private void RunTest(int testIndex, Type testedType, System.Reflection.MethodInfo method, bool monitor)
         {
-
             // create instance
-            ConstructorInfo ci = testedType.GetConstructor(Type.EmptyTypes);
-            Object tested = ci.Invoke(Type.EmptyTypes);
+            var tested = testedType.CreateInstance(Type.EmptyTypes);
+            
             // test 
-            Object tester = CreateTester();
-            SetUp(testIndex, tester, tested);
+            var tester = this.TestedType.CreateInstance(Type.EmptyTypes);
+            this.SetUp(testIndex, tester, tested);
 
             // clean memory
             GC.Collect();
@@ -327,7 +325,9 @@ namespace NPerf.Core
                 this.memorizer.Start();
                 this.timer.Start();
             }
-            Run(tester, tested, method);
+
+            method.Call(tester, tested);
+
             // stop monitoring
             if (monitor)
             {
@@ -336,16 +336,23 @@ namespace NPerf.Core
             }
 
             // tear down
-            TearDown(tester, tested);
+            this.TearDown(tester, tested);
         }
 
         #region Static Helpers
 
-        public static void FromAssembly(PerfTesterCollection testers, Assembly a)
+        public static void FromAssembly(IList<PerfTester> testers, System.Reflection.Assembly a)
         {
             Console.WriteLine("FromAssembly enter");
-            if (testers == null) throw new ArgumentNullException("testers");
-            if (a == null) throw new ArgumentNullException("a");
+            if (testers == null)
+            {
+                throw new ArgumentNullException("testers");
+            }
+
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
 
             foreach (var t in a.GetExportedTypes())
             {
@@ -358,14 +365,21 @@ namespace NPerf.Core
 
                     testers.Add(tester);
                 }
-                else Console.WriteLine("No custom attr");
+                else
+                {
+                    Console.WriteLine("No custom attr");
+                }
             }
         }
 
-        public static PerfTesterCollection FromAssembly(Assembly a)
+        public static IList<PerfTester> FromAssembly(System.Reflection.Assembly a)
         {
-            if (a == null) throw new ArgumentNullException("a");
-            var testers = new PerfTesterCollection();
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            var testers = new List<PerfTester>();
             FromAssembly(testers, a);
 
             return testers;
@@ -375,52 +389,51 @@ namespace NPerf.Core
 
         #region Protected
 
-        protected Object CreateTester()
-        {
-            return this.constructor.Invoke(Type.EmptyTypes);
-        }
-
         protected double RunDescription(int testIndex)
         {
-            if (this.runDescriptor == null) return (double)testIndex;
-
-            Object[] args = new Object[1];
-            args[0] = testIndex;
-            Object tester = CreateTester();
-
-            return (double)this.runDescriptor.Invoke(tester, args);
+            if (this.runDescriptor == null)
+            {
+                return testIndex;
+            }
+            
+            var tester = this.TestedType.CreateInstance(Type.EmptyTypes);
+            return (double)this.runDescriptor.Call(tester, testIndex);
         }
 
-        protected void SetUp(int testIndex, Object tester, Object tested)
+        protected void SetUp(int testIndex, object tester, object tested)
         {
-            if (tester == null) throw new ArgumentNullException("tester");
-            if (tested == null) throw new ArgumentNullException("tested");
+            if (tester == null)
+            {
+                throw new ArgumentNullException("tester");
+            }
+
+            if (tested == null)
+            {
+                throw new ArgumentNullException("tested");
+            }
+
             if (this.setUp != null)
             {
-                Object[] args = new Object[2];
-                args[0] = testIndex;
-                args[1] = tested;
-                this.setUp.Invoke(tester, args);
+                this.setUp.Call(tester, testIndex, tested);
             }
         }
 
-        protected void TearDown(Object tester, Object tested)
+        protected void TearDown(object tester, object tested)
         {
-            if (tester == null) throw new ArgumentNullException("tester");
-            if (tested == null) throw new ArgumentNullException("tested");
+            if (tester == null)
+            {
+                throw new ArgumentNullException("tester");
+            }
+
+            if (tested == null)
+            {
+                throw new ArgumentNullException("tested");
+            }
+
             if (this.tearDown != null)
             {
-                Object[] args = new Object[1];
-                args[0] = tested;
-                this.tearDown.Invoke(tester, args);
+                this.tearDown.Call(tester, tested);
             }
-        }
-
-        protected void Run(Object tester, Object tested, MethodInfo mi)
-        {
-            Object[] args = new Object[1];
-            args[0] = tested;
-            mi.Invoke(tester, args);
         }
 
         #endregion

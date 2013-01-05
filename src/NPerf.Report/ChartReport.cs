@@ -17,7 +17,6 @@ using System.Collections;
 namespace NPerf.Report
 {
 	using NPerf.Core;
-	using NPerf.Core.Collections;
 	
 	using scpl;
 	
