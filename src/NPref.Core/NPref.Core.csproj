@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</ProjectGuid>
+    <ProjectGuid>{6FF20524-48EE-4D1E-9265-B7EE8C25B5AE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NPerf.Framework</RootNamespace>
-    <AssemblyName>NPerf.Framework</AssemblyName>
+    <RootNamespace>NPref.Core</RootNamespace>
+    <AssemblyName>NPref.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\NPerf.Framework.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\NPref.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\NPerf.Framework.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\NPref.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,21 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IFixture.cs" />
-    <Compile Include="IPerfMonitorsManager.cs" />
-    <Compile Include="IPerfMonitor.cs" />
-    <Compile Include="ISinglePerfTest.cs" />
-    <Compile Include="ISingleTestRunner.cs" />
-    <Compile Include="PerfIgnoreAttribute.cs" />
-    <Compile Include="PerfRunDescriptorAttribute.cs" />
-    <Compile Include="PerfSetUpAttribute.cs" />
-    <Compile Include="PerfTearDownAttribute.cs" />
-    <Compile Include="PerfTestAttribute.cs" />
-    <Compile Include="PerfTesterAttribute.cs" />
+    <Compile Include="AssemblyTester.cs" />
+    <Compile Include="SingleTestMultyRunner.cs" />
+    <Compile Include="SingleTestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NPerf.Framework.Doc.xml" />
+    <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
+      <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
+      <Name>NPerf.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,7 @@
-﻿namespace NPerf.Framework
-{
-    using System;
+using System;
 
+namespace NPerf.Framework
+{
     /// <summary>
     /// Defines a test tear-down method.
     /// </summary>

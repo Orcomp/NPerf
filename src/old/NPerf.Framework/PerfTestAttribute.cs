@@ -1,7 +1,7 @@
-﻿namespace NPerf.Framework
-{
-    using System;
+using System;
 
+namespace NPerf.Framework
+{
     /// <summary>
     /// Defines a benchmark test method.
     /// </summary>
@@ -11,7 +11,6 @@
     public class PerfTestAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerfTestAttribute"/> class. 
         /// Empty constructor
         /// </summary>
         public PerfTestAttribute()
@@ -19,18 +18,12 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PerfTestAttribute"/> class. 
         /// Constructor with test descrition
         /// </summary>
-        /// <param name="description">
-        /// The description.
-        /// </param>
         /// <remarks>
         /// Constructs the attribute with <paramref name="description"/>.
         /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// description is a null reference
-        /// </exception>
+        /// <exception cref="ArgumentNullException">description is a null reference</exception>
         public PerfTestAttribute(string description)
         {
             if (description == null)
