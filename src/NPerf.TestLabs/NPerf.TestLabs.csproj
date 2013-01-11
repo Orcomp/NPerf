@@ -43,8 +43,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DaveSexton.Labs">
-      <HintPath>$(LabsAssembliesPath)\NET40\DaveSexton.Labs.dll</HintPath>
+    <Reference Include="DaveSexton.Labs, Version=1.6.4431.20589, Culture=neutral, PublicKeyToken=48f2cc8499584213, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Labs Framework\2.0\Bin\NET40\DaveSexton.Labs.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
