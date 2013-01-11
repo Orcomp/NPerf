@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("NPerf.Framework")]
+[assembly: AssemblyTitle("NPerf.Experiment")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("NPerf.Framework")]
+[assembly: AssemblyProduct("NPerf.Experiment")]
 [assembly: AssemblyCulture("")]
 
 // Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("0b9f3ed0-7d86-45c6-97c0-8b67ca3a97ec")]
+[assembly: Guid("b41dc5db-d14f-47e3-b8d6-664ac5150cb5")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //

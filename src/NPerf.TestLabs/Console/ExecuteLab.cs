@@ -1,0 +1,67 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Diagnostics;
+using NPerf.DevHelpers;
+
+namespace NPerf.TestLabs.Console
+{
+    [DisplayName("")]
+    [Description("")]
+    public sealed class ExecuteLab : BaseConsoleLab
+    {
+        private Process experimentProcess;
+
+        public ExecuteLab()
+        {
+            this.WaitingForUserInput = true;
+
+            this.experimentProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                 {
+                     UseShellExecute = false,
+                     RedirectStandardError = true,
+                     RedirectStandardOutput = true,
+                     CreateNoWindow = true,
+                     WindowStyle = ProcessWindowStyle.Hidden,
+                     FileName =
+                         Environment.CurrentDirectory
+                         + "\\NPerf.Experiment.exe"
+                 }
+            };
+        }
+
+        [DisplayName("Run all experiments")]
+        protected override void Main()
+        {
+            this.RunExperiments();
+        }
+
+        [DisplayName("NPerf.Experiment -ta Perf.DevHelpers -ra FixtureSample -ti 0 -ra Perf.DevHelpers -st TestedObject")]
+        [Description("")]
+        public void DefaultExperiment()
+        {                        
+            this.TraceLine("Enter arguments to continue. For axample: ");
+            this.TraceLine(
+                string.Format(
+                    "-ta {0} -ft {1} -ti 0 -ra {2} -st {3}",
+                    typeof(FixtureSample).Assembly.Location,
+                    typeof(FixtureSample).Name,
+                    typeof(FixtureSample).Assembly.Location,
+                    typeof(TestedObject).Name));
+            this.TraceLine();
+            this.experimentProcess.StartInfo.Arguments = this.UserInput();
+            this.experimentProcess.Start();
+            this.experimentProcess.WaitForExit();
+            var error = this.experimentProcess.StandardError.ReadToEnd();
+            var output = this.experimentProcess.StandardOutput.ReadToEnd();
+            this.TraceStatus("Outputs:");
+            this.TraceLine(output);
+            this.TraceStatus("Errors:");
+            this.TraceLine(error);
+            this.TraceSuccess();
+        }        
+    }
+}

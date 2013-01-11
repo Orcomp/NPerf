@@ -1,13 +1,17 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("NPerf.Framework")]
+[assembly: AssemblyTitle("NPref.Fixture")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("NPerf.Framework")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("NPref.Fixture")]
+[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
@@ -16,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("0b9f3ed0-7d86-45c6-97c0-8b67ca3a97ec")]
+[assembly: Guid("3b393539-ed9f-4804-9dda-deb0e8147444")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //

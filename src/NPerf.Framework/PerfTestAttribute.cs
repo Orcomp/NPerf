@@ -12,14 +12,6 @@
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfTestAttribute"/> class. 
-        /// Empty constructor
-        /// </summary>
-        public PerfTestAttribute()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PerfTestAttribute"/> class. 
         /// Constructor with test descrition
         /// </summary>
         /// <param name="description">
@@ -31,7 +23,7 @@
         /// <exception cref="ArgumentNullException">
         /// description is a null reference
         /// </exception>
-        public PerfTestAttribute(string description)
+        public PerfTestAttribute(string description = null)
         {
             if (description == null)
             {
