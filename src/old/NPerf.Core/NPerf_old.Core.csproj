@@ -92,8 +92,8 @@
       <Project>{E22BF9BC-3A12-4FFD-96FD-1C2253118CA2}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <Reference Include="Fasterflect">
-      <HintPath>..\..\packages\fasterflect.2.1.2\lib\net40\Fasterflect.dll</HintPath>
+    <Reference Include="Fasterflect, Version=2.1.2.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
+      <HintPath>..\..\..\libs\packages\fasterflect.2.1.2\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>

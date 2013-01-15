@@ -4,76 +4,6 @@
         <name>NPerf.Framework</name>
     </assembly>
     <members>
-        <member name="T:NPerf.Framework.PerfTesterAttribute">
-            <summary>
-            A performance tester class attribute.
-            </summary>
-            <remarks name="PerfTesterAttribute"> 
-<para>
-This is the attribute that marks a class that contains performance test
-methods. This attribute is contained in the NPerf.Framework namespace. 
-</para>
-<para>
-The user must specify the type to which the performance tests are to
-be applied. This type is supplied in the constructor.
-</para>
-</remarks>
-            <example name="PerfTesterAttribute">
-In this example, we mark a class to benchmark sorter algorithms defined by the <c>ISorter</c> interface,
-and that should run 3 times:
-<code>using NPerf.Framework;
-
-[PerfTester(typeof(IDictionary),10)]
-public class SorterTester
-{
-   ...
-}</code>
-A test description, and a featured value description can be specified in the attribute
-constructor:
-<code>[PerfTester(typeof(IDictionary),10, Description="...", FeatureDescription="...")]
-public class SorterTester ...
-</code>
-</example>
-        </member>
-        <member name="M:NPerf.Framework.PerfTesterAttribute.#ctor(System.Type,System.Int32)">
-            <summary>
-            Constructs the attribute
-            </summary>
-            <param name="testedType">target type</param>
-            <param name="testCount">number of test runs</param>
-            <exception cref="T:System.ArgumentNullException"><paramref name="testedType"/> is a null reference</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="testCount"/> is smaller than 1</exception>
-        </member>
-        <member name="P:NPerf.Framework.PerfTesterAttribute.TestedType">
-            <summary>
-            Gets the target type of the tester
-            </summary>
-            <value>
-            Target type of the tester
-            </value>
-        </member>
-        <member name="P:NPerf.Framework.PerfTesterAttribute.TestCount">
-            <summary>
-            Gets the number of test runs
-            </summary>
-            <value>
-            The number of test runs 
-            </value>
-        </member>
-        <member name="P:NPerf.Framework.PerfTesterAttribute.Description">
-            <summary>Gets the Test description string</summary>
-            <value>Test description</value>
-        </member>
-        <member name="P:NPerf.Framework.PerfTesterAttribute.FeatureDescription">
-            <summary>Gets the tested feature description string</summary>
-            <value>Tested feature description</value>
-        </member>
-        <member name="T:NPerf.Framework.NamespaceDoc">
-            <summary>
-            The <b>NPerf.Framework</b> namespace contains attributes that can be used
-            to define performance test classes and methods.
-            </summary>
-        </member>
         <member name="T:NPerf.Framework.PerfTearDownAttribute">
             <summary>
             Defines a test tear-down method.
@@ -164,6 +94,90 @@ public DictionaryTester
             <summary>Gets the Test description string</summary>
             <value>Test description</value>
         </member>
+        <member name="T:NPerf.Framework.NamespaceDoc">
+            <summary>
+            The <b>NPerf.Framework</b> namespace contains attributes that can be used
+            to define performance test classes and methods.
+            </summary>
+        </member>
+        <member name="T:NPerf.Framework.PerfIgnoreAttribute">
+            <summary>
+            A custom attribute to disable tester or tests
+            </summary>
+        </member>
+        <member name="M:NPerf.Framework.PerfIgnoreAttribute.#ctor(System.String)">
+            <summary>
+            Default constructor - initializes all fields to default values
+            </summary>
+        </member>
+        <member name="P:NPerf.Framework.PerfIgnoreAttribute.Message">
+            <summary>Gets the reason why the test is ignored</summary>
+            <value>Explanation of the test ignore</value>
+        </member>
+        <member name="T:NPerf.Framework.PerfTesterAttribute">
+            <summary>
+            A performance tester class attribute.
+            </summary>
+            <remarks name="PerfTesterAttribute"> 
+<para>
+This is the attribute that marks a class that contains performance test
+methods. This attribute is contained in the NPerf.Framework namespace. 
+</para>
+<para>
+The user must specify the type to which the performance tests are to
+be applied. This type is supplied in the constructor.
+</para>
+</remarks>
+            <example name="PerfTesterAttribute">
+In this example, we mark a class to benchmark sorter algorithms defined by the <c>ISorter</c> interface,
+and that should run 3 times:
+<code>using NPerf.Framework;
+
+[PerfTester(typeof(IDictionary),10)]
+public class SorterTester
+{
+   ...
+}</code>
+A test description, and a featured value description can be specified in the attribute
+constructor:
+<code>[PerfTester(typeof(IDictionary),10, Description="...", FeatureDescription="...")]
+public class SorterTester ...
+</code>
+</example>
+        </member>
+        <member name="M:NPerf.Framework.PerfTesterAttribute.#ctor(System.Type,System.Int32)">
+            <summary>
+            Constructs the attribute
+            </summary>
+            <param name="testedType">target type</param>
+            <param name="testCount">number of test runs</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="testedType"/> is a null reference</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="testCount"/> is smaller than 1</exception>
+        </member>
+        <member name="P:NPerf.Framework.PerfTesterAttribute.TestedType">
+            <summary>
+            Gets the target type of the tester
+            </summary>
+            <value>
+            Target type of the tester
+            </value>
+        </member>
+        <member name="P:NPerf.Framework.PerfTesterAttribute.TestCount">
+            <summary>
+            Gets the number of test runs
+            </summary>
+            <value>
+            The number of test runs 
+            </value>
+        </member>
+        <member name="P:NPerf.Framework.PerfTesterAttribute.Description">
+            <summary>Gets the Test description string</summary>
+            <value>Test description</value>
+        </member>
+        <member name="P:NPerf.Framework.PerfTesterAttribute.FeatureDescription">
+            <summary>Gets the tested feature description string</summary>
+            <value>Tested feature description</value>
+        </member>
         <member name="T:NPerf.Framework.PerfSetUpAttribute">
             <summary>
             Defines a test set-up method.
@@ -205,20 +219,6 @@ public DictionaryTester
     }
 }</code>
 </example>
-        </member>
-        <member name="T:NPerf.Framework.PerfIgnoreAttribute">
-            <summary>
-            A custom attribute to disable tester or tests
-            </summary>
-        </member>
-        <member name="M:NPerf.Framework.PerfIgnoreAttribute.#ctor(System.String)">
-            <summary>
-            Default constructor - initializes all fields to default values
-            </summary>
-        </member>
-        <member name="P:NPerf.Framework.PerfIgnoreAttribute.Message">
-            <summary>Gets the reason why the test is ignored</summary>
-            <value>Explanation of the test ignore</value>
         </member>
     </members>
 </doc>

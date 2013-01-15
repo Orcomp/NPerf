@@ -9,30 +9,30 @@
 
     internal class TestRunner
     {
-        private IPerfFixture tool;
+        private IPerfTestSuite suite;
 
         private Action<object> testMethod;
 
         private object testedObject;
 
-        public TestRunner(IPerfFixture tool, int testIndex, object testedObject)
+        public TestRunner(IPerfTestSuite suite, int testIndex, object testedObject)
         {
-            this.tool = tool;
-            this.testMethod = tool.Tests[testIndex].Test;
+            this.suite = suite;
+            this.testMethod = suite.Tests[testIndex].Test;
             this.testedObject = testedObject;
         }
 
         public void RunTests()
         {
-                for (var i = 0; i < this.tool.DefaultTestCount; i++)
+                for (var i = 0; i < this.suite.DefaultTestCount; i++)
                 {
-                    this.tool.SetUp(i, this.testedObject);
-                    using (new Monitoring(this.tool, i))
+                    this.suite.SetUp(i, this.testedObject);
+                    using (new Monitoring(this.suite, i))
                     {
                         this.testMethod(this.testedObject);
                     }
 
-                    this.tool.TearDown(this.testedObject);
+                    this.suite.TearDown(this.testedObject);
                 }
         }
 
@@ -40,13 +40,13 @@
         {
             for (var i = start; i < end; i += step)
             {
-                this.tool.SetUp(i, this.testedObject);
-                using (new Monitoring(this.tool, i))
+                this.suite.SetUp(i, this.testedObject);
+                using (new Monitoring(this.suite, i))
                 {
                     this.testMethod(this.testedObject);
                 }
 
-                this.tool.TearDown(this.testedObject);
+                this.suite.TearDown(this.testedObject);
             }
         }
     }

@@ -5,13 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1C52E23B-B597-48E4-AACA-61B2FE350873}</ProjectGuid>
+    <ProjectGuid>{84A569FE-A66A-4B13-9480-0D06B72BFD86}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NPerf.DevHelpers</RootNamespace>
-    <AssemblyName>NPerf.DevHelpers</AssemblyName>
+    <RootNamespace>NPerf.Builder</RootNamespace>
+    <AssemblyName>NPerf.Builder</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CodeDomUtilities.Extensions">
+      <HintPath>..\..\libs\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="CodeDomUtilities.Patterns">
+      <HintPath>..\..\libs\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Patterns.dll</HintPath>
+    </Reference>
+    <Reference Include="Fasterflect">
+      <HintPath>..\..\libs\packages\fasterflect.2.1.2\lib\net40\Fasterflect.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,14 +51,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SilutionInfo.cs">
-      <Link>Properties\SilutionInfo.cs</Link>
+    <Compile Include="CodeCompiler.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="AttribitedFixtureSample.cs" />
-    <Compile Include="TestSuiteSample.cs" />
-    <Compile Include="ITestedObject.cs" />
+    <Compile Include="TestCodeBuider.cs" />
+    <Compile Include="TestSuiteCodeBuilder.cs" />
+    <Compile Include="TestSuiteCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestedObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
@@ -55,7 +68,17 @@
       <Name>NPerf.Framework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

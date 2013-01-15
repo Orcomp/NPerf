@@ -14,11 +14,11 @@
         [STAThread]
         public static void Main(string[] args)
         {
-            /* NPerf.Experiment -ta toolAssembly -ft fixtureTypeNam -ti testIndex -ra researchedAssebmly -st subjectType 
+            /* NPerf.Experiment -ta toolAssembly -ft testSuiteTypeName -ti testIndex -ra researchedAssebmly -st subjectType 
              * 
-             * toolAssembly - file name of the assemly with fixtures
-             * fixtureTypeName - the name of type, which implements IFixture<> interface
-             * testIndex - index of test method in executed fixture
+             * toolAssembly - file name of the assemly with test suites
+             * testSuiteTypeName - the name of type, which implements IPerfTestSuite interface
+             * testIndex - index of test method in executed test suite
              */
 
             try
@@ -26,17 +26,17 @@
                 var arguments = args.ConvertToArguments();
 
                 var toolAssemblyName = arguments.ExtractValue("ta");
-                var fixtureTypeName = arguments.ExtractValue("ft");
-                var fixture = AssemblyLoader.CreateInstance<IPerfFixture>(toolAssemblyName, fixtureTypeName);
+                var testSuiteTypeName = arguments.ExtractValue("ft");
+                var suite = AssemblyLoader.CreateInstance<IPerfTestSuite>(toolAssemblyName, testSuiteTypeName);
 
 
                 var researchedAssebmlyName = arguments.ExtractValue("ra");
                 var subjectTypeName = arguments.ExtractValue("st");
                 var subject = AssemblyLoader.CreateInstance(researchedAssebmlyName, subjectTypeName);
 
-                if (fixture != null && subject != null)
+                if (suite != null && subject != null)
                 {
-                   // fixture.
+                   
                 }
             }
             catch (Exception ex)

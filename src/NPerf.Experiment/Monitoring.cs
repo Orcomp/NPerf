@@ -9,16 +9,16 @@
 
     internal class Monitoring : IDisposable
     {
-        private IPerfFixture tool;
+        private IPerfTestSuite suite;
 
         private bool disposed = false;
 
 
-        public Monitoring(IPerfFixture tool, int iteration)
+        public Monitoring(IPerfTestSuite suite, int iteration)
         {
-            this.tool = tool;
+            this.suite = suite;
 
-            foreach (var monitor in this.tool.Monitors)
+            foreach (var monitor in this.suite.Monitors)
             {
                 monitor.Start(iteration);
             }
@@ -41,13 +41,13 @@
 
             if (disposing)
             {
-                foreach (var monitor in this.tool.Monitors)
+                foreach (var monitor in this.suite.Monitors)
                 {
                     monitor.Stop();
                 }
             }
 
-            this.tool = null;
+            this.suite = null;
             this.disposed = true;
         }
 

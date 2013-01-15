@@ -1,11 +1,12 @@
 ﻿namespace NPerf.Framework
 {
-    /// <summary>
-    /// The performance test interface.
-    /// </summary>
-    public interface IPerfTest : IPerfTestInfo
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
+    public interface IPerfTestInfo
     {
-        /*
         /// <summary>
         /// Gets the name of test.
         /// </summary>
@@ -14,7 +15,7 @@
         /// <summary>
         /// Gets the description of test.
         /// </summary>
-        string Description { get; }        
+        string Description { get; }
 
         /// <summary>
         /// Gets a value indicating whether the test should be ignored.
@@ -24,16 +25,6 @@
         /// <summary>
         /// Gets the ignore message.
         /// </summary>
-        string IgnoreMessage { get; }*/
-
-      //  IPerfTestInfo TestInfo { get; }
-
-        /// <summary>
-        /// The test method.
-        /// </summary>
-        /// <param name="testedObject">
-        /// Instance of tested object.
-        /// </param>
-        void Test(object testedObject);
+        string IgnoreMessage { get; }
     }
 }

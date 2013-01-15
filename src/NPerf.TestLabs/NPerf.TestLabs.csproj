@@ -4,6 +4,8 @@
     <LabsVersion>1.6</LabsVersion>
     <LabsToolsPath>$(MSBuildExtensionsPath)\Labs Framework\$(LabsVersion)\</LabsToolsPath>
     <LabsAssembliesPath>$(LabsInstallDir)\$(LabsVersion)\Bin\</LabsAssembliesPath>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -43,9 +45,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CodeDomUtilities.Extensions">
+      <HintPath>..\..\libs\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="CodeDomUtilities.Patterns">
+      <HintPath>..\..\libs\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Patterns.dll</HintPath>
+    </Reference>
     <Reference Include="DaveSexton.Labs, Version=1.6.4431.20589, Culture=neutral, PublicKeyToken=48f2cc8499584213, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Labs Framework\2.0\Bin\NET40\DaveSexton.Labs.dll</HintPath>
+      <HintPath>..\..\libs\Labs Framework\2.0\Bin\NET40\DaveSexton.Labs.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -75,6 +83,7 @@
     <Compile Include="Catalog - Anonymous.cs" />
     <Compile Include="Catalog - Priority.cs" />
     <Compile Include="Catalog.cs" />
+    <Compile Include="CodeDom\CodeGenerationLab.cs" />
     <Compile Include="Console\ExecuteLab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -84,8 +93,14 @@
   <ItemGroup>
     <Resource Include="Properties\Labs.ico" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NPerf.Builder\NPerf.Builder.csproj">
+      <Project>{84A569FE-A66A-4B13-9480-0D06B72BFD86}</Project>
+      <Name>NPerf.Builder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NPerf.DevHelpers\NPerf.DevHelpers.csproj">
       <Project>{1C52E23B-B597-48E4-AACA-61B2FE350873}</Project>
       <Name>NPerf.DevHelpers</Name>
@@ -97,6 +112,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(LabsToolsPath)\Labs.targets" Condition=" Exists('$(LabsToolsPath)\Labs.targets') " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 			 Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">

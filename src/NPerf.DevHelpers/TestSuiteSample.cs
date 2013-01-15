@@ -6,7 +6,7 @@
     using System.Text;
     using NPerf.Framework;
 
-    public class FixtureSample : IPerfFixture
+    public class TestSuiteSample : IPerfTestSuite
     {
         public IPerfTest[] Tests
         {

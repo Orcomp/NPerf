@@ -3,7 +3,7 @@
     /// <summary>
     /// The the performance fixture that should be run against instances of a given interface implementations.
     /// </summary>
-    public interface IPerfFixture
+    public interface IPerfTestSuite : IPerfTestSuiteInfo
     {
         /// <summary>
         /// Gets performance tests.
@@ -20,28 +20,6 @@
         /// Gets performance counter monitors.
         /// </summary>
         IPerfMonitor[] Monitors { get; }
-
-        /// <summary>
-        /// Gets the number of each test runs.
-        /// </summary>
-        int DefaultTestCount { get; }
-
-        /// <summary>
-        /// Gets the description string.
-        /// </summary>
-        /// <value>Test description.</value>
-        string Description { get; }
-
-        /// <summary>
-        /// Gets the tested feature description string.
-        /// </summary>
-        /// <value>Tested feature description</value>
-        string FeatureDescription { get; }
-        
-        /// <summary>
-        /// Gets or sets the sequence number of the current test.
-        /// </summary>
-        int CurrentIteration { get; set; }
 
         /// <summary>
         /// The test set up method.
