@@ -7,10 +7,12 @@
     using System.Text;
     using Fasterflect;
     using NPerf.Framework;
-    using NPerf.Builder.Properties;
     using System.Linq.Expressions;
+    using CodeDomUtilities;
+    using System.CodeDom.Compiler;
+    using Microsoft.CSharp;
 
-    public class TestSuiteCreator
+    public class TestSuiteAssemblyBuilder
     {
         private readonly Type testerType;
 
@@ -30,7 +32,7 @@
 
         private readonly string featureDescription;
 
-        public TestSuiteCreator(Type testerType, Type testedType)
+        public TestSuiteAssemblyBuilder(Type testerType, Type testedType)
         {
             if (testerType == null)
             {
@@ -100,7 +102,7 @@
                          where method.ReturnType == typeof(void) && method.HasParameterSignature(new[] { this.testedAbstraction })
                          let testAttribute = method.Attribute<PerfTestAttribute>()
                          let ignoreAttribute = method.Attribute<PerfIgnoreAttribute>()
-                         select new TestCodeBuider
+                         select new TestInfo
                          {
                              Name = method.Name,
                              Description = testAttribute.Description,
@@ -109,10 +111,33 @@
                          }).ToArray()
             };
 
-            return testSuiteCode.ToString();
+            return testSuiteCode.BuildCode().GetCSharp();
         }
-        /*
-        public Assembly CreateTestSuite()
-        { }*/
+        
+        public string CreateTestSuite()
+        {
+            CSharpCodeProvider codeProvider = new CSharpCodeProvider();
+           
+            CompilerParameters parameters = new CompilerParameters();
+
+           // parameters.ReferencedAssemblies.Add("DynamicCodeGeneration.Base.dll");
+            parameters.ReferencedAssemblies.Add("System.dll");
+           // parameters.ReferencedAssemblies.Add("DynamicCodeGeneration.CustomAttributes.dll");
+            parameters.GenerateInMemory = false;
+
+            var results = codeProvider.CompileAssemblyFromSource(parameters, this.CreateSourceCode());
+
+            if (results.Errors.HasErrors)
+            {
+                var errorMessage = results.Errors.Count + " Errors:";
+
+                for (var x = 0; x < results.Errors.Count; x++)
+                {
+                    errorMessage = errorMessage + "\r\nLine: " + results.Errors[x].Line + " - " + results.Errors[x].ErrorText;
+                }
+                throw new Exception(errorMessage);
+            }
+            return results.PathToAssembly;
+        }
     }
 }

@@ -1,16 +1,14 @@
 ﻿namespace NPerf.Builder
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using NPerf.Framework;
     using System.CodeDom;
-    using CodeDomUtilities;
-    using Fasterflect;
-    using System.Linq.Expressions;
     using System.Diagnostics;
-    using System.Reflection;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using CodeDomUtilities;
+    using NPerf.Framework;
+    using Blocks = CodeDomUtilities.CodeDomBlocks;
+    using Expressions = CodeDomUtilities.CodeDomExpressions;
 
     public class TestSuiteCodeBuilder : IPerfTestSuiteInfo
     {
@@ -49,14 +47,14 @@
 
         public string FeatureDescription { get; set; }
 
-        public TestCodeBuider[] Tests { get; set; }
+        public TestInfo[] Tests { get; set; }
 
 
         public CodeCompileUnit BuildCode()
         {
-            CodeCompileUnit compileUnit = CodeDomBlocks.CompileUnit();
-            
-            CodeNamespace testSuites = CodeDomBlocks.Namespace("NPerf.TestSuites");
+            var compileUnit = Blocks.CompileUnit();
+
+            var testSuites = Blocks.Namespace("NPerf.TestSuites");
             testSuites.Imports.Add(new CodeNamespaceImport("System"));
 
             compileUnit.AddNamespace(testSuites);
@@ -67,49 +65,45 @@
             var basePerfTest = new CodeTypeReference(typeof(BasePerfTest<>));
             basePerfTest.TypeArguments.Add(this.testedAbstraction);
 
-            var dynamicTestSuiteClass = CodeDomBlocks.Class(MemberAttributes.Public, testSuiteClassName);
+            var dynamicTestSuiteClass = Blocks.Class(MemberAttributes.Public, testSuiteClassName);
             dynamicTestSuiteClass.BaseTypes.Add(basePerfTestSuite);
+
+            var perfTestType = new CodeTypeReference(typeof(IPerfTest));
 
             var dynamicTestClass = this.CreatePerfTestClass();
 
             testSuites.AddType(dynamicTestSuiteClass);
             testSuites.AddType(dynamicTestClass);
 
-            CodeMemberField tester = CodeDomBlocks.Field(MemberAttributes.Private, this.testerType, "tester");
-            CodeFieldReferenceExpression testerReference = CodeDomExpressions.This.FieldReference(tester.Name);
+            CodeMemberField tester = Blocks.Field(MemberAttributes.Private, this.testerType, "tester");
+            CodeFieldReferenceExpression testerReference = Expressions.This.FieldReference(tester.Name);
 
-            CodeMemberField testedObject = CodeDomBlocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
+            CodeMemberField testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
 
-            CodeFieldReferenceExpression testedObjectReference = CodeDomExpressions.This.FieldReference(testedObject.Name);
+            CodeFieldReferenceExpression testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
             
             dynamicTestSuiteClass.AddMember(tester);
             dynamicTestSuiteClass.AddMember(testedObject);
 
-            CodeConstructor testSuiteConstructor = CodeDomBlocks.Constructor(MemberAttributes.Public);
+            CodeConstructor testSuiteConstructor = Blocks.Constructor(MemberAttributes.Public)
+                .AddStatement(testerReference.Assign(this.testerType.CreateObject()))
+                .AddStatement(testedObjectReference.Assign(this.typeToTest.CreateObject()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.DefaultTestCount).Assign(this.DefaultTestCount.Literal()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Description).Assign(this.Description.Literal()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.FeatureDescription).Assign(this.FeatureDescription.Literal()))
+                .AddStatement(PropertyReference<BasePerfTestSuite<object>>(x => x.SetUpMethod).Assign(testerReference.PropertyReference(this.SetUpMethodName)))
+                .AddStatement(PropertyReference<BasePerfTestSuite<object>>(x => x.TearDownMethod).Assign(testerReference.PropertyReference(this.TearDownMethodName)))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Tests).Assign(new CodeArrayCreateExpression(perfTestType,
+                    (from test in this.Tests
+                     select new CodeObjectCreateExpression(
+                         dynamicTestClass.Name, 
+                         test.Name.Literal(), 
+                         test.Description.Literal(), 
+                         test.IsIgnore 
+                            ? (CodeExpression)test.IgnoreMessage.Literal() 
+                            : (CodeExpression)testerReference.PropertyReference(test.Name))).ToArray())));
+
             dynamicTestSuiteClass.AddMember(testSuiteConstructor);
-
-            testSuiteConstructor.AddStatement(testerReference.Assign(this.testerType.CreateObject()));
-            testSuiteConstructor.AddStatement(testedObjectReference.Assign(this.typeToTest.CreateObject()));
-            
-            testSuiteConstructor.AddStatement(
-                GetPropertyReference<IPerfTestSuite>(x => x.DefaultTestCount)
-                .Assign(this.DefaultTestCount.Literal()));
-
-            testSuiteConstructor.AddStatement(
-                GetPropertyReference<IPerfTestSuite>(x => x.Description)
-                .Assign(this.Description.Literal()));
-
-            testSuiteConstructor.AddStatement(
-                GetPropertyReference<IPerfTestSuite>(x => x.FeatureDescription)
-                .Assign(this.FeatureDescription.Literal()));
-
-            testSuiteConstructor.AddStatement(
-                GetPropertyReference<BasePerfTestSuite<object>>(x => x.SetUpMethod)
-                .Assign(testedObjectReference.PropertyReference(this.SetUpMethodName)));
-
-            testSuiteConstructor.AddStatement(
-                GetPropertyReference<BasePerfTestSuite<object>>(x => x.TearDownMethod)
-                .Assign(testedObjectReference.PropertyReference(this.TearDownMethodName)));            
 
             return compileUnit;
         }
@@ -120,34 +114,41 @@
             basePerfTest.TypeArguments.Add(this.testedAbstraction);
 
             var @string = new CodeTypeReference(typeof(string));
-            var @Action = new CodeTypeReference(typeof(Action<>));
-            @Action.TypeArguments.Add(this.testedAbstraction);
+            var @action = new CodeTypeReference(typeof(Action<>));
+            @action.TypeArguments.Add(this.testedAbstraction);
 
-            var dynamicTestClass = CodeDomBlocks.Class(MemberAttributes.Public, testClassName);
+            var dynamicTestClass = Blocks.Class(MemberAttributes.Public, testClassName);
             dynamicTestClass.BaseTypes.Add(basePerfTest);
 
-            CodeConstructor testConstructor = CodeDomBlocks.Constructor(MemberAttributes.Public);
-            testConstructor.AddParameter(new CodeParameterDeclarationExpression(@string, "name"));
-            testConstructor.AddParameter(new CodeParameterDeclarationExpression(@string, "description"));
-            testConstructor.AddParameter(new CodeParameterDeclarationExpression(@Action, "testMethod"));            
+            const string name = "name";
+            const string description = "description";
+            const string testMethod = "testMethod";
+            const string ignoreMessage = "ignoreMessage";
 
-            CodeConstructor ignoredTestConstructor = CodeDomBlocks.Constructor(MemberAttributes.Public);
-            ignoredTestConstructor.AddParameter(new CodeParameterDeclarationExpression(@string, "name"));
-            ignoredTestConstructor.AddParameter(new CodeParameterDeclarationExpression(@string, "description"));
-            ignoredTestConstructor.AddParameter(new CodeParameterDeclarationExpression(@string, "ignoreMessage"));         
+            CodeConstructor testConstructor = Blocks.Constructor(MemberAttributes.Public)
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @description))
+                .AddParameter(new CodeParameterDeclarationExpression(@action, @testMethod))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
+                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));            
+
+            CodeConstructor ignoredTestConstructor = Blocks.Constructor(MemberAttributes.Public)
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @description))
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @ignoreMessage))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
+                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.IsIgnore).Assign((true).Literal()))
+                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.IgnoreMessage).Assign(new CodeVariableReferenceExpression("ignoreMessage")));            
 
             dynamicTestClass.AddMember(testConstructor);
-            dynamicTestClass.AddMember(ignoredTestConstructor);
-
-            // TODO: add Tests initialising
-         //   var nameReference = CodeDomExpressions.This.FieldReference(testedObject.Name)
-
-          //  testConstructor.AddStatement()
+            dynamicTestClass.AddMember(ignoredTestConstructor);                        
 
             return dynamicTestClass;
         }
 
-        private static CodePropertyReferenceExpression GetPropertyReference<T>(Expression<Func<T, object>> propertyExpression)
+        private static CodePropertyReferenceExpression PropertyReference<T>(Expression<Func<T, object>> propertyExpression)
         {
             MemberExpression body;
             var expression = propertyExpression.Body as UnaryExpression;
@@ -164,68 +165,6 @@
             Debug.Assert(body != null, "body != null");
 
             return CodeDomExpressions.This.PropertyReference(body.Member.Name);
-        }        
-
-        public override string ToString()
-        {
-            var code = @"
-using System;
-using NPerf.Framework;
-
-namespace NPerf.TestSuites
-{
-    public slass DynamicTestSuite : BasePerfTestSuite<%TestedAbstraction%>
-    {
-        private %TestedAbstraction% testedObject;
-
-        public DynamicTestSuite()
-        {
-            this.testedObject = new %TestedType%();
-
-            this.DefaultTestCount = %DefaultTestCount%;
-            this.Description = %Description%;
-            this.FeatureDescription = %FeatureDescription%;
-            this.SetUpMethod = this.testedObject.%SetUpMethodName%;
-            this.TearDownMethod = this.testedObject.%TearDownMethodName%;
-
-            this.Tests = new IPerfTest[]
-            {
-                %Tests%
-            };
         }
-    }
-
-    internal class DynamicTest : BasePerfTest<%TestedAbstraction%>
-    {
-        public DynamicTest(string name, string description, string ignoreMessage)
-        {
-            this.Name = name;
-            this.Description = description;
-            this.IsIgnore = true;
-            this.IgnoreMessage = ignoreMessage;
-        }
-
-        public DynamicTest(string name, string description, Action<%TestedAbstraction%> testMethod)
-        {
-            this.Name = name;
-            this.Description = description;
-            this.TestMethod = testMethod;
-        }
-    }
-}
-"
-                .Replace("%TestedAbstraction%", this.TestedAbstraction)
-                .Replace("%TestedType%", this.TypeToTest)
-                .Replace("%DefaultTestCount%", this.DefaultTestCount.ToString())
-                .Replace("%Description%", this.Description)
-                .Replace("%FeatureDescription%", this.FeatureDescription)
-                .Replace("%SetUpMethodName%", this.SetUpMethodName)
-                .Replace("%TearDownMethodName%", this.TearDownMethodName)
-                .Replace("%Tests%", string.Join(@",
-                ", (from test in Tests
-                    select test.ToString())));
-
-            return code;
-        }        
     }
 }

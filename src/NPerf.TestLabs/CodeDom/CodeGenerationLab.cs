@@ -35,10 +35,16 @@ namespace NPerf.TestLabs.CodeDom
                 TearDownMethodName = "TearDownMethodName",
                 TestedAbstraction = "TestedAbstraction",
                 TesterType = "TesterType",
-                TypeToTest = "TypeToTest"
+                TypeToTest = "TypeToTest",
+                Tests = new[]
+                {
+                    new TestInfo{ Name = "Test1", Description = "TestDescr"},
+                    new TestInfo{ Name = "Test2", Description = "TestDescr2", IsIgnore = true},
+                    new TestInfo{ Name = "Test3", Description = "TestDescr3", IsIgnore = true, IgnoreMessage="Ignore message"}
+                }
             };
 
-            Trace(builder.BuildCode().GetCSharp());
+            Trace(builder.BuildCode().GetVB());
         }
 
 
@@ -87,7 +93,7 @@ namespace NPerf.TestLabs.CodeDom
 
             testSuites.AddType(dynamicTestSuite);
 
-            Trace(compileUnit.GetCSharp());
+            Trace(compileUnit.GetVB());
         }
         
     }

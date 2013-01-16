@@ -6,7 +6,7 @@ using NPerf.Framework;
 
 namespace NPerf.Builder
 {
-    public class TestCodeBuider : IPerfTestInfo
+    public class TestInfo : IPerfTestInfo
     {
         public string Name { get; set; }
 
@@ -15,13 +15,5 @@ namespace NPerf.Builder
         public bool IsIgnore { get; set; }
 
         public string IgnoreMessage { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("new DynamicTest({0}, {1}, {2})",
-                this.Name,
-                this.Description,
-                this.IsIgnore ? this.IgnoreMessage : ("this.testedObject." + this.Name));
-        }
     }
 }
