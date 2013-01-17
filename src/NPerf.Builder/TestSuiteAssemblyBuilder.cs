@@ -11,12 +11,15 @@
     using CodeDomUtilities;
     using System.CodeDom.Compiler;
     using Microsoft.CSharp;
+    using System.Reflection.Emit;
 
     public class TestSuiteAssemblyBuilder
     {
         private readonly Type testerType;
 
         private readonly Type testedAbstraction;
+
+        private readonly Type typeToTest;
 
         private readonly MethodInfo runDescriptor;
 
@@ -43,6 +46,8 @@
             {
                 throw new ArgumentNullException("testedType");
             }
+
+            this.typeToTest = testedType;
 
             this.testerType = testerType;
             var testerAttribute = this.testerType.Attribute<PerfTesterAttribute>();
@@ -86,15 +91,16 @@
                     .ToArray();
         }
 
-        private string CreateSourceCode()
+        public string CreateSourceCode()
         {
             var testSuiteCode = new TestSuiteCodeBuilder
             {
+                TesterType = this.testerType.Namespace + "." + this.testerType.Name,
                 SetUpMethodName = this.setUp == null ? string.Empty : this.setUp.Name,
                 TearDownMethodName = this.tearDown == null ? string.Empty : this.tearDown.Name,
                 DefaultTestCount = this.defaultTestCount,
                 TestedAbstraction = this.testedAbstraction.Namespace + "." + this.testedAbstraction.Name,
-                TypeToTest = this.testerType.Namespace + "." + this.testerType.Name,
+                TypeToTest = this.typeToTest.Namespace + "." + this.typeToTest.Name,
                 Description = this.description,
                 FeatureDescription = this.featureDescription,
                 Tests = (from method in
@@ -122,8 +128,15 @@
 
            // parameters.ReferencedAssemblies.Add("DynamicCodeGeneration.Base.dll");
             parameters.ReferencedAssemblies.Add("System.dll");
+            var assemblies = new[] { this.testedAbstraction.Assembly, this.testerType.Assembly, this.typeToTest.Assembly, typeof(IPerfTest).Assembly};
+            foreach (var assm in assemblies.Distinct())
+            {
+                parameters.ReferencedAssemblies.Add(assm.Location);
+            }
+            
            // parameters.ReferencedAssemblies.Add("DynamicCodeGeneration.CustomAttributes.dll");
             parameters.GenerateInMemory = false;
+            parameters.IncludeDebugInformation = true;
 
             var results = codeProvider.CompileAssemblyFromSource(parameters, this.CreateSourceCode());
 

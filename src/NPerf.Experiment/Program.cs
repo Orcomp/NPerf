@@ -8,10 +8,11 @@
     using System.IO;
     using System.Reflection;
     using NPerf.Framework;
+    using System.Windows.Forms;
 
     internal class Program
     {
-        [STAThread]
+     //  [MTAThread]
         public static void Main(string[] args)
         {
             /* NPerf.Experiment -ta toolAssembly -ft testSuiteTypeName -ti testIndex -ra researchedAssebmly -st subjectType 
@@ -20,6 +21,8 @@
              * testSuiteTypeName - the name of type, which implements IPerfTestSuite interface
              * testIndex - index of test method in executed test suite
              */
+
+         //   Application.Run();
 
             try
             {
@@ -34,9 +37,15 @@
                 var subjectTypeName = arguments.ExtractValue("st");
                 var subject = AssemblyLoader.CreateInstance(researchedAssebmlyName, subjectTypeName);
 
+                var testIndex = int.Parse(arguments.ExtractValue("ti"));
+
                 if (suite != null && subject != null)
                 {
-                   
+                //    MessageBox.Show("1");
+                    var runner = new TestRunner(suite, testIndex, subject);
+                  //  MessageBox.Show("2");
+                    runner.RunTests();
+                    //MessageBox.Show("3");
                 }
             }
             catch (Exception ex)

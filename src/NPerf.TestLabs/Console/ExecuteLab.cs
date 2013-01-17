@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Diagnostics;
 using NPerf.DevHelpers;
+using NPerf.Builder;
 
 namespace NPerf.TestLabs.Console
 {
@@ -23,7 +24,7 @@ namespace NPerf.TestLabs.Console
                  {
                      UseShellExecute = false,
                      RedirectStandardError = true,
-                     RedirectStandardOutput = true,
+                     RedirectStandardOutput = false,
                      CreateNoWindow = true,
                      WindowStyle = ProcessWindowStyle.Hidden,
                      FileName =
@@ -56,12 +57,35 @@ namespace NPerf.TestLabs.Console
             this.experimentProcess.Start();
             this.experimentProcess.WaitForExit();
             var error = this.experimentProcess.StandardError.ReadToEnd();
-            var output = this.experimentProcess.StandardOutput.ReadToEnd();
+           // var output = this.experimentProcess.StandardOutput.ReadToEnd();
             this.TraceStatus("Outputs:");
-            this.TraceLine(output);
+          //  this.TraceLine(output);
             this.TraceStatus("Errors:");
             this.TraceLine(error);
             this.TraceSuccess();
-        }        
+        }
+
+        public void BuldAndRun()
+        {
+            var builder = new TestSuiteAssemblyBuilder(typeof(AttribitedFixtureSample), typeof(TestedObject));
+            var assm = builder.CreateTestSuite();
+
+            this.experimentProcess.StartInfo.Arguments = string.Format(
+                    "-ta {0} -ft {1} -ti 0 -ra {2} -st {3}",
+                    assm,
+                    "GeneratedTestSuite",
+                    typeof(TestSuiteSample).Assembly.Location,
+                    typeof(TestedObject).Name);
+            this.experimentProcess.Start();
+//
+            var error = this.experimentProcess.StandardError.ReadToEnd();
+          //  var output = this.experimentProcess.StandardOutput.ReadToEnd();
+            this.experimentProcess.WaitForExit();
+            this.TraceStatus("Outputs:");
+         //   this.TraceLine(output);
+            this.TraceStatus("Errors:");
+            this.TraceLine(error);
+            this.TraceSuccess();
+        }
     }
 }

@@ -9,7 +9,7 @@
     {
         public void SomeAction()
         {
-            throw new NotImplementedException();
+            Console.Out.WriteLine("The action in tested object is executed.");
         }
     }
 }

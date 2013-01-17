@@ -8,6 +8,7 @@ using NPerf.Framework;
 using CodeDomUtilities.Patterns;
 using System.Reflection;
 using NPerf.Builder;
+using NPerf.DevHelpers;
 
 namespace NPerf.TestLabs.CodeDom
 {
@@ -47,6 +48,25 @@ namespace NPerf.TestLabs.CodeDom
             Trace(builder.BuildCode().GetVB());
         }
 
+
+        public void CodeFromTypes()
+        {
+            var builder = new TestSuiteAssemblyBuilder(typeof(AttribitedFixtureSample), typeof(TestedObject));
+            TraceLine(builder.CreateSourceCode());
+        }
+
+        public void AssemblyFromTypes()
+        {
+            try
+            {
+                var builder = new TestSuiteAssemblyBuilder(typeof(AttribitedFixtureSample), typeof(TestedObject));
+                var assm = builder.CreateTestSuite();
+            }
+            catch (Exception ex)
+            {
+                TraceError(ex);
+            }
+        }
 
         public void GenerateCode()
         {

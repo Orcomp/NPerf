@@ -18,10 +18,11 @@
         {
             this.suite = suite;
 
-            foreach (var monitor in this.suite.Monitors)
-            {
-                monitor.Start(iteration);
-            }
+            if (this.suite.Monitors != null)
+                foreach (var monitor in this.suite.Monitors)
+                {
+                    monitor.Start(iteration);
+                }
         }
 
         /// <summary>
@@ -41,10 +42,11 @@
 
             if (disposing)
             {
-                foreach (var monitor in this.suite.Monitors)
-                {
-                    monitor.Stop();
-                }
+                if (this.suite.Monitors != null)
+                    foreach (var monitor in this.suite.Monitors)
+                    {
+                        monitor.Stop();
+                    }
             }
 
             this.suite = null;

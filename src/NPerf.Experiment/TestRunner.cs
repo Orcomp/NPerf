@@ -6,6 +6,7 @@
     using System.Text;
 
     using NPerf.Framework;
+    using System.Windows.Forms;
 
     internal class TestRunner
     {
@@ -26,13 +27,17 @@
         {
                 for (var i = 0; i < this.suite.DefaultTestCount; i++)
                 {
+                    //MessageBox.Show(string.Format("Setup {0}", i));
                     this.suite.SetUp(i, this.testedObject);
                     using (new Monitoring(this.suite, i))
                     {
+                        //MessageBox.Show(string.Format("Before test {0}", i));
                         this.testMethod(this.testedObject);
+                        //MessageBox.Show(string.Format("After test {0}", i));
                     }
-
+                    
                     this.suite.TearDown(this.testedObject);
+                    //MessageBox.Show(string.Format("Teardown {0}", i));
                 }
         }
 

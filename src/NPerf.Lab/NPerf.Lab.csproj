@@ -47,7 +47,6 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="IAtomicTestRunner.cs" />
     <Compile Include="IMonitorsFactory.cs" />
     <Compile Include="IPerfMonitorsManager.cs" />
     <Compile Include="IPerfTestFactory.cs" />
