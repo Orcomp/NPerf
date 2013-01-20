@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Diagnostics;
 using NPerf.DevHelpers;
-using NPerf.Builder;
+using NPerf.Lab.TestBuilder;
 
 namespace NPerf.TestLabs.Console
 {

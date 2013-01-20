@@ -53,7 +53,7 @@
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
-    <Compile Include="Monitoring.cs" />
+    <Compile Include="PerfObserver.cs" />
     <Compile Include="StartArgumentsException.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="UsefulExtensions.cs" />

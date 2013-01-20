@@ -7,8 +7,10 @@ using CodeDomUtilities;
 using NPerf.Framework;
 using CodeDomUtilities.Patterns;
 using System.Reflection;
-using NPerf.Builder;
 using NPerf.DevHelpers;
+using NPerf.Lab.TestBuilder;
+using NPerf.Framework.Interfaces;
+using NPerf.Experiment.Basics;
 
 namespace NPerf.TestLabs.CodeDom
 {

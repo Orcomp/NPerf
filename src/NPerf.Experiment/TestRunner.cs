@@ -1,12 +1,7 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
-    using NPerf.Framework;
-    using System.Windows.Forms;
+    using NPerf.Framework.Interfaces;
 
     internal class TestRunner
     {
@@ -27,17 +22,13 @@
         {
                 for (var i = 0; i < this.suite.DefaultTestCount; i++)
                 {
-                    //MessageBox.Show(string.Format("Setup {0}", i));
                     this.suite.SetUp(i, this.testedObject);
-                    using (new Monitoring(this.suite, i))
+                    using (new PerfObserver(this.suite))
                     {
-                        //MessageBox.Show(string.Format("Before test {0}", i));
                         this.testMethod(this.testedObject);
-                        //MessageBox.Show(string.Format("After test {0}", i));
                     }
                     
                     this.suite.TearDown(this.testedObject);
-                    //MessageBox.Show(string.Format("Teardown {0}", i));
                 }
         }
 
@@ -46,7 +37,13 @@
             for (var i = start; i < end; i += step)
             {
                 this.suite.SetUp(i, this.testedObject);
-                using (new Monitoring(this.suite, i))
+
+                // clean memory
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+
+                using (new PerfObserver(this.suite))
                 {
                     this.testMethod(this.testedObject);
                 }

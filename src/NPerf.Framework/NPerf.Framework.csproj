@@ -40,23 +40,22 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="IPerfTestSuite.cs" />
-    <Compile Include="IPerfLogger.cs" />
-    <Compile Include="IPerfMonitor.cs" />
-    <Compile Include="IPerfTest.cs" />
-    <Compile Include="Attributes\PerfIgnoreAttribute.cs" />
-    <Compile Include="Attributes\PerfRunDescriptorAttribute.cs" />
-    <Compile Include="Attributes\PerfSetUpAttribute.cs" />
-    <Compile Include="Attributes\PerfTearDownAttribute.cs" />
-    <Compile Include="Attributes\PerfTestAttribute.cs" />
-    <Compile Include="Attributes\PerfTesterAttribute.cs" />
-    <Compile Include="IPerfTestInfo.cs" />
-    <Compile Include="IPerfTestSuiteInfo.cs" />
-    <Compile Include="Laboratory\IPerfTestFactory.cs" />
-    <Compile Include="Laboratory\IPerfTestRunner.cs" />
+    <Compile Include="Interfaces\IPerfCounter.cs" />
+    <Compile Include="Interfaces\IPerfTestSuite.cs" />
+    <Compile Include="Interfaces\IPerfLogger.cs" />
+    <Compile Include="Interfaces\IPerfMonitor.cs" />
+    <Compile Include="Interfaces\IPerfTest.cs" />
+    <Compile Include="PerfIgnoreAttribute.cs" />
+    <Compile Include="PerfRunDescriptorAttribute.cs" />
+    <Compile Include="PerfSetUpAttribute.cs" />
+    <Compile Include="PerfTearDownAttribute.cs" />
+    <Compile Include="PerfTestAttribute.cs" />
+    <Compile Include="PerfTesterAttribute.cs" />
+    <Compile Include="Interfaces\IPerfTestInfo.cs" />
+    <Compile Include="Interfaces\IPerfTestSuiteInfo.cs" />
+    <Compile Include="Interfaces\IPerfTestFactory.cs" />
+    <Compile Include="Interfaces\IPerfTestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BasePerfTest.cs" />
-    <Compile Include="BasePerfTestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NPerf.Framework.Doc.xml" />

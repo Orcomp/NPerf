@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text;
     using NPerf.Framework;
+    using NPerf.Framework.Interfaces;
 
     public class TestSuiteSample : IPerfTestSuite
     {
