@@ -1,55 +1,81 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using NPerf.Framework.Interfaces;
+    using NPerf.Core;
+    using NPerf.Core.Monitoring;
 
-    internal class TestRunner
+    internal class TestRunner : IObservable<TestResult>
     {
-        private IPerfTestSuite suite;
+        private readonly Action testMethod;
 
-        private Action<object> testMethod;
+        private readonly Action<int> setUpMethod;
 
-        private object testedObject;
+        private readonly Action tearDownMethod;
 
-        public TestRunner(IPerfTestSuite suite, int testIndex, object testedObject)
+        private readonly Func<int, double> descriptorMethod;
+
+        private readonly int start;
+
+        private readonly int step;
+
+        private readonly int end;
+
+        public TestRunner(
+            Action<int> setUpMethod,
+            Action testMethod,
+            Action tearDownMethod,
+            Func<int, double> descriptorMethod,
+            int start,
+            int step,
+            int end)
         {
-            this.suite = suite;
-            this.testMethod = suite.Tests[testIndex].Test;
-            this.testedObject = testedObject;
+            this.testMethod = testMethod;
+            this.setUpMethod = setUpMethod;
+            this.tearDownMethod = tearDownMethod;
+            this.descriptorMethod = descriptorMethod;
+            this.start = start;
+            this.step = step;
+            this.end = end;
         }
 
-        public void RunTests()
+        public IDisposable Subscribe(IObserver<TestResult> observer)
         {
-                for (var i = 0; i < this.suite.DefaultTestCount; i++)
-                {
-                    this.suite.SetUp(i, this.testedObject);
-                    using (new PerfObserver(this.suite))
-                    {
-                        this.testMethod(this.testedObject);
-                    }
-                    
-                    this.suite.TearDown(this.testedObject);
-                }
-        }
+            var time = new DurationMonitor();
+            var memory = new MemoryMonitor();
 
-        public void RunTests(int start, int end, int step)
-        {
-            for (var i = start; i < end; i += step)
+            for (var i = this.start; i < this.end; i += this.step)
             {
-                this.suite.SetUp(i, this.testedObject);
+                var ok = true;
+                RunDescriptor.Instance.Value = this.descriptorMethod(i);
+                this.setUpMethod(i);
 
                 // clean memory
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
 
-                using (new PerfObserver(this.suite))
+                using (time.Observe())
+                using (memory.Observe())
                 {
-                    this.testMethod(this.testedObject);
+                    try
+                    {
+                        this.testMethod();
+                    }
+                    catch (Exception ex)
+                    {
+                        ok = false;
+                        observer.OnNext(new TestResult { Data = new PerfFailedResult(ex) });
+                    }
                 }
 
-                this.suite.TearDown(this.testedObject);
+                this.tearDownMethod();
+                if (ok)
+                {
+                    observer.OnNext(new TestResult { Data = new PerfResult(time.Value, memory.Value) });
+                }
             }
+
+            return new DisposableObserver();
         }
     }
 }

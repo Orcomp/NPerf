@@ -35,7 +35,7 @@
         /// <exception cref="ArgumentException">
         /// <paramref name="testCount"/> is smaller than 1
         /// </exception>
-        public PerfTesterAttribute(Type testedType, int testCount, string description = null, string featureDescription = null)
+        public PerfTesterAttribute(Type testedType, int testCount)//, string description = null, string featureDescription = null)
         {
             if (testedType == null)
             {
@@ -49,8 +49,6 @@
 
             this.TestedType = testedType;
             this.TestCount = testCount;
-            this.Description = description;
-            this.FeatureDescription = featureDescription;
         }
 
         /// <summary>
@@ -73,12 +71,12 @@
         /// Gets the the Test description string.
         /// </summary>
         /// <value>Test description</value>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets the tested feature description string
         /// </summary>
         /// <value>Tested feature description</value>
-        public string FeatureDescription { get; private set; }
+        public string FeatureDescription { get; set; }
     }
 }

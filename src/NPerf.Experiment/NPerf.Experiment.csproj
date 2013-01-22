@@ -40,21 +40,16 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
-    <Compile Include="PerfObserver.cs" />
+    <Compile Include="Descriptor.cs" />
     <Compile Include="StartArgumentsException.cs" />
+    <Compile Include="TestObserver.cs" />
+    <Compile Include="TestResult.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="UsefulExtensions.cs" />
     <Compile Include="Argument.cs" />
@@ -62,6 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">
+      <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
+      <Name>NPerf.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
       <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
       <Name>NPerf.Framework</Name>

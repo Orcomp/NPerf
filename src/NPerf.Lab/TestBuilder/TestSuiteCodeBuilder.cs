@@ -7,11 +7,12 @@
     using System.Linq.Expressions;
     using CodeDomUtilities;
 
-    using NPerf.Experiment.Basics;
+    using NPerf.Core;
     using NPerf.Framework;
     using Blocks = CodeDomUtilities.CodeDomBlocks;
     using Expressions = CodeDomUtilities.CodeDomExpressions;
     using NPerf.Framework.Interfaces;
+
  //   using NPerf.Experiment.Basics;
 
     public class TestSuiteCodeBuilder : IPerfTestSuiteInfo
@@ -64,11 +65,11 @@
             testSuites.Imports.Add(new CodeNamespaceImport("System"));
 
             compileUnit.AddNamespace(testSuites);
-           
-            var basePerfTestSuite = new CodeTypeReference(typeof(BasePerfTestSuite<>));
+
+            var basePerfTestSuite = new CodeTypeReference(typeof(AbstractPerfTestSuite<>));
             basePerfTestSuite.TypeArguments.Add(this.testedAbstraction);
 
-            var basePerfTest = new CodeTypeReference(typeof(BasePerfTest<>));
+            var basePerfTest = new CodeTypeReference(typeof(AbstractPerfTest<>));
             basePerfTest.TypeArguments.Add(this.testedAbstraction);
 
             var dynamicTestSuiteClass = Blocks.Class(MemberAttributes.Public, testSuiteClassName);
@@ -97,9 +98,9 @@
                 .AddStatement(PropertyReference<IPerfTestSuite>(x => x.DefaultTestCount).Assign(this.DefaultTestCount.Literal()))
                 .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Description).Assign(this.Description.Literal()))
                 .AddStatement(PropertyReference<IPerfTestSuite>(x => x.FeatureDescription).Assign(this.FeatureDescription.Literal()))
-                .AddStatement(PropertyReference<BasePerfTestSuite<object>>(x => x.SetUpMethod).Assign(testerReference.PropertyReference(this.SetUpMethodName)))
-                .AddStatement(PropertyReference<BasePerfTestSuite<object>>(x => x.TearDownMethod).Assign(testerReference.PropertyReference(this.TearDownMethodName)))
-                .AddStatement(PropertyReference<BasePerfTestSuite<object>>(x => x.GetDescriptorMethod).Assign(testerReference.PropertyReference(this.RunDescriptorMethodName)))
+                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.SetUpMethod).Assign(testerReference.PropertyReference(this.SetUpMethodName)))
+                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.TearDownMethod).Assign(testerReference.PropertyReference(this.TearDownMethodName)))
+                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.GetDescriptorMethod).Assign(testerReference.PropertyReference(this.RunDescriptorMethodName)))
                 .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Tests).Assign(new CodeArrayCreateExpression(perfTestType,
                     (from test in this.Tests
                      select new CodeObjectCreateExpression(
@@ -117,7 +118,7 @@
 
         private CodeTypeDeclaration CreatePerfTestClass()
         {
-            var basePerfTest = new CodeTypeReference(typeof(BasePerfTest<>));
+            var basePerfTest = new CodeTypeReference(typeof(AbstractPerfTest<>));
             basePerfTest.TypeArguments.Add(this.testedAbstraction);
 
             var @string = new CodeTypeReference(typeof(string));
@@ -138,7 +139,7 @@
                 .AddParameter(new CodeParameterDeclarationExpression(@action, @testMethod))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
-                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));            
+                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));            
 
             CodeConstructor ignoredTestConstructor = Blocks.Constructor(MemberAttributes.Public)
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
@@ -146,8 +147,8 @@
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @ignoreMessage))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
-                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.IsIgnore).Assign((true).Literal()))
-                .AddStatement(PropertyReference<BasePerfTest<object>>(x => x.IgnoreMessage).Assign(new CodeVariableReferenceExpression("ignoreMessage")));            
+                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.IsIgnore).Assign((true).Literal()))
+                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.IgnoreMessage).Assign(new CodeVariableReferenceExpression("ignoreMessage")));            
 
             dynamicTestClass.AddMember(testConstructor);
             dynamicTestClass.AddMember(ignoredTestConstructor);                        

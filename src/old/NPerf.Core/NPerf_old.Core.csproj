@@ -87,11 +87,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NPerf.Framework\NPerf_old.Framework.csproj">
-      <Name>NPerf_old.Framework</Name>
-      <Project>{E22BF9BC-3A12-4FFD-96FD-1C2253118CA2}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
     <Reference Include="Fasterflect, Version=2.1.2.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
       <HintPath>..\..\..\libs\packages\fasterflect.2.1.2\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
@@ -122,7 +117,6 @@
     <Compile Include="Monitoring\TimeMonitor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TestManager.cs" />
     <Compile Include="PerfFailedResult.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -176,6 +170,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NPerf.Framework\NPerf.Framework.csproj">
+      <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
+      <Name>NPerf.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

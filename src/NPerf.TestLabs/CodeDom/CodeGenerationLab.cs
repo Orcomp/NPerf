@@ -10,10 +10,11 @@ using System.Reflection;
 using NPerf.DevHelpers;
 using NPerf.Lab.TestBuilder;
 using NPerf.Framework.Interfaces;
-using NPerf.Experiment.Basics;
 
 namespace NPerf.TestLabs.CodeDom
 {
+    using NPerf.Core;
+
     [DisplayName("")]
     [Description("")]
     public sealed class CodeGenerationLab : BaseConsoleLab
@@ -47,14 +48,14 @@ namespace NPerf.TestLabs.CodeDom
                 }
             };
 
-            Trace(builder.BuildCode().GetVB());
+            this.Trace(builder.BuildCode().GetVB());
         }
 
 
         public void CodeFromTypes()
         {
             var builder = new TestSuiteAssemblyBuilder(typeof(AttribitedFixtureSample), typeof(TestedObject));
-            TraceLine(builder.CreateSourceCode());
+            this.TraceLine(builder.CreateSourceCode());
         }
 
         public void AssemblyFromTypes()
@@ -62,31 +63,29 @@ namespace NPerf.TestLabs.CodeDom
             try
             {
                 var builder = new TestSuiteAssemblyBuilder(typeof(AttribitedFixtureSample), typeof(TestedObject));
-                var assm = builder.CreateTestSuite();
+                builder.CreateTestSuite();
             }
             catch (Exception ex)
             {
-                TraceError(ex);
+                this.TraceError(ex);
             }
         }
 
         public void GenerateCode()
         {
-            CodeCompileUnit compileUnit = new CodeCompileUnit();
-            CodeNamespace testSuites = new CodeNamespace("NPerf.TestSuites");
+            var compileUnit = new CodeCompileUnit();
+            var testSuites = new CodeNamespace("NPerf.TestSuites");
             testSuites.Imports.Add(new CodeNamespaceImport("System"));
 
             compileUnit.AddNamespace(testSuites);
 
-            CodeTypeDeclaration dynamicTestSuite = new CodeTypeDeclaration("DynamicTestSuite");
-            dynamicTestSuite.IsClass = true;
-            var basePerfTestSuite = new CodeTypeReference(typeof(BasePerfTestSuite<>));
+            var dynamicTestSuite = new CodeTypeDeclaration("DynamicTestSuite") { IsClass = true };
+            var basePerfTestSuite = new CodeTypeReference(typeof(AbstractPerfTestSuite<>));
             basePerfTestSuite.TypeArguments.Add("ITestedAbstraction");
 
             dynamicTestSuite.BaseTypes.Add(basePerfTestSuite);
-
             
-            CodeMemberField tester =
+            var tester =
                 new CodeMemberField 
                 { 
                     Name = "tester",  
@@ -95,17 +94,13 @@ namespace NPerf.TestLabs.CodeDom
                 };
 
 
-            CodeFieldReferenceExpression testerReference =
+            var testerReference =
                 new CodeFieldReferenceExpression(
                     new CodeThisReferenceExpression(), "tester");
 
             var testerInit = testerReference.Assign(new CodeTypeReference("TesterType").CreateObject());
 
-            /*
-            var tester = "TesterType".PropertyReference("tester");
-            var assignment = tester.Assign((null as object).Literal());
-            */
-            CodeConstructor constructor =
+            var constructor =
                 new CodeConstructor { Attributes = MemberAttributes.Public | MemberAttributes.Final };
             constructor.AddStatement(testerInit);
 
@@ -115,7 +110,7 @@ namespace NPerf.TestLabs.CodeDom
 
             testSuites.AddType(dynamicTestSuite);
 
-            Trace(compileUnit.GetVB());
+            this.Trace(compileUnit.GetVB());
         }
         
     }

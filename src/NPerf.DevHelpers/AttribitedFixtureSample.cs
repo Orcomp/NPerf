@@ -6,7 +6,7 @@
     using System.Text;
     using NPerf.Framework;
 
-    [PerfTester(typeof(ITestedObject), 6000, "Tester description string", "Tester feature description")]
+    [PerfTester(typeof(ITestedObject), 6000, Description = "Tester description string", FeatureDescription = "Tester feature description")]
     public class AttribitedFixtureSample
     {
         [PerfSetUp]

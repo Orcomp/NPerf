@@ -4,25 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+
+
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;
 
     public class TestSuiteSample : IPerfTestSuite
     {
         public IPerfTest[] Tests
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public IPerfLogger Logger
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IPerfMonitor[] Monitors
         {
             get { throw new NotImplementedException(); }
         }
@@ -62,6 +51,12 @@
         public void TearDown(object testedObject)
         {
             throw new NotImplementedException();
-        }        
+        }
+
+
+        public double GetRunDescriptor(int iteration)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

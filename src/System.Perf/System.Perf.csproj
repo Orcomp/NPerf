@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</ProjectGuid>
+    <ProjectGuid>{126E1C76-8FE3-4B38-9DE9-969C7E79A61C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NPerf.Framework</RootNamespace>
-    <AssemblyName>NPerf.Framework</AssemblyName>
+    <RootNamespace>System.Perf</RootNamespace>
+    <AssemblyName>System.Perf</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -18,10 +18,9 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET40_OR_GREATER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\NPerf.Framework.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,30 +29,42 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\NPerf.Framework.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Interfaces\IPerfTestSuite.cs" />
-    <Compile Include="Interfaces\IPerfTest.cs" />
-    <Compile Include="PerfIgnoreAttribute.cs" />
-    <Compile Include="PerfRunDescriptorAttribute.cs" />
-    <Compile Include="PerfSetUpAttribute.cs" />
-    <Compile Include="PerfTearDownAttribute.cs" />
-    <Compile Include="PerfTestAttribute.cs" />
-    <Compile Include="PerfTesterAttribute.cs" />
-    <Compile Include="Interfaces\IPerfTestInfo.cs" />
-    <Compile Include="Interfaces\IPerfTestSuiteInfo.cs" />
+    <Compile Include="DelegateInterface\DelegateInterfaceTester.cs" />
+    <Compile Include="DelegateInterface\DelegateMethodCaller.cs" />
+    <Compile Include="DelegateInterface\EventHandlerMethodCaller.cs" />
+    <Compile Include="DelegateInterface\IMethodCall.cs" />
+    <Compile Include="DelegateInterface\IMethodCaller.cs" />
+    <Compile Include="DelegateInterface\InterfaceMethodCall.cs" />
+    <Compile Include="DelegateInterface\MethodCall.cs" />
+    <Compile Include="Dictionary\ContainsDictionaryTester.cs" />
+    <Compile Include="Dictionary\DictionaryTester.cs" />
+    <Compile Include="Dictionary\EmptyDictionaryTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringBuilding\IStringRunner.cs" />
+    <Compile Include="StringBuilding\StringBuilderRunner.cs" />
+    <Compile Include="StringBuilding\StringBuildingTester.cs" />
+    <Compile Include="StringBuilding\StringRunner.cs" />
+    <Compile Include="StringBuilding\StringWriterRunner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NPerf.Framework.Doc.xml" />
+    <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
+      <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
+      <Name>NPerf.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

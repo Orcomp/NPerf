@@ -12,16 +12,6 @@
         IPerfTest[] Tests { get; }
 
         /// <summary>
-        /// Gets testing logger.
-        /// </summary>
-        IPerfLogger Logger { get; }
-
-        /// <summary>
-        /// Gets performance counter monitors.
-        /// </summary>
-        IPerfMonitor[] Monitors { get; }
-
-        /// <summary>
         /// The test set up method.
         /// </summary>
         /// <param name="iteration">
@@ -38,6 +28,8 @@
         /// <param name="testedObject">
         /// The tested object.
         /// </param>
-        void TearDown(object testedObject);        
+        void TearDown(object testedObject);
+
+        double GetRunDescriptor(int iteration);
     }
 }

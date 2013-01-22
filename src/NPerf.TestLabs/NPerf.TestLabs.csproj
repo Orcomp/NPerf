@@ -97,13 +97,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">
+      <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
+      <Name>NPerf.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NPerf.DevHelpers\NPerf.DevHelpers.csproj">
       <Project>{1C52E23B-B597-48E4-AACA-61B2FE350873}</Project>
       <Name>NPerf.DevHelpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NPerf.Experiment.Basics\NPerf.Experiment.Basics.csproj">
-      <Project>{976C2043-A58F-473F-8172-643C8CB53464}</Project>
-      <Name>NPerf.Experiment.Basics</Name>
     </ProjectReference>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
       <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>

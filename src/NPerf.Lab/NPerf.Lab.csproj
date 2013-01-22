@@ -56,15 +56,18 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
+    <Compile Include="ITestExecuter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBuilder\TestInfo.cs" />
     <Compile Include="TestBuilder\TestSuiteAssemblyBuilder.cs" />
     <Compile Include="TestBuilder\TestSuiteCodeBuilder.cs" />
+    <Compile Include="TestExecuter.cs" />
+    <Compile Include="TestExecuterCollection.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NPerf.Experiment.Basics\NPerf.Experiment.Basics.csproj">
-      <Project>{976C2043-A58F-473F-8172-643C8CB53464}</Project>
-      <Name>NPerf.Experiment.Basics</Name>
+    <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">
+      <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
+      <Name>NPerf.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
       <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>

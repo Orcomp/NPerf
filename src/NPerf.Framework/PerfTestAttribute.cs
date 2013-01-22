@@ -10,6 +10,10 @@
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class PerfTestAttribute : Attribute
     {
+        public PerfTestAttribute()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfTestAttribute"/> class. 
         /// Constructor with test descrition
@@ -23,7 +27,7 @@
         /// <exception cref="ArgumentNullException">
         /// description is a null reference
         /// </exception>
-        public PerfTestAttribute(string description = null)
+        public PerfTestAttribute(string description)
         {
             if (description == null)
             {
