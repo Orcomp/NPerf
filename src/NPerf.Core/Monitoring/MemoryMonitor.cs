@@ -12,7 +12,7 @@
 
         public IDisposable Observe()
         {
-            return new DisposableObserver(
+            return new DisposableScope(
                 () =>
                 {
                     this.startStatus = new MemoryStatus(Process.GetCurrentProcess());

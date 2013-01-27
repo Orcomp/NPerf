@@ -13,22 +13,6 @@
 
         public string FeatureDescription { get; protected set; }
 
-        public bool IsSetUpAvailable
-        {
-            get
-            {
-                return this.SetUpMethod != null;
-            }
-        }
-
-        public bool IsTearDownAvailable
-        {
-            get
-            {
-                return this.TearDownMethod != null;
-            }
-        }
-
         public Action<int, T> SetUpMethod { get; protected set; }
 
         public Action<T> TearDownMethod { get; protected set; }
@@ -38,23 +22,19 @@
         public void SetUp(int iteration, object testedObject)
         {
             CheckTestedObject(testedObject);
-            if (!this.IsSetUpAvailable)
+            if (this.SetUpMethod != null)
             {
-                throw new InvalidOperationException("Setting up is not available for current test suite.");
+                this.SetUpMethod(iteration, (T)testedObject);
             }
-
-            this.SetUpMethod(iteration, (T)testedObject);
         }
 
         public void TearDown(object testedObject)
         {
             CheckTestedObject(testedObject);
-            if (!this.IsTearDownAvailable)
+            if (this.TearDownMethod != null)
             {
-                throw new InvalidOperationException("Tearing down is not available for current test suite.");
+                this.TearDownMethod((T)testedObject);
             }
-
-            this.TearDownMethod((T)testedObject);
         }
 
         private static void CheckTestedObject(object testedObject)

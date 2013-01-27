@@ -9,10 +9,10 @@
         private Semaphore full;
         private bool disposed;
 
-        public SendReceiveLock(string fullName, string emptyName, int size)
+        public SendReceiveLock(string fullName, string emptyName)
         {
-            this.empty = NamedSemaphore.OpenOrCreate(emptyName, size, size);
-            this.full = NamedSemaphore.OpenOrCreate(fullName, 0, size);
+            this.empty = NamedSemaphore.OpenOrCreate(emptyName, 1, 1);
+            this.full = NamedSemaphore.OpenOrCreate(fullName, 0, 1);
         }
 
         public void Send(Action sendAction)

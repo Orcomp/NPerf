@@ -3,6 +3,7 @@
     using System;
     using NPerf.Core;
     using NPerf.Core.Monitoring;
+    using NPerf.Core.TestResults;
 
     internal class TestRunner : IObservable<TestResult>
     {
@@ -64,18 +65,18 @@
                     catch (Exception ex)
                     {
                         ok = false;
-                        observer.OnNext(new TestResult { Data = new PerfFailedResult(ex) });
+                        observer.OnNext(new PerfFailedResult(ex));
                     }
                 }
 
                 this.tearDownMethod();
                 if (ok)
                 {
-                    observer.OnNext(new TestResult { Data = new PerfResult(time.Value, memory.Value) });
+                    observer.OnNext(new PerfResult(time.Value, memory.Value));
                 }
             }
 
-            return new DisposableObserver();
+            return new DisposableScope();
         }
     }
 }

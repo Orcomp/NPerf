@@ -47,21 +47,23 @@
     </Compile>
     <Compile Include="AbstractPerfTest.cs" />
     <Compile Include="AbstractPerfTestSuite.cs" />
-    <Compile Include="Monitoring\DisposableObserver.cs" />
+    <Compile Include="Monitoring\DisposableScope.cs" />
     <Compile Include="Monitoring\DurationMonitor.cs" />
     <Compile Include="Monitoring\IPerfMonitor.cs" />
     <Compile Include="Monitoring\MemoryMonitor.cs" />
     <Compile Include="Monitoring\MemoryStatus.cs" />
     <Compile Include="RunDescriptor.cs" />
-    <Compile Include="ExpError.cs" />
+    <Compile Include="TestResults\ExperimentError.cs" />
     <Compile Include="Communication\MemoryMappedFileView.cs" />
-    <Compile Include="Communication\NamedSemaphore.cs" />
+    <Compile Include="Communication\NamedMutex.cs" />
     <Compile Include="Communication\ProcessMailBox.cs" />
     <Compile Include="Communication\SendReceiveLock.cs" />
-    <Compile Include="ExpComplete.cs" />
-    <Compile Include="PerfFailedResult.cs" />
-    <Compile Include="PerfResult.cs" />
+    <Compile Include="TestResults\ExperimentCompleted.cs" />
+    <Compile Include="TestResults\PerfFailedResult.cs" />
+    <Compile Include="TestResults\PerfResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestResults\TestInfo.cs" />
+    <Compile Include="TestResults\TestResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">

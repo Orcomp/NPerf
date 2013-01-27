@@ -3,6 +3,7 @@
     using System;
     using NPerf.Core;
     using NPerf.Core.Communication;
+    using NPerf.Core.TestResults;
 
     internal class TestObserver : IObserver<TestResult>, IDisposable
     {
@@ -17,17 +18,17 @@
 
         public void OnCompleted()
         {
-            this.mailBox.Content = new ExpComplete();
+            this.mailBox.Content = new ExperimentCompleted();
         }
 
         public void OnError(Exception error)
         {
-            this.mailBox.Content = new ExpError(error);
+            this.mailBox.Content = new ExperimentError(error);
         }
 
         public void OnNext(TestResult value)
         {
-            this.mailBox.Content = value.Data;
+            this.mailBox.Content = value;
         }
 
         ~TestObserver()

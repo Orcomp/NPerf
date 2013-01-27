@@ -3,6 +3,7 @@
     using System;
     using NPerf.Core;
     using NPerf.Core.Communication;
+    using NPerf.Core.TestResults;
     using NPerf.Framework.Interfaces;
 
     internal class Program
@@ -11,7 +12,7 @@
 
         public static void Main(string[] args)
         {
-            /* NPerf.Experiment -box boxName -ta toolAssembly -ft testSuiteTypeName -ti testIndex -ra researchedAssebmly -st subjectType 
+            /* NPerf.Experiment -box boxName -ta toolAssembly -ft testSuiteTypeName -ti testIndex -ra researchedAssebmly -st subjectType -start startValue -step stepValue -end andValue
              * 
              * toolAssembly - file name of the assemly with test suites
              * testSuiteTypeName - the name of type, which implements IPerfTestSuite interface
@@ -44,6 +45,10 @@
 
                     var testIndex = int.Parse(arguments.ExtractValue("ti"));
 
+                    var start = arguments.ExtractValue("start");
+                    var step = arguments.ExtractValue("step");
+                    var end = arguments.ExtractValue("end");
+
                     if (suite != null && subject != null)
                     {
                         var test = suite.Tests[testIndex];
@@ -52,9 +57,9 @@
                             delegate { test.Test(subject); },
                             delegate { suite.TearDown(subject); },
                             delegate(int idx) { return suite.GetRunDescriptor(idx); },
-                            0,
-                            1,
-                            suite.Tests.Length - 1);
+                            string.IsNullOrEmpty(start) ? 0 : int.Parse(start),
+                            string.IsNullOrEmpty(step) ? 1 : int.Parse(step),
+                            string.IsNullOrEmpty(end) ? suite.Tests.Length - 1 : int.Parse(end));
 
                             runner.Subscribe(testObserver);
                     }
@@ -90,7 +95,7 @@
             {
                 using (var mailBox = new ProcessMailBox(boxName, 1024))
                 {
-                    mailBox.Content = new ExpError();
+                    mailBox.Content = new ExperimentError();
                 }
             }
         }

@@ -46,10 +46,8 @@
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
-    <Compile Include="Descriptor.cs" />
     <Compile Include="StartArgumentsException.cs" />
     <Compile Include="TestObserver.cs" />
-    <Compile Include="TestResult.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="UsefulExtensions.cs" />
     <Compile Include="Argument.cs" />

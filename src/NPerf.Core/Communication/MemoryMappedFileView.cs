@@ -4,8 +4,8 @@
     using System.IO;
     using System.IO.MemoryMappedFiles;
     using System.Runtime.Serialization.Formatters.Binary;
-
-    public class MemoryMappedFileView : IDisposable
+    
+    internal class MemoryMappedFileView : IDisposable
     {
         private MemoryMappedViewStream stream;
         private readonly int size;
@@ -20,11 +20,13 @@
 
         private void ReadBytes(byte[] data)
         {
+            this.stream.Seek(0, SeekOrigin.Begin);
             this.stream.Read(data, 0, data.Length);
         }
 
         private void WriteBytes(byte[] data, int offset)
         {
+            this.stream.Seek(0, SeekOrigin.Begin);
             stream.Write(data, offset, data.Length);
         }
 
@@ -66,11 +68,11 @@
         {
             var formatter = new BinaryFormatter();
             var binaryData = new byte[length];
-            var ms = new MemoryStream(binaryData, 0, length, true, true);
-            formatter.Serialize(ms, data);
-            ms.Flush();
-            ms.Close();
-            this.WriteBytes(binaryData, offset);
+            using (var ms = new MemoryStream(binaryData, 0, length, true, true))
+            {
+                formatter.Serialize(ms, data);
+                this.WriteBytes(binaryData, offset);
+            }
         }
 
         protected void Dispose(bool disposing)

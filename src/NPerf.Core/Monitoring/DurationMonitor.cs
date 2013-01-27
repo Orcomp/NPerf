@@ -30,7 +30,7 @@
 
         public IDisposable Observe()
         {
-            return new DisposableObserver(
+            return new DisposableScope(
                 () =>
                     {
                         // lets do the waiting threads there work

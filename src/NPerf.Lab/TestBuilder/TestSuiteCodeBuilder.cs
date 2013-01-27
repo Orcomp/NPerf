@@ -8,17 +8,16 @@
     using CodeDomUtilities;
 
     using NPerf.Core;
+    using NPerf.Core.TestResults;
     using NPerf.Framework;
     using Blocks = CodeDomUtilities.CodeDomBlocks;
     using Expressions = CodeDomUtilities.CodeDomExpressions;
     using NPerf.Framework.Interfaces;
 
- //   using NPerf.Experiment.Basics;
-
     public class TestSuiteCodeBuilder : IPerfTestSuiteInfo
     {
-        private const string testSuiteClassName = "GeneratedTestSuite";
-        private const string testClassName = "GeneratedTest";
+        public const string TestSuiteClassName = "GeneratedTestSuite";
+        private const string TestClassName = "GeneratedTest";
 
         private CodeTypeReference testedAbstraction;
         private CodeTypeReference testerType;
@@ -72,7 +71,7 @@
             var basePerfTest = new CodeTypeReference(typeof(AbstractPerfTest<>));
             basePerfTest.TypeArguments.Add(this.testedAbstraction);
 
-            var dynamicTestSuiteClass = Blocks.Class(MemberAttributes.Public, testSuiteClassName);
+            var dynamicTestSuiteClass = Blocks.Class(MemberAttributes.Public, TestSuiteClassName);
             dynamicTestSuiteClass.BaseTypes.Add(basePerfTestSuite);
 
             var perfTestType = new CodeTypeReference(typeof(IPerfTest));
@@ -125,7 +124,7 @@
             var @action = new CodeTypeReference(typeof(Action<>));
             @action.TypeArguments.Add(this.testedAbstraction);
 
-            var dynamicTestClass = Blocks.Class(MemberAttributes.Public, testClassName);
+            var dynamicTestClass = Blocks.Class(MemberAttributes.Public, TestClassName);
             dynamicTestClass.BaseTypes.Add(basePerfTest);
 
             const string name = "name";
