@@ -4,13 +4,13 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Core.Communication;
-    using NUnit.Framework;
 
-    [TestFixture]
+    [TestClass]
     public class ProcessMailBoxTest
     {
-        [Test]
+        [TestMethod]
         public void CanSetGetMailBoxContent()
         {
             const string Content = "Content";
@@ -24,7 +24,7 @@
             }
         }
 
-        [Test]
+        [TestMethod]
         public void CanSyncSetGetMailBoxContent()
         {
             const int N = 10;

@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -46,7 +47,8 @@
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
-    <Compile Include="StartArgumentsException.cs" />
+    <Compile Include="Experiment.cs" />
+    <Compile Include="SartParameters.cs" />
     <Compile Include="TestObserver.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="UsefulExtensions.cs" />

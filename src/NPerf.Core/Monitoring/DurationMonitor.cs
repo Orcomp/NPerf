@@ -4,24 +4,17 @@
     using System.ComponentModel;
     using System.Runtime.InteropServices;
     using System.Threading;
+    using System.Diagnostics;
 
     public class DurationMonitor : IPerfMonitor<double>
     {
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
-
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(out long lpFrequency);
-
-        private long startTime;
-
-        private long stopTime;
+        Stopwatch clock = new Stopwatch();
 
         public DurationMonitor()
         {
-            if (QueryPerformanceFrequency(out this.freq) == false)
+            this.freq = Stopwatch.Frequency;
+            if (!Stopwatch.IsHighResolution)
             {
-                // high-performance counter not supported 
                 throw new Win32Exception();
             }
         }
@@ -32,16 +25,14 @@
         {
             return new DisposableScope(
                 () =>
-                    {
-                        // lets do the waiting threads there work
+                    {                        
                         Thread.Sleep(0);
-
-                        QueryPerformanceCounter(out this.startTime);
+                        clock.Restart();
                     },
                 () =>
                     {
-                        QueryPerformanceCounter(out this.stopTime);
-                        this.Value = (this.stopTime - this.startTime) / (double)this.freq;
+                        clock.Stop();
+                        this.Value = clock.ElapsedTicks / (double)this.freq;
                     });
         }
 

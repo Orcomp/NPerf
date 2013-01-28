@@ -5,6 +5,7 @@
 
     public abstract class AbstractPerfTest<T> : IPerfTest
     {
+        public string TestMethodName { get; protected set; }
 
         public string Name { get; protected set; }
 

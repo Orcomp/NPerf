@@ -3,13 +3,13 @@
     using System.Collections.Generic;
     using System.Threading;
     using FluentAssertions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Core.Communication;
-    using NUnit.Framework;
 
-    [TestFixture]
-    class NamedSemaphoreTest
+    [TestClass]
+    public class NamedSemaphoreTest
     {
-        [Test]
+        [TestMethod]
         public void CanCreateNamedSemaphore()
         {
             using (var semaphore = NamedSemaphore.OpenOrCreate("Named_semaphore", 2, 3))
@@ -22,7 +22,7 @@
             }
         }
 
-        [Test]
+        [TestMethod]
         public void CanUseNamedSemaphores()
         {
             var list = new List<int>();

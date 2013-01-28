@@ -1,9 +1,8 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using NPerf.Core;
     using NPerf.Core.Monitoring;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
 
     internal class TestRunner : IObservable<TestResult>
     {
@@ -47,7 +46,8 @@
             for (var i = this.start; i < this.end; i += this.step)
             {
                 var ok = true;
-                RunDescriptor.Instance.Value = this.descriptorMethod(i);
+
+                var descriptor = this.descriptorMethod(i);
                 this.setUpMethod(i);
 
                 // clean memory
@@ -65,14 +65,14 @@
                     catch (Exception ex)
                     {
                         ok = false;
-                        observer.OnNext(new PerfFailedResult(ex));
+                        observer.OnNext(new ExperimentError(ex, descriptor)); 
                     }
                 }
 
                 this.tearDownMethod();
                 if (ok)
                 {
-                    observer.OnNext(new PerfResult(time.Value, memory.Value));
+                    observer.OnNext(new PerfResult(time.Value, memory.Value, descriptor));
                 }
             }
 

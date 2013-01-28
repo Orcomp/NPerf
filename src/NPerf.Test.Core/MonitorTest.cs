@@ -4,13 +4,13 @@
     using System.Collections.Generic;
     using System.Threading;
     using FluentAssertions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Core.Monitoring;
-    using NUnit.Framework;
 
-    [TestFixture]
+    [TestClass]
     public class MonitorTest
     {
-        [Test]
+        [TestMethod]
         public void CanUseDurationMonitor()
         {
             var monitor = new DurationMonitor();
@@ -34,7 +34,7 @@
             (value1 < value2).Should().BeTrue();
         }
 
-        [Test]
+        [TestMethod]
         public void CanUseMemoryMonitor()
         {
             var monitor = new MemoryMonitor();

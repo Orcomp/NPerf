@@ -3,7 +3,7 @@
     using System;
     using NPerf.Core;
     using NPerf.Core.Communication;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
 
     internal class TestObserver : IObserver<TestResult>, IDisposable
     {

@@ -4,17 +4,17 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Test.Helpers;
-    using NUnit.Framework;
 
-    [TestFixture]
+    [TestClass]
     public class SendReceiveLockTest
     {
         const string FullName = "full";
 
         const string EmptyName = "empty";
 
-        [Test]
+        [TestMethod]
         public void CandExecuteSending()
         {
             var list = new List<int>();
@@ -30,7 +30,7 @@
             list[0].Should().Be(Value);
         }
 
-        [Test]
+        [TestMethod]
         public void CandExecuteReceiving()
         {           
             const int Value = 1;
@@ -50,10 +50,9 @@
             }            
         }
 
-        [Test]
+        [TestMethod]
         public void CanSyncSendReceive()
         {
-
             var buff = 0;
             const int N = 10;
             const int SecondsTimeout = 30;

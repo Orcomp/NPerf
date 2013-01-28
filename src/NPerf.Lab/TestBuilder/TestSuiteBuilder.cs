@@ -8,7 +8,8 @@
     using Fasterflect;
     using Microsoft.CSharp;
 
-    using NPerf.Core.TestResults;
+    using NPerf.Core;
+    using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;
 
@@ -109,9 +110,7 @@
                          select new TestInfo
                          {
                              Name = method.Name,
-                             Description = testAttribute.Description,
-                             IsIgnore = ignoreAttribute != null,
-                             IgnoreMessage = ignoreAttribute == null ? string.Empty : ignoreAttribute.Message
+                             Description = testAttribute.Description
                          }).ToArray()
             };
 

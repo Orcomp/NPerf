@@ -6,13 +6,10 @@
     using System.Linq;
     using System.Linq.Expressions;
     using CodeDomUtilities;
-
     using NPerf.Core;
-    using NPerf.Core.TestResults;
-    using NPerf.Framework;
+    using NPerf.Framework.Interfaces;
     using Blocks = CodeDomUtilities.CodeDomBlocks;
     using Expressions = CodeDomUtilities.CodeDomExpressions;
-    using NPerf.Framework.Interfaces;
 
     public class TestSuiteCodeBuilder : IPerfTestSuiteInfo
     {
@@ -87,7 +84,7 @@
             CodeMemberField testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
 
             CodeFieldReferenceExpression testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
-            
+
             dynamicTestSuiteClass.AddMember(tester);
             dynamicTestSuiteClass.AddMember(testedObject);
 
@@ -106,9 +103,7 @@
                          dynamicTestClass.Name,
                          test.Name.Literal(),
                          test.Description.Literal(),
-                         test.IsIgnore
-                            ? (CodeExpression)test.IgnoreMessage.Literal()
-                            : (CodeExpression)testerReference.PropertyReference(test.Name))).ToArray())));
+                         (CodeExpression)testerReference.PropertyReference(test.Name))).ToArray())));
 
             dynamicTestSuiteClass.AddMember(testSuiteConstructor);
 
@@ -130,28 +125,19 @@
             const string name = "name";
             const string description = "description";
             const string testMethod = "testMethod";
-            const string ignoreMessage = "ignoreMessage";
+            const string testMethodName = "testMethodName";
 
-            CodeConstructor testConstructor = Blocks.Constructor(MemberAttributes.Public)
+            var testConstructor = Blocks.Constructor(MemberAttributes.Public)
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @description))
+                .AddParameter(new CodeParameterDeclarationExpression(@string, @testMethodName))
                 .AddParameter(new CodeParameterDeclarationExpression(@action, @testMethod))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@testMethodName)))
                 .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
-                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));            
-
-            CodeConstructor ignoredTestConstructor = Blocks.Constructor(MemberAttributes.Public)
-                .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
-                .AddParameter(new CodeParameterDeclarationExpression(@string, @description))
-                .AddParameter(new CodeParameterDeclarationExpression(@string, @ignoreMessage))
-                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
-                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
-                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.IsIgnore).Assign((true).Literal()))
-                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.IgnoreMessage).Assign(new CodeVariableReferenceExpression("ignoreMessage")));            
+                .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));
 
             dynamicTestClass.AddMember(testConstructor);
-            dynamicTestClass.AddMember(ignoredTestConstructor);                        
-
             return dynamicTestClass;
         }
 

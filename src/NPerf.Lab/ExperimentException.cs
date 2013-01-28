@@ -2,7 +2,7 @@
 {
     using System;
     using NPerf.Core;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
 
     public class ExperimentException:Exception
     {

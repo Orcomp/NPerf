@@ -6,7 +6,7 @@
     using System.Reflection;
     using Fasterflect;
     using NPerf.Core;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
 
     public class PerfLab

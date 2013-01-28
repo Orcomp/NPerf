@@ -52,18 +52,16 @@
     <Compile Include="Monitoring\IPerfMonitor.cs" />
     <Compile Include="Monitoring\MemoryMonitor.cs" />
     <Compile Include="Monitoring\MemoryStatus.cs" />
-    <Compile Include="RunDescriptor.cs" />
-    <Compile Include="TestResults\ExperimentError.cs" />
+    <Compile Include="PerfTestResults\ExperimentError.cs" />
     <Compile Include="Communication\MemoryMappedFileView.cs" />
     <Compile Include="Communication\NamedMutex.cs" />
     <Compile Include="Communication\ProcessMailBox.cs" />
     <Compile Include="Communication\SendReceiveLock.cs" />
-    <Compile Include="TestResults\ExperimentCompleted.cs" />
-    <Compile Include="TestResults\PerfFailedResult.cs" />
-    <Compile Include="TestResults\PerfResult.cs" />
+    <Compile Include="PerfTestResults\ExperimentCompleted.cs" />
+    <Compile Include="PerfTestResults\PerfResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestResults\TestInfo.cs" />
-    <Compile Include="TestResults\TestResult.cs" />
+    <Compile Include="PerfTestResults\TestResult.cs" />
+    <Compile Include="TestInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">

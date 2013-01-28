@@ -1,76 +1,34 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using NPerf.Core;
+    using System.Linq;
     using NPerf.Core.Communication;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
     using NPerf.Framework.Interfaces;
 
     internal class Program
     {
-        private static string boxName;
+        private static string channelName;
 
         public static void Main(string[] args)
         {
-            /* NPerf.Experiment -box boxName -ta toolAssembly -ft testSuiteTypeName -ti testIndex -ra researchedAssebmly -st subjectType -start startValue -step stepValue -end andValue
-             * 
-             * toolAssembly - file name of the assemly with test suites
-             * testSuiteTypeName - the name of type, which implements IPerfTestSuite interface
-             * testIndex - index of test method in executed test suite
+            /*
+             * -suiteLib {0} -suiteType {1} -testMethod {2} -subjectAssm {3} -subjecType {4} -channelName {5} -start {6} -step {7} -end {8}
              */
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
-            RunDescriptor.Instance.Value = -1;
-            var arguments = args.ConvertToArguments();
-            boxName = arguments.ExtractValue("box");
 
-            if (string.IsNullOrEmpty(boxName))
+            var startParameters = new SartParameters(args);
+
+            channelName = startParameters.ChannelName;
+
+            if (string.IsNullOrEmpty(channelName))
             {
                 SendError(new Exception("Mailbox name for interprocess communication was not set."));
                 return;
             }
 
-            using (var testObserver = new TestObserver(boxName))
-            {
-                try
-                {
-                    var toolAssemblyName = arguments.ExtractValue("ta");
-                    var testSuiteTypeName = arguments.ExtractValue("ft");
-                    var suite = AssemblyLoader.CreateInstance<IPerfTestSuite>(toolAssemblyName, testSuiteTypeName);
-
-
-                    var researchedAssebmlyName = arguments.ExtractValue("ra");
-                    var subjectTypeName = arguments.ExtractValue("st");
-                    var subject = AssemblyLoader.CreateInstance(researchedAssebmlyName, subjectTypeName);
-
-                    var testIndex = int.Parse(arguments.ExtractValue("ti"));
-
-                    var start = arguments.ExtractValue("start");
-                    var step = arguments.ExtractValue("step");
-                    var end = arguments.ExtractValue("end");
-
-                    if (suite != null && subject != null)
-                    {
-                        var test = suite.Tests[testIndex];
-                        var runner = new TestRunner(
-                            delegate(int idx) { suite.SetUp(idx, subject); },
-                            delegate { test.Test(subject); },
-                            delegate { suite.TearDown(subject); },
-                            delegate(int idx) { return suite.GetRunDescriptor(idx); },
-                            string.IsNullOrEmpty(start) ? 0 : int.Parse(start),
-                            string.IsNullOrEmpty(step) ? 1 : int.Parse(step),
-                            string.IsNullOrEmpty(end) ? suite.Tests.Length - 1 : int.Parse(end));
-
-                            runner.Subscribe(testObserver);
-                    }
-
-                    testObserver.OnCompleted();
-                }
-                catch (Exception ex)
-                {
-                    testObserver.OnError(ex);
-                }
-            }
+            Experiment.Start(startParameters);
         }
 
         private static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -87,15 +45,15 @@
 
         private static void SendError(Exception ex)
         {
-            if (string.IsNullOrEmpty(boxName))
+            if (string.IsNullOrEmpty(channelName))
             {
                 Console.Error.WriteLine(ex.ToString());
             }
             else
             {
-                using (var mailBox = new ProcessMailBox(boxName, 1024))
+                using (var mailBox = new ProcessMailBox(channelName, 1024))
                 {
-                    mailBox.Content = new ExperimentError();
+                    mailBox.Content = new ExperimentError { Descriptor = -1, };
                 }
             }
         }

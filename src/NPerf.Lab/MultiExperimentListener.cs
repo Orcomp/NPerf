@@ -2,7 +2,7 @@
 {
     using System.Linq;
     using NPerf.Core;
-    using NPerf.Core.TestResults;
+    using NPerf.Core.PerfTestResults;
     using NPerf.Lab.Queueing;
     using NPerf.Lab.Threading;
 
