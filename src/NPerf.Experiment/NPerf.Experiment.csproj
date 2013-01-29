@@ -47,7 +47,7 @@
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
-    <Compile Include="Experiment.cs" />
+    <Compile Include="ExperimentScope.cs" />
     <Compile Include="SartParameters.cs" />
     <Compile Include="TestObserver.cs" />
     <Compile Include="TestRunner.cs" />

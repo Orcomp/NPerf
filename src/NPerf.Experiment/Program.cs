@@ -28,7 +28,7 @@
                 return;
             }
 
-            Experiment.Start(startParameters);
+            ExperimentScope.Start(startParameters);
         }
 
         private static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -22,7 +22,7 @@
             const string ErrorText = "error";
             using (var mailBox = new ProcessMailBox(MailBoxName, 1024))
             {
-                using (var observer = new TestObserver("box"))
+                using (var observer = new TestObserver(MailBoxName))
                 {
                     var list = new List<object>();
 

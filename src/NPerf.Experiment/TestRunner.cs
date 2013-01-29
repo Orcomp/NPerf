@@ -72,7 +72,7 @@
                 this.tearDownMethod();
                 if (ok)
                 {
-                    observer.OnNext(new PerfResult(time.Value, memory.Value, descriptor));
+                    observer.OnNext(new NextResult(time.Value, memory.Value, descriptor));
                 }
             }
 

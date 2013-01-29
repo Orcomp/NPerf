@@ -6,7 +6,9 @@
     internal sealed class SendReceiveLock : IDisposable
     {
         private Semaphore empty;
+
         private Semaphore full;
+
         private bool disposed;
 
         public SendReceiveLock(string fullName, string emptyName)

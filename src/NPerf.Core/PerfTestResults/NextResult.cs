@@ -6,16 +6,16 @@
     /// Class describing benchmark results.
     /// </summary>
     [Serializable]
-    public class PerfResult : TestResult
+    public class NextResult : TestResult
     {
-        public PerfResult()
+        public NextResult()
         {
         }
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public PerfResult(double duration, long memoryUsage, double descriptor)
+        public NextResult(double duration, long memoryUsage, double descriptor)
         {
             this.Duration = duration;
             this.MemoryUsage = memoryUsage;
@@ -34,7 +34,7 @@
 
         public override bool Equals(object obj)
         {
-            var perfResult = obj as PerfResult;
+            var perfResult = obj as NextResult;
             if (perfResult == null)
             {
                 return false;

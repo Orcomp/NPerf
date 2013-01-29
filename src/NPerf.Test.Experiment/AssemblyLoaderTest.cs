@@ -9,9 +9,9 @@
     {
         [TestMethod]
         public void CanLoadType()
-        {           
-            const string TypeName = "TestSuiteSample";
-            const string AssemblyName = "NPerf.DevHelpers.dll";
+        {
+            string TypeName = typeof(NPerf.DevHelpers.PerfTestSuiteSample).Name;
+            string AssemblyName = typeof(NPerf.DevHelpers.PerfTestSuiteSample).Assembly.Location;
             var instance = AssemblyLoader.CreateInstance(AssemblyName, TypeName);
             instance.Should().NotBeNull();
             instance.GetType().Name.Should().Be(TypeName);

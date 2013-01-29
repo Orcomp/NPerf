@@ -9,7 +9,7 @@
     {
         public void SomeAction()
         {
-            Console.Out.WriteLine("The action in tested object is executed.");
+           // Console.Out.WriteLine("The action in tested object is executed.");
         }
     }
 }

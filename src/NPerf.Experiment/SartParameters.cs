@@ -2,6 +2,10 @@
 {
     internal class SartParameters
     {
+        public SartParameters()
+        { 
+        }
+
         public SartParameters(string[] args)
         {
             var arguments = args.ConvertToArguments();
@@ -16,22 +20,22 @@
             this.End = arguments.ExtractValue("end");
         }
 
-        public string ChannelName { get; private set; }
+        public string ChannelName { get; set; }
 
-        public string SuiteAssembly { get; private set; }
+        public string SuiteAssembly { get; set; }
 
-        public string SuiteType { get; private set; }
+        public string SuiteType { get; set; }
 
-        public string SubjectAssembly { get; private set; }
+        public string SubjectAssembly { get; set; }
 
-        public string SubjectType { get; private set; }
+        public string SubjectType { get; set; }
 
-        public string TestMethod { get; private set; }
+        public string TestMethod { get; set; }
 
-        public string Start { get; private set; }
+        public string Start { get; set; }
 
-        public string Step { get; private set; }
+        public string Step { get; set; }
 
-        public string End { get; private set; }
+        public string End { get; set; }
     }
 }

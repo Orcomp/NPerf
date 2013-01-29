@@ -58,7 +58,7 @@
     <Compile Include="Communication\ProcessMailBox.cs" />
     <Compile Include="Communication\SendReceiveLock.cs" />
     <Compile Include="PerfTestResults\ExperimentCompleted.cs" />
-    <Compile Include="PerfTestResults\PerfResult.cs" />
+    <Compile Include="PerfTestResults\NextResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PerfTestResults\TestResult.cs" />
     <Compile Include="TestInfo.cs" />

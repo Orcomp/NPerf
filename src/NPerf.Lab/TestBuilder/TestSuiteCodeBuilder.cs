@@ -78,10 +78,10 @@
             testSuites.AddType(dynamicTestSuiteClass);
             testSuites.AddType(dynamicTestClass);
 
-            CodeMemberField tester = Blocks.Field(MemberAttributes.Private, this.testerType, "tester");
+            var tester = Blocks.Field(MemberAttributes.Private, this.testerType, "tester");
             CodeFieldReferenceExpression testerReference = Expressions.This.FieldReference(tester.Name);
 
-            CodeMemberField testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
+            var testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
 
             CodeFieldReferenceExpression testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
 
