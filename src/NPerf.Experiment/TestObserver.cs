@@ -1,7 +1,6 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using NPerf.Core;
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
 

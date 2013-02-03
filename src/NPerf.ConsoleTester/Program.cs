@@ -13,10 +13,13 @@ namespace NPerf.ConsoleTester
 
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            
-            Application.Run(new ExecutionContext());            
+            using (var context = new ExecutionContext())
+            {
+                Application.Run(context);
+            }            
         }
     }
 }

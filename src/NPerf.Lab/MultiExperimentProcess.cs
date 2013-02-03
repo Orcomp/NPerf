@@ -9,7 +9,7 @@
     {
         private int counter;
 
-        private static readonly object sync = new object();
+        private readonly object sync = new object();
 
         public event EventHandler Exited;
 
@@ -82,7 +82,7 @@
 
         public void Dispose()
         {
-            foreach (var process in processes)
+            foreach (var process in this.processes)
             {
                 process.Dispose();
             }

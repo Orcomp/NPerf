@@ -6,59 +6,17 @@
     using System.Threading;
 
     public class ReactiveQueue<T> : IDisposable
+        where T : class
     {
         private Queue<T> queue;
 
-        private bool closed;
-
-        private bool closing;
+        private readonly EventWaitHandle wh = new AutoResetEvent(false);
 
         private readonly object syncLock = new object();
 
         private bool disposed;
 
         private readonly Thread queueThread;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this <see 
-        /// cref="ReactiveQueue&lt;T&gt;"/> is closed.
-        /// </summary>
-        /// <value><c>true</c> if closed; otherwise, <c>false</c>.</value>
-        public bool Closed
-        {
-            get
-            {
-                lock (this.syncLock)
-                {
-                    return this.closed;
-                }
-            }
-
-            set
-            {
-
-                if (value)
-                {
-                    lock (this.syncLock)
-                    {
-                        this.closing = true;
-                        Monitor.PulseAll(this.syncLock);
-                    }
-                    
-                    this.queueThread.Join();
-                }
-                else
-                {
-                    lock (this.syncLock)
-                    {
-                        this.closing = false;
-                        this.closed = false;
-                    }
-                    this.queueThread.Start();
-                }
-            }
-        }
-
 
         /// <summary>
         /// Initializes a new instance of the ReactiveQueue class.
@@ -68,7 +26,6 @@
             this.queue = new Queue<T>();
             this.queueThread = new Thread(this.Loop);
             this.queueThread.Start();
-            //ThreadPool.QueueUserWorkItem(this.OnEnqueue);
         }
 
         /// <summary>
@@ -79,14 +36,10 @@
         {
             lock (this.syncLock)
             {
-                if (this.Closed || this.closing)
-                {
-                    return;
-                }
-
                 this.queue.Enqueue(item);
-                Monitor.PulseAll(this.syncLock);
             }
+
+            this.wh.Set();
         }
 
         /// <summary>
@@ -100,31 +53,33 @@
         protected void Loop()
         {
             Thread.CurrentThread.Name = "ReactiveQueue";
-            while (!this.Closed)
+            while (true)
             {
                 T[] items = null;
                 lock (this.syncLock)
                 {
-                    if (this.queue.Count == 0 && !this.closed)
-                    {
-                        Monitor.Wait(this.syncLock);
-                    }
-
-                    if (this.ItemDequeued != null)
+                    if (this.queue.Count > 0)
                     {
                         items = this.queue.ToArray();
                         this.queue.Clear();
                     }
-
-                    if (this.closing)
-                    {
-                        this.closed = true;
-                    }
                 }
 
-                if (this.ItemDequeued != null && items != null && items.Length > 0)
+                if (items != null)
                 {
-                    Array.ForEach(items, this.ActionHandler);
+                    foreach (var item in items)
+                    {
+                        if (item == null)
+                        {
+                            return;
+                        }
+
+                        this.ActionHandler(item);
+                    }
+                }
+                else
+                {
+                    this.wh.WaitOne();
                 }
             }
         }
@@ -137,13 +92,6 @@
             }
         }
 
-        /// <summary>
-        /// Closes this instance.
-        /// </summary>
-        public void Close()
-        {
-            this.Dispose();
-        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources
@@ -157,11 +105,9 @@
             {
                 if (disposing)
                 {
-                    this.Closed = true;
-                    lock (this.syncLock)
-                    {
-                        Monitor.PulseAll(this.syncLock);
-                    }
+                    this.Enqueue(null);
+                    this.queueThread.Join();
+                    this.wh.Close();
                 }
             }
 

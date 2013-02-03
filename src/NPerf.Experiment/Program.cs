@@ -1,11 +1,8 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using System.Linq;
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
-    using NPerf.Framework.Interfaces;
-    using System.Diagnostics;
 
     internal class Program
     {

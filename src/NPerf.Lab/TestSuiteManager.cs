@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
@@ -13,9 +14,6 @@
     using NPerf.Lab.Info;
     using NPerf.Lab.Queueing;
     using NPerf.Lab.TestBuilder;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     internal class TestSuiteManager
     {

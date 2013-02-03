@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-
-namespace NPerf.Lab.Threading
+﻿namespace NPerf.Lab.Threading
 {
+    using System;
+    using System.Threading;
+
     /// <summary>
     /// SingleRunnable provides simple management of a threaded blocking loop implementations.
     /// </summary>
@@ -14,9 +11,9 @@ namespace NPerf.Lab.Threading
         private Thread thread;
         /// <summary>Use this variable in your infinite while loop condition.</summary>
         protected bool running = false;
-        private bool aborted = false;
+        private bool aborted;
         private readonly bool interruptOnStop;
-        private bool disposed = false;
+        private bool disposed;
 
         /// <summary>Initialize the runnable base class.</summary>
         //protected SingleRunnable() : this(true,false,false) {}

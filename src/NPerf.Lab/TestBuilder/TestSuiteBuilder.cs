@@ -7,7 +7,6 @@
     using CodeDomUtilities;
     using Fasterflect;
     using Microsoft.CSharp;
-
     using NPerf.Core;
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;

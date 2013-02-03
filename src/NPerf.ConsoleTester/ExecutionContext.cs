@@ -21,6 +21,8 @@
             var lab = new PerfLab(typeof(StringBuildingTester).Assembly, typeof(StringRunner).Assembly, typeof(Dictionary<,>).Assembly);
 
             lab.Run(true).Subscribe(this.OnNext, ex => { }, this.Completed);
+            
+            //Application.Exit();
         }
 
         void OnNext(TestResult value)
@@ -30,8 +32,9 @@
         }
 
         private void Completed()
-        {            
-            Application.ExitThread();
+        {
+            this.ExitThread();
+           // Application.ExitThread();
          //   Application.Exit();
         }
     }
