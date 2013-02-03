@@ -13,17 +13,17 @@
 
         public TestObserver(string boxName)
         {
-            this.mailBox = new ProcessMailBox(boxName, 1024);
+            this.mailBox = new ProcessMailBox(boxName);
         }
 
         public void OnCompleted()
         {
-            this.mailBox.Content = new ExperimentCompleted();
+            this.mailBox.Content = TestResultFactory.Instance.Comleted();
         }
 
         public void OnError(Exception error)
         {
-            this.mailBox.Content = new ExperimentError(error);
+            this.mailBox.Content = TestResultFactory.Instance.FatalError(error);
         }
 
         public void OnNext(TestResult value)

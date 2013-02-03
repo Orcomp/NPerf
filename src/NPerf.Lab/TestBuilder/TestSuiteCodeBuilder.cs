@@ -8,50 +8,42 @@
     using CodeDomUtilities;
     using NPerf.Core;
     using NPerf.Framework.Interfaces;
+    using NPerf.Lab.Info;
+
     using Blocks = CodeDomUtilities.CodeDomBlocks;
     using Expressions = CodeDomUtilities.CodeDomExpressions;
 
-    public class TestSuiteCodeBuilder : IPerfTestSuiteInfo
+    public class TestSuiteCodeBuilder
     {
         public const string TestSuiteClassName = "GeneratedTestSuite";
+
         private const string TestClassName = "GeneratedTest";
 
-        private CodeTypeReference testedAbstraction;
-        private CodeTypeReference testerType;
-        private CodeTypeReference typeToTest;
+        private readonly CodeTypeReference testedAbstraction;
 
-        public string TesterType
+        private readonly CodeTypeReference testerType;
+
+        private readonly TestSuiteInfo testSuiteInfo;
+
+        private readonly string runDescriptorMethodName;
+
+        private readonly string setUpMethodName;
+
+        private readonly string tearDownMethodName;
+
+        public TestSuiteCodeBuilder(
+            TestSuiteInfo testSuiteInfo,
+            string runDescriptorMethodName,
+            string setUpMethodName,
+            string tearDownMethodName)
         {
-            get { return this.testerType.BaseType; }
-            set { this.testerType = new CodeTypeReference(value); }
+            this.testSuiteInfo = testSuiteInfo;
+            this.runDescriptorMethodName = runDescriptorMethodName;
+            this.setUpMethodName = setUpMethodName;
+            this.tearDownMethodName = tearDownMethodName;
+            this.testerType = new CodeTypeReference(testSuiteInfo.TesterType);
+            this.testedAbstraction = new CodeTypeReference(testSuiteInfo.TestedAbstraction);
         }
-
-        public string TestedAbstraction
-        {
-            get { return this.testedAbstraction.BaseType; }
-            set { this.testedAbstraction = new CodeTypeReference(value); }
-        }
-
-        public string TypeToTest
-        {
-            get { return this.typeToTest.BaseType; }
-            set { this.typeToTest = new CodeTypeReference(value); }
-        }
-
-        public string RunDescriptorMethodName { get; set; }
-
-        public string SetUpMethodName { get; set; }
-
-        public string TearDownMethodName { get; set; }
-
-        public int DefaultTestCount { get; set; }
-
-        public string Description { get; set; }
-
-        public string FeatureDescription { get; set; }
-
-        public TestInfo[] Tests { get; set; }
-
 
         public CodeCompileUnit BuildCode()
         {
@@ -79,31 +71,55 @@
             testSuites.AddType(dynamicTestClass);
 
             var tester = Blocks.Field(MemberAttributes.Private, this.testerType, "tester");
-            CodeFieldReferenceExpression testerReference = Expressions.This.FieldReference(tester.Name);
+            var testerReference = Expressions.This.FieldReference(tester.Name);
 
             var testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
 
-            CodeFieldReferenceExpression testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
+            var testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
 
             dynamicTestSuiteClass.AddMember(tester);
             dynamicTestSuiteClass.AddMember(testedObject);
 
-            CodeConstructor testSuiteConstructor = Blocks.Constructor(MemberAttributes.Public)
+            var tests = from test in this.testSuiteInfo.Tests
+                        select
+                            new CodeObjectCreateExpression(
+                            dynamicTestClass.Name,
+                            new CodeTypeReference(typeof(Guid)).CreateObject(test.TestId.ToString().Literal()),
+                            test.TestMethodName.Literal(),
+                            (CodeExpression)testerReference.PropertyReference(test.TestMethodName),
+                            test.TestDescription.Literal());
+
+            var testSuiteConstructor = Blocks.Constructor(MemberAttributes.Public)
                 .AddStatement(testerReference.Assign(this.testerType.CreateObject()))
-                .AddStatement(testedObjectReference.Assign(this.typeToTest.CreateObject()))
-                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.DefaultTestCount).Assign(this.DefaultTestCount.Literal()))
-                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Description).Assign(this.Description.Literal()))
-                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.FeatureDescription).Assign(this.FeatureDescription.Literal()))
-                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.SetUpMethod).Assign(testerReference.PropertyReference(this.SetUpMethodName)))
-                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.TearDownMethod).Assign(testerReference.PropertyReference(this.TearDownMethodName)))
-                .AddStatement(PropertyReference<AbstractPerfTestSuite<object>>(x => x.GetDescriptorMethod).Assign(testerReference.PropertyReference(this.RunDescriptorMethodName)))
-                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.Tests).Assign(new CodeArrayCreateExpression(perfTestType,
-                    (from test in this.Tests
-                     select new CodeObjectCreateExpression(
-                         dynamicTestClass.Name,
-                         test.Name.Literal(),
-                         test.Description.Literal(),
-                         (CodeExpression)testerReference.PropertyReference(test.Name))).ToArray())));
+                .AddStatement(testedObjectReference.Assign(new CodeTypeReference(this.testSuiteInfo.TestedType).CreateObject()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.DefaultTestCount).Assign(this.testSuiteInfo.DefaultTestCount.Literal()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.TestSuiteDescription).Assign(this.testSuiteInfo.TestSuiteDescription.Literal()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.FeatureDescription).Assign(this.testSuiteInfo.FeatureDescription.Literal()))
+                .AddStatement(PropertyReference<IPerfTestSuite>(x => x.TestedType).Assign(new CodeTypeOfExpression(this.testSuiteInfo.TestedType)))
+                .AddStatement(
+                    PropertyReference<IPerfTestSuite>(x => x.Tests)
+                        .Assign(new CodeArrayCreateExpression(perfTestType, tests.Cast<CodeExpression>().ToArray())));
+
+            if (!string.IsNullOrEmpty(this.runDescriptorMethodName))
+            {
+                testSuiteConstructor.AddStatement(
+                    PropertyReference<AbstractPerfTestSuite<object>>(x => x.GetDescriptorMethod)
+                        .Assign(testerReference.PropertyReference(this.runDescriptorMethodName)));
+            }
+
+            if (!string.IsNullOrEmpty(this.setUpMethodName))
+            {
+                testSuiteConstructor.AddStatement(
+                    PropertyReference<AbstractPerfTestSuite<object>>(x => x.SetUpMethod)
+                        .Assign(testerReference.PropertyReference(this.setUpMethodName)));
+            }
+
+            if (!string.IsNullOrEmpty(this.tearDownMethodName))
+            {
+                testSuiteConstructor.AddStatement(
+                    PropertyReference<AbstractPerfTestSuite<object>>(x => x.TearDownMethod)
+                        .Assign(testerReference.PropertyReference(this.tearDownMethodName)));
+            }
 
             dynamicTestSuiteClass.AddMember(testSuiteConstructor);
 
@@ -117,6 +133,7 @@
 
             var @string = new CodeTypeReference(typeof(string));
             var @action = new CodeTypeReference(typeof(Action<>));
+            var @guid = new CodeTypeReference(typeof(Guid));
             @action.TypeArguments.Add(this.testedAbstraction);
 
             var dynamicTestClass = Blocks.Class(MemberAttributes.Public, TestClassName);
@@ -125,16 +142,16 @@
             const string name = "name";
             const string description = "description";
             const string testMethod = "testMethod";
-            const string testMethodName = "testMethodName";
+            const string testId = "testId";
 
             var testConstructor = Blocks.Constructor(MemberAttributes.Public)
+                .AddParameter(new CodeParameterDeclarationExpression(@guid, @testId))
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @name))
+                .AddParameter(new CodeParameterDeclarationExpression(@action, @testMethod))                
                 .AddParameter(new CodeParameterDeclarationExpression(@string, @description))
-                .AddParameter(new CodeParameterDeclarationExpression(@string, @testMethodName))
-                .AddParameter(new CodeParameterDeclarationExpression(@action, @testMethod))
-                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@name)))
-                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Name).Assign(new CodeVariableReferenceExpression(@testMethodName)))
-                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.Description).Assign(new CodeVariableReferenceExpression(@description)))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.TestId).Assign(new CodeVariableReferenceExpression(@testId)))  
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.TestMethodName).Assign(new CodeVariableReferenceExpression(@name)))
+                .AddStatement(PropertyReference<IPerfTestInfo>(x => x.TestDescription).Assign(new CodeVariableReferenceExpression(@description)))
                 .AddStatement(PropertyReference<AbstractPerfTest<object>>(x => x.TestMethod).Assign(new CodeVariableReferenceExpression(@testMethod)));
 
             dynamicTestClass.AddMember(testConstructor);
@@ -159,7 +176,5 @@
 
             return CodeDomExpressions.This.PropertyReference(body.Member.Name);
         }
-
-        public object BasePerfTestSuite { get; set; }
     }
 }

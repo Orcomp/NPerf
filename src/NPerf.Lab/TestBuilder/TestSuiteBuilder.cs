@@ -9,17 +9,13 @@
     using Microsoft.CSharp;
 
     using NPerf.Core;
-    using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;
+    using NPerf.Lab.Info;
 
     public class TestSuiteBuilder
     {
-        private readonly Type testerType;
-
-        private readonly Type testedAbstraction;
-
-        private readonly Type typeToTest;
+        private readonly TestSuiteInfo testSuiteInfo;
 
         private readonly MethodInfo runDescriptor;
 
@@ -27,105 +23,66 @@
 
         private readonly MethodInfo tearDown;
 
-        private readonly int defaultTestRepeatings;
 
-        private readonly string description;
-
-        private readonly string featureDescription;
-
-        public TestSuiteBuilder(Type testerType, Type testedType)
+        public TestSuiteBuilder(TestSuiteInfo testSuiteInfo)
         {
-            if (testerType == null)
+            if (testSuiteInfo == null)
             {
-                throw new ArgumentNullException("testerType");
+                throw new ArgumentNullException("testSuiteInfo");
             }
 
-            if (testedType == null)
-            {
-                throw new ArgumentNullException("testedType");
-            }
-
-            this.typeToTest = testedType;
-
-            this.testerType = testerType;
-            var testerAttribute = this.testerType.Attribute<PerfTesterAttribute>();
-            if (testerAttribute == null)
-            {
-                throw new ArgumentException("Tester type must be marked by PerfTesterAttribute", "testerType");
-            }
-
-            this.testedAbstraction = testerAttribute.TestedType;
-            if (!this.testedAbstraction.IsAssignableFrom(testedType))
-            {
-                throw new ArgumentException(string.Format("Tester type {0} is not assignable from {1}", this.testedAbstraction, testedType), "testedType");
-            }
-
-            this.defaultTestRepeatings = testerAttribute.TestCount;
-            this.description = testerAttribute.Description;
-            this.featureDescription = testerAttribute.FeatureDescription;
+            this.testSuiteInfo = testSuiteInfo;
 
             // get run descriptor
             this.runDescriptor =
-                this.testerType.MethodsWith(Flags.AllMembers, typeof(PerfRunDescriptorAttribute))
-                    .FirstOrDefault(
-                        m => m.ReturnType == typeof(double) && m.HasParameterSignature(new[] { typeof(int) }));
+                testSuiteInfo.TesterType.MethodsWith(Flags.AllMembers, typeof(PerfRunDescriptorAttribute))
+                             .FirstOrDefault(
+                                 m => m.ReturnType == typeof(double) && m.HasParameterSignature(new[] { typeof(int) }));
 
             // get set up
             this.setUp =
-                this.testerType.MethodsWith(Flags.AllMembers, typeof(PerfSetUpAttribute))
-                    .FirstOrDefault(
-                        m => m.ReturnType == typeof(void) && m.HasParameterSignature(new[] { typeof(int), this.testedAbstraction }));
+                testSuiteInfo.TesterType.MethodsWith(Flags.AllMembers, typeof(PerfSetUpAttribute))
+                             .FirstOrDefault(
+                                 m =>
+                                 m.ReturnType == typeof(void)
+                                 && m.HasParameterSignature(new[] { typeof(int), testSuiteInfo.TestedAbstraction }));
 
             // get tear down
             this.tearDown =
-                this.testerType.MethodsWith(Flags.AllMembers, typeof(PerfTearDownAttribute))
-                    .FirstOrDefault(
-                        m => m.ReturnType == typeof(void) && m.HasParameterSignature(new[] { this.testedAbstraction }));
-
-            // get test method
-            this.TestMethods =
-                this.testerType.MethodsWith(Flags.AllMembers, typeof(PerfTestAttribute))
-                    .Where(m => m.ReturnType == typeof(void) && m.HasParameterSignature(new[] { this.testedAbstraction }))
-                    .ToArray();
+                testSuiteInfo.TesterType.MethodsWith(Flags.AllMembers, typeof(PerfTearDownAttribute))
+                             .FirstOrDefault(
+                                 m =>
+                                 m.ReturnType == typeof(void)
+                                 && m.HasParameterSignature(new[] { testSuiteInfo.TestedAbstraction }));
         }
 
         private string CreateSourceCode()
         {
-            var testSuiteCode = new TestSuiteCodeBuilder
-            {
-                TesterType = this.testerType.Namespace + "." + this.testerType.Name,
-                RunDescriptorMethodName = this.runDescriptor == null ? string.Empty : this.runDescriptor.Name,
-                SetUpMethodName = this.setUp == null ? string.Empty : this.setUp.Name,
-                TearDownMethodName = this.tearDown == null ? string.Empty : this.tearDown.Name,
-                DefaultTestCount = this.defaultTestRepeatings,
-                TestedAbstraction = this.testedAbstraction.Namespace + "." + this.testedAbstraction.Name,
-                TypeToTest = this.typeToTest.Namespace + "." + this.typeToTest.Name,
-                Description = this.description,
-                FeatureDescription = this.featureDescription,
-                Tests = (from method in
-                             this.testerType.MethodsWith(Flags.AllMembers, typeof(PerfTestAttribute))
-                         where method.ReturnType == typeof(void) && method.HasParameterSignature(new[] { this.testedAbstraction })
-                         let testAttribute = method.Attribute<PerfTestAttribute>()
-                         let ignoreAttribute = method.Attribute<PerfIgnoreAttribute>()
-                         select new TestInfo
-                         {
-                             Name = method.Name,
-                             Description = testAttribute.Description
-                         }).ToArray()
-            };
+            var testSuiteCode = new TestSuiteCodeBuilder(
+                this.testSuiteInfo,
+                this.runDescriptor == null ? string.Empty : this.runDescriptor.Name,
+                this.setUp == null ? string.Empty : this.setUp.Name,
+                this.tearDown == null ? string.Empty : this.tearDown.Name);
 
             return testSuiteCode.BuildCode().GetCSharp();
         }
         
         public string Build()
         {
-            CSharpCodeProvider codeProvider = new CSharpCodeProvider();
-           
-            CompilerParameters parameters = new CompilerParameters();
+            var codeProvider = new CSharpCodeProvider();
+            var parameters = new CompilerParameters();
 
             parameters.ReferencedAssemblies.Add("System.dll");
-            var assemblies = new[] { this.testedAbstraction.Assembly, this.testerType.Assembly, this.typeToTest.Assembly, typeof(IPerfTest).Assembly};
-            foreach (var assm in assemblies.Distinct())
+            var assemblies = (new[] 
+            {
+                this.testSuiteInfo.TestedAbstraction.Assembly, 
+                this.testSuiteInfo.TesterType.Assembly, 
+                this.testSuiteInfo.TestedType.Assembly, 
+                typeof(IPerfTest).Assembly, 
+                typeof(PerfTesterAttribute).Assembly,
+                typeof(AbstractPerfTest<>).Assembly
+            }).Distinct();
+            foreach (var assm in assemblies)
             {
                 parameters.ReferencedAssemblies.Add(assm.Location);
             }
@@ -133,7 +90,8 @@
             parameters.GenerateInMemory = false;
             parameters.IncludeDebugInformation = true;
 
-            var results = codeProvider.CompileAssemblyFromSource(parameters, this.CreateSourceCode());
+            var code = this.CreateSourceCode();
+            var results = codeProvider.CompileAssemblyFromSource(parameters, code);
 
             if (results.Errors.HasErrors)
             {
@@ -143,11 +101,11 @@
                 {
                     errorMessage = errorMessage + "\r\nLine: " + results.Errors[x].Line + " - " + results.Errors[x].ErrorText;
                 }
+
                 throw new Exception(errorMessage);
             }
+
             return results.PathToAssembly;
         }
-
-        public MethodInfo[] TestMethods { get; private set; }
     }
 }

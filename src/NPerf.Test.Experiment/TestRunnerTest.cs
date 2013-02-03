@@ -23,7 +23,7 @@
             const int End = 135;
             const string MailBoxName = "box";            
 
-            using (var mailBox = new ProcessMailBox(MailBoxName, 1024))
+            using (var mailBox = new ProcessMailBox(MailBoxName))
             {
                 using (var observer = new TestObserver(MailBoxName))
                 {

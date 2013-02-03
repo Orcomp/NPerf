@@ -65,14 +65,14 @@
                     catch (Exception ex)
                     {
                         ok = false;
-                        observer.OnNext(new ExperimentError(ex, descriptor)); 
+                        observer.OnNext(TestResultFactory.Instance.FaultResult(descriptor, ex));
                     }
                 }
 
                 this.tearDownMethod();
                 if (ok)
                 {
-                    observer.OnNext(new NextResult(time.Value, memory.Value, descriptor));
+                    observer.OnNext(TestResultFactory.Instance.PerfResult(time.Value, memory.Value, descriptor));
                 }
             }
 

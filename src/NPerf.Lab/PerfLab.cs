@@ -1,36 +1,66 @@
 ﻿namespace NPerf.Lab
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reactive.Linq;
     using System.Reflection;
     using Fasterflect;
-    using NPerf.Core;
     using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
+    using NPerf.Lab.Info;
 
     public class PerfLab
     {
-        private readonly IObservable<TestSuiteManager> testManagers;
+        private readonly TestSuiteInfo[] testSuites;
+
+        private readonly IDictionary<Guid, TestInfo> tests;
 
         public PerfLab(Assembly fixtureLib, params Assembly[] testSubjects)
         {
-            this.testManagers = (from tester in fixtureLib.TypesWith<PerfTesterAttribute>()
-                                 let testerAttr = tester.Attribute<PerfTesterAttribute>()
-                                 from testedType in testSubjects.SelectMany(t => t.Types())
-                                 where testerAttr.TestedType.IsAssignableFrom(testedType)
-                                 select new TestSuiteManager(tester, testedType)).ToObservable();
+            this.SystemInfo = SystemInfo.Instance;
+
+            this.testSuites = (from tester in fixtureLib.TypesWith<PerfTesterAttribute>()
+                               from testedType in testSubjects.SelectMany(t => t.Types())
+                               where this.IsTestebleType(tester, testedType)                                   
+                               select TestSuiteManager.GetTestSuiteInfo(tester, testedType)).ToArray();
+            this.tests = this.testSuites.SelectMany(suite => suite.Tests).ToDictionary(test => test.TestId, test => test);
         }
 
-        public IObservable<TestResult> Run()
+        private bool IsTestebleType(Type testerType, Type testedType)
         {
-            return this.testManagers.SelectMany(testManager => testManager.Run());
+            var testerAttr = testerType.Attribute<PerfTesterAttribute>();
+            return testedType.IsPublic && !testedType.IsGenericTypeDefinition
+                   && testerAttr.TestedType.IsAssignableFrom(testedType) && !(testerAttr.TestedType == testedType)
+                   && !testedType.IsAbstract && !testedType.IsInterface;
         }
 
+        public SystemInfo SystemInfo { get; private set; }
 
-        public IObservable<TestResult> Run(int start, int step, int end)
+        public IDictionary<Guid, TestInfo> Tests
         {
-            return this.testManagers.SelectMany(testManager => testManager.Run(start, step, end));
+            get
+            {
+                return this.tests;
+            }
+        }
+
+        public IEnumerable<TestSuiteInfo> TestSuites 
+        {
+            get
+            {
+                return this.testSuites.AsEnumerable();
+            }
+        }
+
+        public IObservable<TestResult> Run(bool parallel = false)
+        {
+            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, parallel));
+        }
+
+        public IObservable<TestResult> Run(int start, int step, int end, bool parallel = false)
+        {
+            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, start, step, end, parallel));
         }
     }
 }

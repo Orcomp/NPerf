@@ -5,6 +5,7 @@
     using NPerf.Core.PerfTestResults;
     using NPerf.Lab.Queueing;
     using NPerf.Lab.Threading;
+    using System.Threading;
 
     internal class SingleExperimentListener : SingleRunnable
     {
@@ -15,13 +16,14 @@
         public SingleExperimentListener(string name, ReactiveQueue<TestResult> queue)
             : base(true, false)
         {
-            this.mailBox = new ProcessMailBox(name, 1024);
+            this.mailBox = new ProcessMailBox(name);
             this.queue = queue;
         }
 
         protected override void Run()
         {
             object message;
+            Thread.CurrentThread.Name = this.mailBox.ChannelName;
             do
             {
                 message = this.mailBox.Content as TestResult;
@@ -30,7 +32,7 @@
                     this.queue.Enqueue((TestResult)message);
                 }
             }
-            while (!(message is ExperimentError) && !(message is ExperimentCompleted));
+            while (!(message is ExperimentError && ((TestResult)message).Descriptor == -1) && !(message is ExperimentCompleted));
         }
 
         protected override void Dispose(bool disposing)

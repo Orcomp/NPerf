@@ -2,9 +2,9 @@
 {
     using System;
     using System.Diagnostics;
-using System.Text;
+    using System.Text;
 
-    public class ExperimentProcess
+    public class ExperimentProcess : IDisposable
     {
         private Process experimentProcess;
 
@@ -21,19 +21,21 @@ using System.Text;
         public ExperimentProcess(string channelName, string suiteAssembly, string suiteTypeName, Type testedType, string testName)
         {
             this.experimentProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = false,
-                    CreateNoWindow = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName =
-                        Environment.CurrentDirectory
-                        + "\\NPerf.Experiment.exe"
-                }
-            };
+                                         {
+                                             StartInfo =
+                                                 new ProcessStartInfo
+                                                     {
+                                                         UseShellExecute = true,
+                                                         RedirectStandardError = false,
+                                                         RedirectStandardOutput = false,
+                                                         CreateNoWindow = false,
+                                                         WindowStyle = ProcessWindowStyle.Normal,
+                                                         FileName =
+                                                             Environment.CurrentDirectory
+                                                             + "\\NPerf.Experiment.exe"
+                                                     },
+                                             EnableRaisingEvents = true
+                                         };
 
             this.ChannelName = channelName;
             this.suiteAssembly = suiteAssembly;
@@ -52,7 +54,7 @@ using System.Text;
                 this.ReceivedErrors = new StringBuilder();
             }
 
-            this.ReceivedErrors.AppendFormat(e.Data);
+            this.ReceivedErrors.AppendFormat(e.Data).AppendLine();
         }
 
         void experimentProcess_Exited(object sender, EventArgs e)
@@ -107,6 +109,14 @@ using System.Text;
             if (waitForExit)
             {
                 this.experimentProcess.WaitForExit();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!this.experimentProcess.HasExited)
+            {
+                this.experimentProcess.Kill();
             }
         }
     }

@@ -7,11 +7,11 @@
     {
         public string TestMethodName { get; protected set; }
 
-        public string Name { get; protected set; }
-
-        public string Description { get; protected set; }
+        public string TestDescription { get; protected set; }
 
         public Action<T> TestMethod { get; protected set; }
+
+        public Guid TestId { get; protected set; }
 
         public void Test(object testedObject)
         {

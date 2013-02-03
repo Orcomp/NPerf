@@ -5,8 +5,6 @@
     /// </summary>
     public interface IPerfTest : IPerfTestInfo
     {
-        string TestMethodName { get; }
-
         /// <summary>
         /// The test method.
         /// </summary>

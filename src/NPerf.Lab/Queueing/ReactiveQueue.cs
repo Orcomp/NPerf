@@ -7,15 +7,17 @@
 
     public class ReactiveQueue<T> : IDisposable
     {
-        private ConcurrentQueue<T> queue;
+        private Queue<T> queue;
 
         private bool closed;
 
-        private object syncLock = new object();
+        private bool closing;
 
-        private readonly object closeLock = new object();
+        private readonly object syncLock = new object();
 
         private bool disposed;
+
+        private readonly Thread queueThread;
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see 
@@ -26,7 +28,7 @@
         {
             get
             {
-                lock (this.closeLock)
+                lock (this.syncLock)
                 {
                     return this.closed;
                 }
@@ -34,30 +36,39 @@
 
             set
             {
-                lock (this.closeLock)
+
+                if (value)
                 {
-                    this.closed = value;
+                    lock (this.syncLock)
+                    {
+                        this.closing = true;
+                        Monitor.PulseAll(this.syncLock);
+                    }
+                    
+                    this.queueThread.Join();
+                }
+                else
+                {
+                    lock (this.syncLock)
+                    {
+                        this.closing = false;
+                        this.closed = false;
+                    }
+                    this.queueThread.Start();
                 }
             }
         }
-      
-        /// <summary>
-        /// Gets or sets the sync lock.
-        /// </summary>
-        /// <value>The sync lock.</value>
-        internal object SyncLock
-        {
-            get { return this.syncLock; }
-            set { this.syncLock = value; }
-        }
+
 
         /// <summary>
         /// Initializes a new instance of the ReactiveQueue class.
         /// </summary>
         public ReactiveQueue()
         {
-            this.queue = new ConcurrentQueue<T>();
-            ThreadPool.QueueUserWorkItem(this.OnEnqueue);
+            this.queue = new Queue<T>();
+            this.queueThread = new Thread(this.Loop);
+            this.queueThread.Start();
+            //ThreadPool.QueueUserWorkItem(this.OnEnqueue);
         }
 
         /// <summary>
@@ -66,13 +77,13 @@
         /// <param name="item">The item.</param>
         public void Enqueue(T item)
         {
-            if (this.Closed)
-            {
-                return;
-            }
-
             lock (this.syncLock)
             {
+                if (this.Closed || this.closing)
+                {
+                    return;
+                }
+
                 this.queue.Enqueue(item);
                 Monitor.PulseAll(this.syncLock);
             }
@@ -86,35 +97,34 @@
         /// <summary>
         /// Occurs when Enqueue is called.
         /// </summary>
-        protected void OnEnqueue(object obj)
+        protected void Loop()
         {
             Thread.CurrentThread.Name = "ReactiveQueue";
             while (!this.Closed)
             {
-                var items = new List<T>();
+                T[] items = null;
                 lock (this.syncLock)
                 {
-                    if (this.queue.Count == 0)
+                    if (this.queue.Count == 0 && !this.closed)
                     {
                         Monitor.Wait(this.syncLock);
                     }
 
                     if (this.ItemDequeued != null)
                     {
-                        while (this.queue.Count > 0)
-                        {
-                            T item;
-                            if (this.queue.TryDequeue(out item))
-                            {
-                                items.Add(item);
-                            }
-                        }
+                        items = this.queue.ToArray();
+                        this.queue.Clear();
+                    }
+
+                    if (this.closing)
+                    {
+                        this.closed = true;
                     }
                 }
 
-                if (this.ItemDequeued != null && items.Count > 0)
+                if (this.ItemDequeued != null && items != null && items.Length > 0)
                 {
-                    items.ForEach(this.ActionHandler);
+                    Array.ForEach(items, this.ActionHandler);
                 }
             }
         }

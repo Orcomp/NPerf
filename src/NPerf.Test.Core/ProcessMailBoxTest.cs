@@ -14,7 +14,7 @@
         public void CanSetGetMailBoxContent()
         {
             const string Content = "Content";
-            using (var mailBox = new ProcessMailBox("mailBox", 1024))
+            using (var mailBox = new ProcessMailBox("mailBox"))
             {
                 mailBox.Content = Content;
 
@@ -31,7 +31,7 @@
             const int SecondsTimeout = 30;
 
             var list = new List<int>();
-            using (var mailBox = new ProcessMailBox("mailBox", 1024))
+            using (var mailBox = new ProcessMailBox("mailBox"))
             {
                 var setTask = Task.Factory.StartNew(() =>
                     {

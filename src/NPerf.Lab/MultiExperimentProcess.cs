@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Text;
 
-    internal class MultiExperimentProcess
+    internal class MultiExperimentProcess : IDisposable
     {
         private int counter;
 
@@ -70,7 +70,16 @@
         {
             get
             {
+               // processes[].ReceivedErrors
                 throw new NotImplementedException();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var process in processes)
+            {
+                process.Dispose();
             }
         }
     }

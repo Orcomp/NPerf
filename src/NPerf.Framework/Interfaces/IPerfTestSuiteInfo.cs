@@ -1,7 +1,15 @@
 ﻿namespace NPerf.Framework.Interfaces
 {
+    using System;
+
     public interface IPerfTestSuiteInfo
-    {        
+    {
+        //Guid TestSuiteId { get; }
+
+        Type TestedType { get; }
+
+        Type TestedAbstraction { get; }
+
         /// <summary>
         /// Gets the number of each test runs.
         /// </summary>
@@ -11,7 +19,7 @@
         /// Gets the description string.
         /// </summary>
         /// <value>Test description.</value>
-        string Description { get; }
+        string TestSuiteDescription { get; }
 
         /// <summary>
         /// Gets the tested feature description string.

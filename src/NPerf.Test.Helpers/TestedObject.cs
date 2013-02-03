@@ -1,10 +1,10 @@
-﻿namespace NPerf.DevHelpers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
+namespace NPerf.Test.Helpers
+{
     public class TestedObject : ITestedObject
     {
         public void SomeAction()

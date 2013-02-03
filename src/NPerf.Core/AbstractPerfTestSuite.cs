@@ -9,9 +9,13 @@
 
         public int DefaultTestCount { get; protected set; }
 
-        public string Description { get; protected set; }
+        public string TestSuiteDescription { get; protected set; }
 
         public string FeatureDescription { get; protected set; }
+
+        public Type TestedType { get; protected set; }
+
+        public Type TestedAbstraction { get; protected set; }
 
         public Action<int, T> SetUpMethod { get; protected set; }
 
@@ -46,7 +50,7 @@
 
             if (!(testedObject is T))
             {
-                throw new ArgumentException(string.Format("Tested object must be assignable to {0}", typeof(T)), "testedObject");
+                throw new ArgumentException(string.Format("Tested object must be instance of {0}", typeof(T)));
             }
         }
 
@@ -57,5 +61,5 @@
                                             ? this.GetDescriptorMethod(iteration)
                                             : iteration;
         }
-    }    
+    }
 }

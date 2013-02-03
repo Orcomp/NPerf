@@ -20,7 +20,7 @@
         {
             const string MailBoxName = "box";
             const string ErrorText = "error";
-            using (var mailBox = new ProcessMailBox(MailBoxName, 1024))
+            using (var mailBox = new ProcessMailBox(MailBoxName))
             {
                 using (var observer = new TestObserver(MailBoxName))
                 {

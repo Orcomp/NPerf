@@ -43,9 +43,12 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
+    <Compile Include="AttribitedFixtureSample.cs" />
+    <Compile Include="ITestedObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SendReceiveLockHelper.cs" />
     <Compile Include="SingleThreadAccessController.cs" />
+    <Compile Include="TestedObject.cs" />
     <Compile Include="TestResultGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

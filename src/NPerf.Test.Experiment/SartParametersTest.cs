@@ -1,13 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NPerf.Experiment;
-using FluentAssertions;
-
-namespace NPerf.Test.Experiment
+﻿namespace NPerf.Test.Experiment
 {
+    using FluentAssertions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NPerf.Experiment;
+
     [TestClass]
     public class SartParametersTest
     {

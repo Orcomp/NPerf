@@ -35,7 +35,7 @@
         /// <exception cref="ArgumentException">
         /// <paramref name="testCount"/> is smaller than 1
         /// </exception>
-        public PerfTesterAttribute(Type testedType, int testCount)//, string description = null, string featureDescription = null)
+        public PerfTesterAttribute(Type testedType, int testCount)
         {
             if (testedType == null)
             {

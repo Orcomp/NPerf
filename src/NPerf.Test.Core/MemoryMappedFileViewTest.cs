@@ -11,9 +11,9 @@
         [TestMethod]
         public void CanReadWriteSerialize()
         {
-            using (var mmf = MemoryMappedFile.CreateNew("test_mmf", 1024))
+            using (var mmf = MemoryMappedFile.CreateNew("test_mmf", ChannelConfiguration.Instance.ChannelSize))
             {
-                using (var view = new MemoryMappedFileView(mmf.CreateViewStream(0, 1024, MemoryMappedFileAccess.ReadWrite), 1024))
+                using (var view = new MemoryMappedFileView(mmf.CreateViewStream(0, ChannelConfiguration.Instance.ChannelSize, MemoryMappedFileAccess.ReadWrite)))
                 {
                     const string TextToWrite = "text to serialize";
                     view.WriteSerialize(TextToWrite);

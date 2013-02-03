@@ -2,14 +2,14 @@
 {
     using System;
     using NPerf.Core;
+    using NPerf.Test.Helpers;
 
     public class PerfTestSample : AbstractPerfTest<ITestedObject>
     {
-        public PerfTestSample(Action<ITestedObject> testMethod, string testMethodName, string testName, string description)
+        public PerfTestSample(Action<ITestedObject> testMethod, string testName, string description)
         {
-            this.Description = description;
-            this.Name = testName;
-            this.TestMethodName = testMethodName;
+            this.TestDescription = description;
+            this.TestMethodName = testName;
             this.TestMethod = testMethod;
         }
     }

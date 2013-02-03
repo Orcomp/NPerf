@@ -7,17 +7,18 @@
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;
     using NPerf.Core;
+    using NPerf.Test.Helpers;
 
     public class PerfTestSuiteSample : AbstractPerfTestSuite<ITestedObject>
     {
         public PerfTestSuiteSample()
         {
             this.DefaultTestCount = 10;
-            this.Description = "PerfTestSuiteSample description";
+            this.TestSuiteDescription = "PerfTestSuiteSample description";
             this.GetDescriptorMethod = i => i / 2d;
             this.SetUpMethod = (i, obj) => { };
             this.TearDownMethod = obj => { };
-            this.Tests = new[] { new PerfTestSample(obj => { }, "TestMethod", "testName", "test description") };
+            this.Tests = new[] { new PerfTestSample(obj => { }, "TestMethod", "test description") };
         }
     }
 }

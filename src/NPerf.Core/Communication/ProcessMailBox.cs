@@ -24,15 +24,21 @@
         /// <param name="name">
         /// The name for the semaphores and the shared memory file.
         /// </param>
-        /// <param name="size">
-        /// The size of the shared memory in terms of bytes.
-        /// </param>
-        public ProcessMailBox(string name, int size)
+        public ProcessMailBox(string name)
         {
+            this.ChannelName = name;
             this.mailBoxSync = new SendReceiveLock(name + ".FullMutex.MailBox", name + ".EmptyMutex.MailBox");
-            this.file = MemoryMappedFile.CreateOrOpen(name + ".MemoryMappedFile.MailBox", size, MemoryMappedFileAccess.ReadWrite);
-            this.view = new MemoryMappedFileView(this.file.CreateViewStream(0, size, MemoryMappedFileAccess.ReadWrite), size);
+            this.file = MemoryMappedFile.CreateOrOpen(
+                name + ".MemoryMappedFile.MailBox",
+                ChannelConfiguration.Instance.ChannelSize,
+                MemoryMappedFileAccess.ReadWrite);
+            this.view =
+                new MemoryMappedFileView(
+                    this.file.CreateViewStream(
+                        0, ChannelConfiguration.Instance.ChannelSize, MemoryMappedFileAccess.ReadWrite));
         }
+
+        public string ChannelName { get; private set; }
 
         /// <summary>
         /// Gets or sets the content content accessor. Blocking on getting if empty and on setting if full.

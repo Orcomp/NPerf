@@ -12,10 +12,10 @@
 
         private bool disposed;
 
-        internal MemoryMappedFileView(MemoryMappedViewStream stream, int size)
+        internal MemoryMappedFileView(MemoryMappedViewStream stream)
         {
             this.stream = stream;
-            this.size = size;
+            this.size = ChannelConfiguration.Instance.ChannelSize;
         }
 
         private void ReadBytes(byte[] data)
