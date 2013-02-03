@@ -70,8 +70,13 @@
         {
             get
             {
-               // processes[].ReceivedErrors
-                throw new NotImplementedException();
+                var str = new StringBuilder();
+                foreach (var process in this.processes)
+                {
+                    str.AppendLine(process.ReceivedErrors.ToString());
+                }
+
+                return str;
             }
         }
 

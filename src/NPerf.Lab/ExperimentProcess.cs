@@ -25,11 +25,11 @@
                                              StartInfo =
                                                  new ProcessStartInfo
                                                      {
-                                                         UseShellExecute = true,
-                                                         RedirectStandardError = false,
+                                                         UseShellExecute = false,
+                                                         RedirectStandardError = true,
                                                          RedirectStandardOutput = false,
-                                                         CreateNoWindow = false,
-                                                         WindowStyle = ProcessWindowStyle.Normal,
+                                                         CreateNoWindow = true,
+                                                         WindowStyle = ProcessWindowStyle.Hidden,
                                                          FileName =
                                                              Environment.CurrentDirectory
                                                              + "\\NPerf.Experiment.exe"

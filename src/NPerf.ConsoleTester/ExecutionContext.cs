@@ -20,7 +20,7 @@
         {
             var lab = new PerfLab(typeof(StringBuildingTester).Assembly, typeof(StringRunner).Assembly, typeof(Dictionary<,>).Assembly);
 
-            lab.Run().Subscribe(this.OnNext, ex => { }, this.Completed);
+            lab.Run(true).Subscribe(this.OnNext, ex => { }, this.Completed);
         }
 
         void OnNext(TestResult value)

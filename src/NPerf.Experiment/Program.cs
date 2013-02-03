@@ -33,7 +33,9 @@
             catch (Exception ex)
             {
                 SendError(ex);
-            }            
+            }
+
+           // Console.ReadKey();
         }
 
         private static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
