@@ -131,7 +131,7 @@
             }
         }
 
-        private static IObservable<TestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Action<MultiExperimentProcess> startProcess)
+        private static IObservable<TestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<MultiExperimentProcess> startProcess)
         {
             return Observable.Create<TestResult>(
                 observer =>
@@ -142,6 +142,7 @@
 
                         var processes = new MultiExperimentProcess(
                             (from testMethod in testSuiteInfo.Tests
+                             where testFilter(testMethod)
                              select
                                  new ExperimentProcess(
                                  string.Format(
@@ -190,15 +191,30 @@
                     });
         }
 
-        public static IObservable<TestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
+        internal static IObservable<TestResult> Run(TestInfo[] testInfo, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo, processes => processes.Start(!parallel));
+            return testInfo.Select(x => x.Suite).ToObservable().Distinct()
+                .SelectMany(suite => CreateRunObservable(suite, 
+                    x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
+                    processes => processes.Start(!parallel)));
         }
 
+        public static IObservable<TestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
+        {
+            return CreateRunObservable(testSuiteInfo,  x => true, processes => processes.Start(!parallel));
+        }
+
+        internal static IObservable<TestResult> Run(TestInfo[] testInfo, int start, int step, int end, bool parallel)
+        {
+            return testInfo.Select(x => x.Suite).ToObservable().Distinct()
+               .SelectMany(suite => CreateRunObservable(suite,
+                   x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
+                   processes => processes.Start(start, step, end, !parallel)));
+        }
 
         public static IObservable<TestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo, processes => processes.Start(start, step, end, !parallel));
-        }
+            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel));
+        }       
     }
 }
