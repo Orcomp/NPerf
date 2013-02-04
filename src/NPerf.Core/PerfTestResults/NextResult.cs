@@ -31,7 +31,7 @@
         public double Duration { get; set; }
 
         public long MemoryUsage { get; set; }
-
+        
         public override bool Equals(object obj)
         {
             var perfResult = obj as NextResult;

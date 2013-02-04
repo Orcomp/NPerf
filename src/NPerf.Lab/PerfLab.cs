@@ -10,7 +10,7 @@
     using NPerf.Framework;
     using NPerf.Lab.Info;
 
-    public class PerfLab
+    public class PerfLab : IDisposable
     {
         private readonly TestSuiteInfo[] testSuites;
 
@@ -19,7 +19,7 @@
         public PerfLab(Assembly fixtureLib, params Assembly[] testSubjects)
         {
             this.SystemInfo = SystemInfo.Instance;
-
+            
             this.testSuites = (from tester in fixtureLib.TypesWith<PerfTesterAttribute>()
                                from testedType in testSubjects.SelectMany(t => t.Types())
                                where this.IsTestebleType(tester, testedType)                                   
@@ -53,6 +53,16 @@
             }
         }
 
+        public IObservable<TestResult> Run(Guid[] tests, bool parallel = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IObservable<TestResult> Run(Guid[] tests, int start, int step, int end, bool parallel = false)
+        {
+            throw new NotImplementedException();
+        }
+
         public IObservable<TestResult> Run(bool parallel = false)
         {
             return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, parallel));
@@ -61,6 +71,11 @@
         public IObservable<TestResult> Run(int start, int step, int end, bool parallel = false)
         {
             return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, start, step, end, parallel));
+        }
+
+        public void Dispose()
+        {
+           // this.queue.Dispose();
         }
     }
 }

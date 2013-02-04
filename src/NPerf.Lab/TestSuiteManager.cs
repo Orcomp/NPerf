@@ -12,8 +12,8 @@
     using NPerf.Framework;
     using NPerf.Framework.Interfaces;
     using NPerf.Lab.Info;
-    using NPerf.Lab.Queueing;
     using NPerf.Lab.TestBuilder;
+    using System.Reactive.Subjects;
 
     internal class TestSuiteManager
     {
@@ -136,8 +136,9 @@
             return Observable.Create<TestResult>(
                 observer =>
                     {
+                        ISubject<TestResult> subject = new Subject<TestResult>();
+
                         var assemblyLocation = BuildTestSuiteAssembly(testSuiteInfo);
-                        var queue = new ReactiveQueue<TestResult>();
 
                         var processes = new MultiExperimentProcess(
                             (from testMethod in testSuiteInfo.Tests
@@ -157,17 +158,17 @@
                         {
                             processes.Exited += (sender, e) => observer.OnCompleted();
 
-                            queue.ItemDequeued += delegate(object sender, DequeueEventArgs<TestResult> e)
+                            subject.Subscribe(res =>
+                            {
+                                if (res != null)
                                 {
-                                    if (e.Item != null)
-                                    {
-                                        observer.OnNext(e.Item);
-                                    }
-                                };
+                                    observer.OnNext(res);
+                                }
+                            });
 
                             var listener =
                                 new MultiExperimentListener(
-                                    processes.Experiments.Select(x => x.ChannelName).ToArray(), queue);
+                                    processes.Experiments.Select(x => x.ChannelName).ToArray(), subject);
                             listener.Start();
 
                             startProcess(processes);
@@ -181,7 +182,6 @@
                             () =>
                                 {
                                     processes.Dispose();
-                                    queue.Dispose();
                                     if (!string.IsNullOrEmpty(assemblyLocation))
                                     {
                                         File.Delete(assemblyLocation);
