@@ -13,7 +13,6 @@
     using NPerf.Framework.Interfaces;
     using NPerf.Lab.Info;
     using NPerf.Lab.TestBuilder;
-    using System.Reactive.Subjects;
 
     internal class TestSuiteManager
     {
@@ -131,13 +130,11 @@
             }
         }
 
-        private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<MultiExperimentProcess> startProcess)
+        private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<ExperimentProcess> startProcess, bool parallel = false)
         {
             return Observable.Create<PerfTestResult>(
                 observer =>
                     {
-                        ISubject<PerfTestResult> subject = new Subject<PerfTestResult>();
-
                         var assemblyLocation = BuildTestSuiteAssembly(testSuiteInfo);
 
                         var processes = new MultiExperimentProcess(
@@ -155,34 +152,18 @@
                                  testSuiteInfo.TestedType,
                                  testMethod.TestMethodName)).ToArray());
 
-                        if (processes.Experiments.Any())
-                        {
-                            processes.Exited += (sender, e) => observer.OnCompleted();
+                        var listener = from experiment in processes.Experiments.ToObservable()
+                                       from result in new SingleExperimentListener(experiment, startProcess, parallel)
+                                       select result;                         
 
-                            subject.Subscribe(res =>
-                            {
-                                if (res != null)
-                                {
-                                    observer.OnNext(res);
-                                }
-                            });
-
-                            var listener =
-                                new MultiExperimentListener(
-                                    processes.Experiments.Select(x => x.ChannelName).ToArray(), subject);
-                            listener.Start();
-
-                            startProcess(processes);
-                        }
-                        else
-                        {
-                            observer.OnCompleted();
-                        }
+                        var subscription = listener.SubscribeSafe(observer);
 
                         return Disposable.Create(
                             () =>
                                 {
+                                    subscription.Dispose();
                                     processes.Dispose();
+                                    
                                     if (!string.IsNullOrEmpty(assemblyLocation))
                                     {
                                         File.Delete(assemblyLocation);
@@ -196,12 +177,13 @@
             return testInfo.Select(x => x.Suite).Distinct().ToObservable()
                 .SelectMany(suite => CreateRunObservable(suite,
                     x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
-                    processes => processes.Start(!parallel)));
+                    processes => processes.Start(!parallel),
+                    parallel));
         }
 
         public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo,  x => true, processes => processes.Start(!parallel));
+            return CreateRunObservable(testSuiteInfo,  x => true, processes => processes.Start(!parallel), parallel);
         }
 
         internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, int start, int step, int end, bool parallel)
@@ -209,12 +191,12 @@
             return testInfo.Select(x => x.Suite).ToObservable().Distinct()
                .SelectMany(suite => CreateRunObservable(suite,
                    x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
-                   processes => processes.Start(start, step, end, !parallel)));
+                   processes => processes.Start(start, step, end, !parallel), parallel));
         }
 
         public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel));
+            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel), parallel);
         }       
     }
 }

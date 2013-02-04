@@ -11,7 +11,7 @@
 
         public override string ToString()
         {
-            return string.Format("{0} d={1}", this.GetType().Name, Descriptor);
+            return string.Format("{0} id={1} d={2}", this.GetType().Name, TestId, Descriptor);
         }
 
         public override bool Equals(object obj)

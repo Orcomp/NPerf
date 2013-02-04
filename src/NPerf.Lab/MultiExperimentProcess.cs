@@ -7,10 +7,6 @@
 
     internal class MultiExperimentProcess : IDisposable
     {
-        private int counter;
-
-        private readonly object sync = new object();
-
         public event EventHandler Exited;
 
         private ExperimentProcess[] processes;
@@ -18,28 +14,6 @@
         public MultiExperimentProcess(params ExperimentProcess[] expriments)
         {
             this.processes = expriments;
-            this.counter = expriments.Length;
-
-            foreach (var expriment in expriments)
-            {
-                expriment.Exited += (sender, e) =>
-                    {
-                        lock (sync)
-                        {
-                            counter--;
-
-                            if (this.counter == 0 && Exited != null)
-                            {
-                                Exited(this, EventArgs.Empty);
-                            }
-
-                            if (counter < 0)
-                            {
-                                throw new InvalidOperationException("The count of exit processes are greater than count of started processes.");
-                            }
-                        }
-                    };
-            }
         }
 
         public IEnumerable<ExperimentProcess> Experiments

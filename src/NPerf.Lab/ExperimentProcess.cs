@@ -16,8 +16,6 @@
 
         private readonly string testName;
 
-        public event EventHandler Exited;
-
         public ExperimentProcess(string channelName, string suiteAssembly, string suiteTypeName, Type testedType, string testName)
         {
             this.experimentProcess = new Process
@@ -34,7 +32,6 @@
                                                              Environment.CurrentDirectory
                                                              + "\\NPerf.Experiment.exe"
                                                      },
-                                             EnableRaisingEvents = true
                                          };
 
             this.ChannelName = channelName;
@@ -43,7 +40,6 @@
             this.testedType = testedType;
             this.testName = testName;
 
-            this.experimentProcess.Exited += this.experimentProcess_Exited;
             this.experimentProcess.ErrorDataReceived += this.experimentProcess_ErrorDataReceived;
         }
 
@@ -55,14 +51,6 @@
             }
 
             this.ReceivedErrors.AppendFormat(e.Data).AppendLine();
-        }
-
-        void experimentProcess_Exited(object sender, EventArgs e)
-        {
-            if (this.Exited != null)
-            {
-                this.Exited(this, EventArgs.Empty);
-            }
         }
 
         public string ChannelName { get; private set; }
@@ -102,22 +90,38 @@
             this.Run(waitForExit);
         }
 
-        private void Run(bool waitForExit = true)
-        {
-            this.experimentProcess.Start();
-
-            if (waitForExit)
-            {
-                this.experimentProcess.WaitForExit();
-            }
-        }
-
-        public void Dispose()
+        public void Stop()
         {
             if (!this.experimentProcess.HasExited)
             {
                 this.experimentProcess.Kill();
             }
+
+            this.experimentProcess.WaitForExit();
+        }
+
+        public bool HasExited
+        {
+            get
+            {
+                return this.experimentProcess.HasExited;
+            }
+        }
+
+        private void Run(bool waitForExit = true)
+        {
+            this.experimentProcess.Start();
+            /*
+            if (waitForExit)
+            {
+                this.experimentProcess.WaitForExit();
+            }*/
+        }
+
+        public void Dispose()
+        {
+            this.Stop();
+            this.experimentProcess.Dispose();
         }
     }
 }

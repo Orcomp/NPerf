@@ -1,51 +1,90 @@
 ﻿namespace NPerf.Lab
 {
-    using NPerf.Core;
+    using System;
+    using System.Reactive.Disposables;
+    using System.Threading;
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
-    using NPerf.Lab.Threading;
-    using System.Threading;
-    using System.Reactive.Subjects;
 
-    internal class SingleExperimentListener : SingleRunnable
+    internal class SingleExperimentListener : IObservable<PerfTestResult>, IDisposable
     {
-        private ProcessMailBox mailBox;
+        private readonly ExperimentProcess experiment;
 
-        private ISubject<PerfTestResult> subject;
+        private readonly ProcessMailBox mailBox;
 
-        public SingleExperimentListener(string name, ISubject<PerfTestResult> subject)
-            : base(true, false)
+        private static EventWaitHandle wh = new AutoResetEvent(true);
+
+        private bool parallel;
+
+        private readonly Action<ExperimentProcess> startProcess;
+
+        public SingleExperimentListener(ExperimentProcess experiment, Action<ExperimentProcess> startProcess, bool parallel = false)
         {
-            this.mailBox = new ProcessMailBox(name);
-            this.subject = subject;
+            this.startProcess = startProcess;
+            this.parallel = parallel;                   
+            this.experiment = experiment;
+            this.mailBox = new ProcessMailBox(this.experiment.ChannelName);
         }
 
-        protected override void Run()
+        protected void Run(IObserver<PerfTestResult> observer)
         {
-            object message;
-            Thread.CurrentThread.Name = this.mailBox.ChannelName;
-            do
+            var ok = true;
+            try
             {
-                message = this.mailBox.Content as PerfTestResult;
-                if (message != null)
+                this.startProcess(this.experiment);
+
+                object message;
+                Thread.CurrentThread.Name = this.mailBox.ChannelName;
+                do
                 {
-                    this.subject.OnNext((PerfTestResult)message);
+                    message = this.mailBox.Content as PerfTestResult;
+                    if (message != null)
+                    {
+                        observer.OnNext((PerfTestResult)message);
+                    }
                 }
+                while (!(message is ExperimentError && ((PerfTestResult)message).Descriptor == -1)
+                       && !(message is ExperimentCompleted) && !this.experiment.HasExited);            
             }
-            while (!(message is ExperimentError && ((PerfTestResult)message).Descriptor == -1) && !(message is ExperimentCompleted));
+            catch (ThreadAbortException)
+            {
+            }
+            catch (Exception ex)
+            {
+                ok = false;
+                observer.OnError(ex);
+            }
+
+            if (ok)
+            {
+                observer.OnCompleted();
+            }
         }
 
-        protected override void Dispose(bool disposing)
+        public IDisposable Subscribe(IObserver<PerfTestResult> observer)
         {
-            if (disposing)
+            if (!this.parallel)
             {
-                this.mailBox.Dispose();
+                wh.WaitOne();
             }
 
-            this.mailBox = null;
-            this.subject = null;
+            var thread = new Thread(obj => this.Run((IObserver<PerfTestResult>)obj));
+            thread.Start(observer);
+            
 
-            base.Dispose(disposing);
+            return Disposable.Create(
+                () =>
+                    {
+                        if (!this.parallel)
+                        {
+                            wh.Set();
+                        }
+                    });
+        }
+
+        public void Dispose()
+        {
+            this.mailBox.Dispose();
         }
     }
 }
