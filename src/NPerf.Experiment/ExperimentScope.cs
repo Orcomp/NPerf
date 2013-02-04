@@ -25,7 +25,7 @@
                 {
                     var test = suite.Tests.First(x => x.TestMethodName == startParameters.TestMethod);
 
-                    TestResultFactory.Instance.Init(test.TestId);
+                    PerfTestResultFactory.Instance.Init(test.TestId);
 
                     var runner = new TestRunner(
                         delegate(int idx) { suite.SetUp(idx, subject); },

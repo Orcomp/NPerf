@@ -7,7 +7,7 @@
 
     internal class MultiExperimentListener : MultiRunnable
     {
-        public MultiExperimentListener(string[] names, ISubject<TestResult> subject)
+        public MultiExperimentListener(string[] names, ISubject<PerfTestResult> subject)
         {
             this.SetRunnables((from name in names
                                select (IRunnable)new SingleExperimentListener(name, subject)).ToArray());

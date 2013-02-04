@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class ExperimentCompleted : TestResult
+    public class ExperimentCompleted : PerfTestResult
     {
         public ExperimentCompleted()
         {

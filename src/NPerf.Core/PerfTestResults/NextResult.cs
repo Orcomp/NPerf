@@ -6,7 +6,7 @@
     /// Class describing benchmark results.
     /// </summary>
     [Serializable]
-    public class NextResult : TestResult
+    public class NextResult : PerfTestResult
     {
         public NextResult()
         {

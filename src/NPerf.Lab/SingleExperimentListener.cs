@@ -11,9 +11,9 @@
     {
         private ProcessMailBox mailBox;
 
-        private ISubject<TestResult> subject;
+        private ISubject<PerfTestResult> subject;
 
-        public SingleExperimentListener(string name, ISubject<TestResult> subject)
+        public SingleExperimentListener(string name, ISubject<PerfTestResult> subject)
             : base(true, false)
         {
             this.mailBox = new ProcessMailBox(name);
@@ -26,13 +26,13 @@
             Thread.CurrentThread.Name = this.mailBox.ChannelName;
             do
             {
-                message = this.mailBox.Content as TestResult;
+                message = this.mailBox.Content as PerfTestResult;
                 if (message != null)
                 {
-                    this.subject.OnNext((TestResult)message);
+                    this.subject.OnNext((PerfTestResult)message);
                 }
             }
-            while (!(message is ExperimentError && ((TestResult)message).Descriptor == -1) && !(message is ExperimentCompleted));
+            while (!(message is ExperimentError && ((PerfTestResult)message).Descriptor == -1) && !(message is ExperimentCompleted));
         }
 
         protected override void Dispose(bool disposing)

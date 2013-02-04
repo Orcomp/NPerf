@@ -4,7 +4,7 @@
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
 
-    internal class TestObserver : IObserver<TestResult>, IDisposable
+    internal class TestObserver : IObserver<PerfTestResult>, IDisposable
     {
         private ProcessMailBox mailBox;
 
@@ -17,15 +17,15 @@
 
         public void OnCompleted()
         {
-            this.mailBox.Content = TestResultFactory.Instance.Comleted();
+            this.mailBox.Content = PerfTestResultFactory.Instance.Comleted();
         }
 
         public void OnError(Exception error)
         {
-            this.mailBox.Content = TestResultFactory.Instance.FatalError(error);
+            this.mailBox.Content = PerfTestResultFactory.Instance.FatalError(error);
         }
 
-        public void OnNext(TestResult value)
+        public void OnNext(PerfTestResult value)
         {
             this.mailBox.Content = value;
         }

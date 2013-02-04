@@ -131,12 +131,12 @@
             }
         }
 
-        private static IObservable<TestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<MultiExperimentProcess> startProcess)
+        private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<MultiExperimentProcess> startProcess)
         {
-            return Observable.Create<TestResult>(
+            return Observable.Create<PerfTestResult>(
                 observer =>
                     {
-                        ISubject<TestResult> subject = new Subject<TestResult>();
+                        ISubject<PerfTestResult> subject = new Subject<PerfTestResult>();
 
                         var assemblyLocation = BuildTestSuiteAssembly(testSuiteInfo);
 
@@ -191,7 +191,7 @@
                     });
         }
 
-        internal static IObservable<TestResult> Run(TestInfo[] testInfo, bool parallel = false)
+        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, bool parallel = false)
         {
             return testInfo.Select(x => x.Suite).Distinct().ToObservable()
                 .SelectMany(suite => CreateRunObservable(suite,
@@ -199,12 +199,12 @@
                     processes => processes.Start(!parallel)));
         }
 
-        public static IObservable<TestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
+        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
         {
             return CreateRunObservable(testSuiteInfo,  x => true, processes => processes.Start(!parallel));
         }
 
-        internal static IObservable<TestResult> Run(TestInfo[] testInfo, int start, int step, int end, bool parallel)
+        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, int start, int step, int end, bool parallel)
         {
             return testInfo.Select(x => x.Suite).ToObservable().Distinct()
                .SelectMany(suite => CreateRunObservable(suite,
@@ -212,7 +212,7 @@
                    processes => processes.Start(start, step, end, !parallel)));
         }
 
-        public static IObservable<TestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, bool parallel = false)
+        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, bool parallel = false)
         {
             return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel));
         }       

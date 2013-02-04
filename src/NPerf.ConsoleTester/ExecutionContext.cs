@@ -10,7 +10,7 @@
 
     internal class ExecutionContext : ApplicationContext
     {
-        private List<TestResult> list = new List<TestResult>();
+        private List<PerfTestResult> list = new List<PerfTestResult>();
 
         private PerfLab lab;
         public ExecutionContext()
@@ -30,7 +30,7 @@
             this.lab.Run(new[] { this.lab.Tests.First().Key, this.lab.Tests.Last().Key }, true).Subscribe(this.OnNext, ex => { }, this.ExitThread);
         }
 
-        void OnNext(TestResult value)
+        void OnNext(PerfTestResult value)
         {
             this.list.Add(value);
             Console.WriteLine(value);

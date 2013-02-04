@@ -27,7 +27,7 @@
             {
                 using (var observer = new TestObserver(MailBoxName))
                 {
-                    var list = new List<TestResult>();
+                    var list = new List<PerfTestResult>();
                     var runner = new TestRunner(i => setUpCounter++, () => testCounter++, () => tearDownCounter++, i => i / 2d, Start, Step, End);
 
                     var taskObserve = Task.Factory.StartNew(
@@ -41,7 +41,7 @@
                         {
                             for (int i = Start; i < End; i += Step)
                             {
-                                list.Add((TestResult)mailBox.Content);
+                                list.Add((PerfTestResult)mailBox.Content);
                             }
                         });
 

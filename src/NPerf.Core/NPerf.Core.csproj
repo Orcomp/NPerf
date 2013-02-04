@@ -55,9 +55,9 @@
     <Compile Include="Communication\SendReceiveLock.cs" />
     <Compile Include="PerfTestResults\ExperimentCompleted.cs" />
     <Compile Include="PerfTestResults\NextResult.cs" />
-    <Compile Include="PerfTestResults\TestResultFactory.cs" />
+    <Compile Include="PerfTestResults\PerfTestResult.cs" />
+    <Compile Include="PerfTestResults\PerfTestResultFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PerfTestResults\TestResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
