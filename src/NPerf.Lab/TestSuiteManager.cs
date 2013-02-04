@@ -193,8 +193,8 @@
 
         internal static IObservable<TestResult> Run(TestInfo[] testInfo, bool parallel = false)
         {
-            return testInfo.Select(x => x.Suite).ToObservable().Distinct()
-                .SelectMany(suite => CreateRunObservable(suite, 
+            return testInfo.Select(x => x.Suite).Distinct().ToObservable()
+                .SelectMany(suite => CreateRunObservable(suite,
                     x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
                     processes => processes.Start(!parallel)));
         }

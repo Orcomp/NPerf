@@ -16,5 +16,21 @@
         public string TestDescription { get; set; }
 
         public TestSuiteInfo Suite { get; set; }
+
+        public override int GetHashCode()
+        {
+            return TestId.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var testInfo = obj as TestInfo;
+            if (testInfo == null)
+            {
+                return false;
+            }
+
+            return this.TestId.Equals(testInfo.TestId);
+        }
     }
 }

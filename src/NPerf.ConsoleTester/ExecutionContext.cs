@@ -17,11 +17,17 @@
         {
             this.lab = new PerfLab(typeof(StringBuildingTester).Assembly, typeof(StringRunner).Assembly, typeof(Dictionary<,>).Assembly);
             this.RunTests();
+           // this.RunSomeTests();
         }
 
         public void RunTests()
         {
             this.lab.Run(true).Subscribe(this.OnNext, ex => { }, this.Completed);
+        }
+
+        public void RunSomeTests()
+        {
+            this.lab.Run(new[] { this.lab.Tests.First().Key, this.lab.Tests.Last().Key }, true).Subscribe(this.OnNext, ex => { }, this.ExitThread);
         }
 
         void OnNext(TestResult value)

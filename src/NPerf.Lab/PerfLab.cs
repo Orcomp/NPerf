@@ -55,12 +55,12 @@
 
         public IObservable<TestResult> Run(Guid[] tests, bool parallel = false)
         {
-            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray() , parallel));
+            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), parallel);
         }
 
         public IObservable<TestResult> Run(Guid[] tests, int start, int step, int end, bool parallel = false)
         {
-            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), start, step, end, parallel));
+            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), start, step, end, parallel);
         }
 
         public IObservable<TestResult> Run(bool parallel = false)
