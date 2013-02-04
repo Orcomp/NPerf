@@ -49,7 +49,7 @@
     <Compile Include="SendReceiveLockHelper.cs" />
     <Compile Include="SingleThreadAccessController.cs" />
     <Compile Include="TestedObject.cs" />
-    <Compile Include="TestResultGenerator.cs" />
+    <Compile Include="PerTestResultGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">

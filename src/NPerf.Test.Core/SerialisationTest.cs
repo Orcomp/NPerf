@@ -12,7 +12,7 @@
         [TestMethod]
         public void CanSerializeDeserializePerfResult()
         {
-            var perfResult = TestResultGenerator.CreatePerfResult();
+            var perfResult = PerTestResultGenerator.CreatePerfResult();
 
             var formatter = new BinaryFormatter();
             var binaryData = new byte[1024 * 5];
@@ -32,7 +32,7 @@
         [TestMethod]
         public void CanSerializeDeserializeExperimentError()
         {
-            var perfFailedResult = TestResultGenerator.CreateExperimentError();
+            var perfFailedResult = PerTestResultGenerator.CreateExperimentError();
 
             var formatter = new BinaryFormatter();
             var binaryData = new byte[1024 * 5];
@@ -52,7 +52,7 @@
         [TestMethod]
         public void CanSerializeDeserializeExperimentCompleted()
         {
-            var experimentCompleted = TestResultGenerator.CreateExperimentCompleted();
+            var experimentCompleted = PerTestResultGenerator.CreateExperimentCompleted();
 
             var formatter = new BinaryFormatter();
             var binaryData = new byte[1024 * 5];

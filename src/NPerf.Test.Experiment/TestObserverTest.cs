@@ -29,7 +29,7 @@
                     var taskObserve = Task.Factory.StartNew(
                         () =>
                             {
-                                observer.OnNext(TestResultGenerator.CreatePerfResult());
+                                observer.OnNext(PerTestResultGenerator.CreatePerfResult());
                                 observer.OnError(new Exception(ErrorText));
                                 observer.OnCompleted();
                             });
@@ -44,7 +44,7 @@
 
                     Task.WaitAll(new[] { taskObserve, taskMailBox }, TimeSpan.FromSeconds(20)).Should().BeTrue();
                     list.Count.Should().Be(3);
-                    list[0].Should().Be(TestResultGenerator.CreatePerfResult());
+                    list[0].Should().Be(PerTestResultGenerator.CreatePerfResult());
                     list[1].Should().Be(new ExperimentError(new Exception(ErrorText)));
                     list[2].Should().Be(new ExperimentCompleted());
                 }
