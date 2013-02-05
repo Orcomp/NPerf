@@ -6,6 +6,7 @@
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Test.Helpers;
+    using System.Collections.Concurrent;
 
     [TestClass]
     public class SendReceiveLockTest
@@ -42,11 +43,11 @@
                 helper.Send(TimeSpan.FromMilliseconds(1000)).Should().BeTrue();
 
                 helper.AddReceiveFunction(() => list[0]);
-                IList<int> result = new List<int>();
+                var result = new ConcurrentBag<int>();
                 helper.Receive<int>(result, TimeSpan.FromMilliseconds(1000)).Should().BeTrue();
 
                 result.Count.Should().Be(1);
-                result[0].Should().Be(Value);
+                result.ToArray()[0].Should().Be(Value);
             }            
         }
 
@@ -54,8 +55,8 @@
         public void CanSyncSendReceive()
         {
             var buff = 0;
-            const int N = 10;
-            const int SecondsTimeout = 30;
+            const int N = 20;
+            const int SecondsTimeout = 60;
             
             var helper = new SendReceiveLockHelper(FullName, EmptyName);
             for (var i = 0; i < N; i++)
@@ -79,20 +80,20 @@
                     });
             }
 
-            var list = new List<int>();
+            var list = new ConcurrentBag<int>();
             var sendTask = Task.Factory.StartNew(() => helper.Send(TimeSpan.FromSeconds(SecondsTimeout)));
             var receiveTask = Task.Factory.StartNew(() => helper.Receive(list, TimeSpan.FromSeconds(SecondsTimeout)));
-            sendTask.Wait();
-            receiveTask.Wait();
 
-            sendTask.Result.Should().BeTrue();
-            receiveTask.Result.Should().BeTrue();
+            Task.WaitAll(sendTask, receiveTask);
 
-            list.Count.Should().Be(N);
+            sendTask.Result.Should().BeTrue("sendTask.Result should be true");
+            receiveTask.Result.Should().BeTrue("receiveTask.Result should be true");
+
+            list.Count.Should().Be(N, string.Format("list.Count should be equals {0}", N));
 
             for (var i = 0; i < N; i++)
             {
-                list.Contains(i).Should().BeTrue();
+                list.Should().Contain(i, string.Format("list should contains {0}", i));
             }
         }
     }

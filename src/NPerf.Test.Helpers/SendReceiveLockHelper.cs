@@ -6,6 +6,7 @@
 
     using NPerf.Core.Communication;
     using System.Threading.Tasks;
+    using System.Collections.Concurrent;
 
     public class SendReceiveLockHelper : IDisposable
     {
@@ -30,7 +31,7 @@
             return Task.WaitAll(tasks, timeout);
         }
 
-        public bool Receive<T>(IList<T> list, TimeSpan timeout)
+        public bool Receive<T>(ConcurrentBag<T> list, TimeSpan timeout)
         {
             var tasks =
                 this.recieveFunctions.Select(receiving => (Action)(() => list.Add((T)this.locker.Receive(receiving))))
