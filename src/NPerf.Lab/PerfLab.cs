@@ -22,12 +22,25 @@
             
             this.testSuites = (from tester in fixtureLib.TypesWith<PerfTesterAttribute>()
                                from testedType in testSubjects.SelectMany(t => t.Types())
-                               where this.IsTestebleType(tester, testedType)                                   
+                               where IsTestebleType(tester, testedType)                                   
                                select TestSuiteManager.GetTestSuiteInfo(tester, testedType)).ToArray();
             this.tests = this.testSuites.SelectMany(suite => suite.Tests).ToDictionary(test => test.TestId, test => test);
         }
 
-        private bool IsTestebleType(Type testerType, Type testedType)
+        public PerfLab(params Assembly[] perfTestAssemblies)
+        {
+            this.SystemInfo = SystemInfo.Instance;
+
+            this.testSuites = (from assembly in perfTestAssemblies
+                               from tester in assembly.TypesWith<PerfTesterAttribute>()
+                               from testedType in perfTestAssemblies.SelectMany(t => t.Types())
+                               where IsTestebleType(tester, testedType)
+                               select TestSuiteManager.GetTestSuiteInfo(tester, testedType)).ToArray();
+
+            this.tests = this.testSuites.SelectMany(suite => suite.Tests).ToDictionary(test => test.TestId, test => test);
+        }
+
+        private static bool IsTestebleType(Type testerType, Type testedType)
         {
             var testerAttr = testerType.Attribute<PerfTesterAttribute>();
             return testedType.IsPublic && !testedType.IsGenericTypeDefinition

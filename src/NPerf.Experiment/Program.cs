@@ -1,6 +1,8 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
+    using System.Diagnostics;
+
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
 
@@ -57,7 +59,7 @@
             {
                 using (var mailBox = new ProcessMailBox(channelName))
                 {
-                    mailBox.Content = new ExperimentError { Descriptor = -1, };
+                    mailBox.Content = new ExperimentError(ex);
                 }
             }
         }

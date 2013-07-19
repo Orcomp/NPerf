@@ -154,7 +154,7 @@
 
                         var listener = from experiment in processes.Experiments.ToObservable()
                                        from result in new SingleExperimentListener(experiment, startProcess, parallel)
-                                       select result;                         
+                                       select result;
 
                         var subscription = listener.SubscribeSafe(observer);
 

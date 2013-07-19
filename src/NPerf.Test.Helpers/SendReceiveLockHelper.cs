@@ -1,12 +1,12 @@
 ﻿namespace NPerf.Test.Helpers
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
 
     using NPerf.Core.Communication;
     using System.Threading.Tasks;
-    using System.Collections.Concurrent;
 
     public class SendReceiveLockHelper : IDisposable
     {

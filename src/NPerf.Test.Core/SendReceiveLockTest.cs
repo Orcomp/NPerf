@@ -1,12 +1,13 @@
 ﻿namespace NPerf.Test.Core
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NPerf.Test.Helpers;
-    using System.Collections.Concurrent;
 
     [TestClass]
     public class SendReceiveLockTest
@@ -57,6 +58,7 @@
             var buff = 0;
             const int N = 20;
             const int SecondsTimeout = 60;
+
             
             var helper = new SendReceiveLockHelper(FullName, EmptyName);
             for (var i = 0; i < N; i++)
