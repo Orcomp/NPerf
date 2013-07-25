@@ -1,7 +1,7 @@
 ﻿namespace NPerf.Experiment
 {
     using System;
-    using NPerf.Core.Monitoring;
+    using NPerf.Core.Communication.Monitoring;
     using NPerf.Core.PerfTestResults;
 
     internal class TestRunner : IObservable<PerfTestResult>

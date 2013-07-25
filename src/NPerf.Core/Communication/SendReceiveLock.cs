@@ -17,37 +17,40 @@
             this.full = NamedSemaphore.OpenOrCreate(fullName, 0, 1);
         }
 
-        public void Send(Action sendAction)
+        public void Send(Action sendAction, TimeSpan timeout)
         {
-            this.empty.WaitOne();
-            try
+            if (this.empty.WaitOne(timeout))
             {
-                sendAction();
-            }
-            catch
-            {
-                this.empty.Release();
-                throw;
-            }
-
-            this.full.Release();
+                try
+                {
+                    sendAction();
+                }
+                catch
+                {
+                    this.empty.Release();
+                    throw;
+                }
+                this.full.Release();
+            }            
         }
 
-        public object Receive(Func<object> receiveFunc)
+        public object Receive(Func<object> receiveFunc, TimeSpan timeout)
         {
-            object result;
-            this.full.WaitOne();
-            try
+            object result = null;
+            if (this.full.WaitOne(timeout))
             {
-                result = receiveFunc();
-            }
-            catch
-            {
-                this.full.Release();
-                throw;
-            }
+                try
+                {
+                    result = receiveFunc();
+                }
+                catch
+                {
+                    this.full.Release();
+                    throw;
+                }
 
-            this.empty.Release();
+                this.empty.Release();
+            }
             return result;
         }
 

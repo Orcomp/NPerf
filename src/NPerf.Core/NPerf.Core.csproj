@@ -40,14 +40,18 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AbstractPerfTest.cs" />
-    <Compile Include="AbstractPerfTestSuite.cs" />
+    <Compile Include="GenericPerfTest.cs" />
+    <Compile Include="GenericPerfTestSuite.cs" />
     <Compile Include="Communication\ChannelConfiguration.cs" />
     <Compile Include="Communication\Monitoring\DisposableScope.cs" />
     <Compile Include="Communication\Monitoring\DurationMonitor.cs" />
     <Compile Include="Communication\Monitoring\IPerfMonitor.cs" />
     <Compile Include="Communication\Monitoring\MemoryMonitor.cs" />
     <Compile Include="Communication\Monitoring\MemoryStatus.cs" />
+    <Compile Include="Info\TestInfo.cs" />
+    <Compile Include="Info\TestInfoIgnored.cs" />
+    <Compile Include="Info\TestSuiteInfo.cs" />
+    <Compile Include="PerfTest.cs" />
     <Compile Include="PerfTestResults\ExperimentError.cs" />
     <Compile Include="Communication\MemoryMappedFileView.cs" />
     <Compile Include="Communication\NamedMutex.cs" />
@@ -57,6 +61,7 @@
     <Compile Include="PerfTestResults\NextResult.cs" />
     <Compile Include="PerfTestResults\PerfTestResult.cs" />
     <Compile Include="PerfTestResults\PerfTestResultFactory.cs" />
+    <Compile Include="PerfTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

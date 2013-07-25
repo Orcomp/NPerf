@@ -2,6 +2,7 @@
 {
     using System;
     using System.Reactive.Disposables;
+    using System.Reactive.Subjects;
     using System.Threading;
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
@@ -23,7 +24,7 @@
             this.startProcess = startProcess;
             this.parallel = parallel;                   
             this.experiment = experiment;
-            this.mailBox = new ProcessMailBox(this.experiment.ChannelName);
+            this.mailBox = new ProcessMailBox(this.experiment.ChannelName, TimeSpan.FromMilliseconds(-1));
         }
 
         protected void Run(IObserver<PerfTestResult> observer)
@@ -35,12 +36,17 @@
 
                 object message;
                 Thread.CurrentThread.Name = this.mailBox.ChannelName;
+
+                var buff = new ReplaySubject<PerfTestResult>();
+                buff.Subscribe(observer);
                 do
                 {
                     message = this.mailBox.Content as PerfTestResult;
+                    
                     if (message != null)
                     {
-                        observer.OnNext((PerfTestResult)message);
+                        buff.OnNext((PerfTestResult)message);
+                        //observer.OnNext((PerfTestResult)message);
                     }
                 }
                 while (!(message is ExperimentError && ((PerfTestResult)message).Descriptor == -1)

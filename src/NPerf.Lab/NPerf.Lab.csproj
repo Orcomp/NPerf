@@ -41,40 +41,35 @@
     <Reference Include="CodeDomUtilities.Patterns">
       <HintPath>..\..\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Patterns.dll</HintPath>
     </Reference>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\NPerfRunner\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+    <Reference Include="Fasterflect">
+      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Reactive.Core, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\NPerfRunner\packages\Rx-Core.2.1.30214.0\lib\Net40\System.Reactive.Core.dll</HintPath>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\..\packages\Rx-Core.2.1.30214.0\lib\Net40\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\NPerfRunner\packages\Rx-Interfaces.2.1.30214.0\lib\Net40\System.Reactive.Interfaces.dll</HintPath>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\..\packages\Rx-Interfaces.2.1.30214.0\lib\Net40\System.Reactive.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.1.30214.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\NPerfRunner\packages\Rx-Linq.2.1.30214.0\lib\Net40\System.Reactive.Linq.dll</HintPath>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\..\packages\Rx-Linq.2.1.30214.0\lib\Net40\System.Reactive.Linq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Info\TestInfo.cs" />
-    <Compile Include="Info\TestInfoIgnored.cs" />
-    <Compile Include="Info\TestSuiteInfo.cs" />
     <Compile Include="MultiExperimentProcess.cs" />
     <Compile Include="PerfLab.cs" />
     <Compile Include="SingleExperimentListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemInfo.cs" />
-    <Compile Include="TestBuilder\TestSuiteBuilder.cs" />
-    <Compile Include="TestBuilder\TestSuiteCodeBuilder.cs" />
+    <Compile Include="DynamicTest\TestSuiteBuilder.cs" />
+    <Compile Include="DynamicTest\TestSuiteCodeBuilder.cs" />
     <Compile Include="TestSuiteManager.cs" />
     <Compile Include="ExperimentProcess.cs" />
   </ItemGroup>
@@ -89,7 +84,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

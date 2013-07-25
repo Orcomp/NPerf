@@ -4,7 +4,7 @@
     using NPerf.Core;
     using NPerf.Test.Helpers;
 
-    public class PerfTestSample : AbstractPerfTest<ITestedObject>
+    public class PerfTestSample : GenericPerfTest<ITestedObject>
     {
         public PerfTestSample(Action<ITestedObject> testMethod, string testName, string description)
         {

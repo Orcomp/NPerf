@@ -12,7 +12,9 @@
 
         public static void Main(string[] args)
         {
-         //   Debugger.Launch();
+#if DEBUG
+        //    Debugger.Launch();
+#endif
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
@@ -32,19 +34,22 @@
             catch (Exception ex)
             {
                 SendError(ex);
-            }
-
-           // Console.ReadKey();
+            } 
         }
 
         private static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+/*#if DEBUG
+            Debugger.Launch();
+#endif*/
+
             var ex = e.ExceptionObject as Exception;
 
             if (ex == null)
             {
                 return;
             }
+
 
             SendError(ex);
         }
@@ -57,7 +62,7 @@
             }
             else
             {
-                using (var mailBox = new ProcessMailBox(channelName))
+                using (var mailBox = new ProcessMailBox(channelName, TimeSpan.FromSeconds(5)))
                 {
                     mailBox.Content = new ExperimentError(ex);
                 }

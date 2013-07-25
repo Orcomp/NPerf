@@ -24,7 +24,7 @@
         public bool Send(TimeSpan timeout)
         {
             var tasks =
-                this.sendActions.Select(sending => (Action)(() => this.locker.Send(sending)))
+                this.sendActions.Select(sending => (Action)(() => this.locker.Send(sending, timeout)))
                     .Select(useLocker => Task.Factory.StartNew(useLocker))
                     .ToArray();
 
@@ -34,7 +34,7 @@
         public bool Receive<T>(ConcurrentBag<T> list, TimeSpan timeout)
         {
             var tasks =
-                this.recieveFunctions.Select(receiving => (Action)(() => list.Add((T)this.locker.Receive(receiving))))
+                this.recieveFunctions.Select(receiving => (Action)(() => list.Add((T)this.locker.Receive(receiving, timeout))))
                     .Select(useLocker => Task.Factory.StartNew(useLocker))
                     .ToArray();
 

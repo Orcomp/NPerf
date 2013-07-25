@@ -1,8 +1,7 @@
-﻿namespace NPerf.Core.Monitoring
+﻿namespace NPerf.Core.Communication.Monitoring
 {
     using System;
     using System.ComponentModel;
-    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Diagnostics;
 

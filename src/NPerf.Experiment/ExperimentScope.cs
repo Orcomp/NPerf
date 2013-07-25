@@ -2,8 +2,8 @@
 {
     using System;
     using System.Linq;
+    using NPerf.Core;
     using NPerf.Core.PerfTestResults;
-    using NPerf.Framework.Interfaces;
 
     internal class ExperimentScope
     {
@@ -11,7 +11,7 @@
         {            
             using (var testObserver = new TestObserver(startParameters.ChannelName))
             {
-                var suite = AssemblyLoader.CreateInstance<IPerfTestSuite>(
+                var suite = AssemblyLoader.CreateInstance<PerfTestSuite>(
                     startParameters.SuiteAssembly, startParameters.SuiteType);
 
                 var subject = AssemblyLoader.CreateInstance(
@@ -23,7 +23,7 @@
                 
                 if (suite != null && subject != null)
                 {
-                    var test = suite.Tests.First(x => x.TestMethodName == startParameters.TestMethod);
+                    var test = suite.Tests.First(x => x.TestMethodName == startParameters.TestMethod && x.TestedType == subject.GetType());
 
                     PerfTestResultFactory.Instance.Init(test.TestId);
 

@@ -6,19 +6,19 @@
 
     internal class AssemblyLoader
     {
-        public static T CreateInstance<T>(string assemblyName, string typeName)
+        public static T CreateInstance<T>(string suiteAssemblyName, string suiteTypeName)
         {
-            if (string.IsNullOrWhiteSpace(assemblyName))
+            if (string.IsNullOrWhiteSpace(suiteAssemblyName))
             {
-                throw new ArgumentNullException("assemblyName");
+                throw new ArgumentNullException("suiteAssemblyName");
             }
 
-            if (string.IsNullOrWhiteSpace(typeName))
+            if (string.IsNullOrWhiteSpace(suiteTypeName))
             {
-                throw new ArgumentNullException("typeName");
+                throw new ArgumentNullException("suiteTypeName");
             }
-
-            var instance = CreateInstance(assemblyName, typeName);
+            
+            var instance = CreateInstance(suiteAssemblyName, suiteTypeName);
             return instance == null ? default(T) : (T)instance;
         }
 

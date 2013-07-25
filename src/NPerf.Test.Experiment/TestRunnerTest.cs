@@ -21,9 +21,9 @@
             const int Start = 0;
             const int Step = 7;
             const int End = 135;
-            const string MailBoxName = "box";            
+            const string MailBoxName = "box";
 
-            using (var mailBox = new ProcessMailBox(MailBoxName))
+            using (var mailBox = new ProcessMailBox(MailBoxName, TimeSpan.FromMilliseconds(-1)))
             {
                 using (var observer = new TestObserver(MailBoxName))
                 {

@@ -18,14 +18,17 @@
 
         private bool disposed;
 
+        private TimeSpan sendReceiveTimeout;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessMailBox"/> class.
         /// </summary>
         /// <param name="name">
         /// The name for the semaphores and the shared memory file.
         /// </param>
-        public ProcessMailBox(string name)
+        public ProcessMailBox(string name, TimeSpan sendReceiveTimeout)
         {
+            this.sendReceiveTimeout = sendReceiveTimeout;
             this.ChannelName = name;
             this.mailBoxSync = new SendReceiveLock(name + ".FullMutex.MailBox", name + ".EmptyMutex.MailBox");
             this.file = MemoryMappedFile.CreateOrOpen(
@@ -48,12 +51,12 @@
         {
             get
             {
-                return this.mailBoxSync.Receive(() => this.view.ReadDeserialize());
+                return this.mailBoxSync.Receive(() => this.view.ReadDeserialize(), this.sendReceiveTimeout);
             }
 
             set
             {
-                this.mailBoxSync.Send(() => this.view.WriteSerialize(value));
+                this.mailBoxSync.Send(() => this.view.WriteSerialize(value), this.sendReceiveTimeout);
             }
         }
 

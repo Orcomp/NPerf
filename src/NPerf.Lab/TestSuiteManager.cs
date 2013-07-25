@@ -8,23 +8,21 @@
     using System.Reactive.Linq;
     using System.Reflection;
     using Fasterflect;
+    using NPerf.Core.Info;
     using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
-    using NPerf.Framework.Interfaces;
-    using NPerf.Lab.Info;
     using NPerf.Lab.TestBuilder;
 
     internal class TestSuiteManager
     {
-        public static TestSuiteInfo GetTestSuiteInfo(Type testerType, Type testedType)
+        public static TestSuiteInfo GetTestSuiteInfo(Type testerType, IEnumerable<Type> testedTypes)
         {
-            CheckArguments(testerType, testedType);
+            
             var testerAttribute = testerType.Attribute<PerfTesterAttribute>();
             
             var suiteInfo = new TestSuiteInfo
                            {
                                TesterType = testerType,
-                               TestedType = testedType,
                                DefaultTestCount = testerAttribute.TestCount,
                                TestSuiteDescription = testerAttribute.Description,
                                FeatureDescription = testerAttribute.FeatureDescription,
@@ -35,17 +33,19 @@
             var ignoredTests = new List<TestInfoIgnored>();
 
             foreach (var test in from method in testerType.MethodsWith(Flags.AllMembers, typeof(PerfTestAttribute))
-                                 select GetTestInfo(Guid.NewGuid(), method, testerAttribute.TestedType, suiteInfo))
+                                 from testedType in testedTypes
+                                 select GetTestInfo(Guid.NewGuid(), method, testerAttribute.TestedType, suiteInfo, testedType))
             {
-                if (test is TestInfo)
+                var ignored = test as TestInfoIgnored;
+                if (ignored != null)
                 {
-                    tests.Add((TestInfo)test);
+                    ignoredTests.Add(ignored);
                     continue;
                 }
 
-                if (test is TestInfoIgnored)
+                if (test != null)
                 {
-                    ignoredTests.Add((TestInfoIgnored)test);
+                    tests.Add(test);
                     continue;
                 }
 
@@ -64,8 +64,10 @@
             return builder.Build();
         }
 
-        private static IPerfTestInfo GetTestInfo(Guid id, MethodInfo method, Type testedAbstraction, TestSuiteInfo suiteInfo )
+        private static TestInfo GetTestInfo(Guid id, MethodInfo method, Type testedAbstraction, TestSuiteInfo suiteInfo, Type testedType)
         {
+            CheckTestability(suiteInfo.TesterType, testedType);
+
             var testAttribute = method.Attribute<PerfTestAttribute>();
             if (testAttribute == null)
             {
@@ -77,7 +79,7 @@
                 throw new ArgumentException("Incorrect parameter signature");
             }
 
-            IPerfTestInfo result;
+            TestInfo result;
             var ignoreAttribute = method.Attribute<PerfIgnoreAttribute>();
             if (ignoreAttribute == null)
             {
@@ -86,6 +88,7 @@
                                 TestId = id,
                                 TestDescription = testAttribute.Description,
                                 TestMethodName = method.Name, 
+                                TestedType = testedType,
                                 Suite = suiteInfo
                             };
             }
@@ -97,6 +100,7 @@
                     TestDescription = testAttribute.Description,
                     TestMethodName = method.Name,
                     IgnoreMessage = ignoreAttribute.Message,
+                    TestedType = testedType,
                     Suite = suiteInfo
                 };
             }
@@ -104,7 +108,7 @@
             return result;
         }
 
-        private static void CheckArguments(Type testerType, Type testedType)
+        private static void CheckTestability(Type testerType, Type testedType)
         {
             if (testerType == null)
             {
@@ -146,10 +150,10 @@
                                      "{0}.{1}({2})",
                                      testSuiteInfo.TesterType.Name,
                                      testMethod.TestMethodName,
-                                     testSuiteInfo.TestedType.Name),
+                                     testMethod.TestedType.Name),
                                  assemblyLocation,
                                  TestSuiteCodeBuilder.TestSuiteClassName,
-                                 testSuiteInfo.TestedType,
+                                 testMethod.TestedType,
                                  testMethod.TestMethodName)).ToArray());
 
                         var listener = from experiment in processes.Experiments.ToObservable()
@@ -174,11 +178,15 @@
 
         internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, bool parallel = false)
         {
-            return testInfo.Select(x => x.Suite).Distinct().ToObservable()
-                .SelectMany(suite => CreateRunObservable(suite,
-                    x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
-                    processes => processes.Start(!parallel),
-                    parallel));
+            return testInfo.Select(x => x.Suite)
+                           .Distinct()
+                           .ToObservable()
+                           .SelectMany(suite => CreateRunObservable(suite,
+                                                                    x =>
+                                                                    testInfo.FirstOrDefault(
+                                                                        test => test.TestId.Equals(x.TestId)) != null,
+                                                                    processes => processes.Start(!parallel),
+                                                                    parallel));
         }
 
         public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)

@@ -19,11 +19,12 @@
             this.lab = new PerfLab(typeof(StringBuildingTester).Assembly, typeof(StringRunner).Assembly, typeof(Dictionary<,>).Assembly);
             this.RunTests();
             //this.RunSomeTests();
+            
         }
 
         public void RunTests()
         {
-            this.lab.Run(true).Subscribe(this.OnNext, ex => { }, this.Completed);
+            this.lab.Run().Subscribe(this.OnNext, ex => { }, this.Completed);
         }
 
         public void RunSomeTests()

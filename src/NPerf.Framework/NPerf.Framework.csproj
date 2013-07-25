@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NPerf.Framework</RootNamespace>
     <AssemblyName>NPerf.Framework</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,16 +41,12 @@
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Interfaces\IPerfTestInfo.cs" />
-    <Compile Include="Interfaces\IPerfTestSuite.cs" />
-    <Compile Include="Interfaces\IPerfTest.cs" />
     <Compile Include="PerfIgnoreAttribute.cs" />
     <Compile Include="PerfRunDescriptorAttribute.cs" />
     <Compile Include="PerfSetUpAttribute.cs" />
     <Compile Include="PerfTearDownAttribute.cs" />
     <Compile Include="PerfTestAttribute.cs" />
     <Compile Include="PerfTesterAttribute.cs" />
-    <Compile Include="Interfaces\IPerfTestSuiteInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

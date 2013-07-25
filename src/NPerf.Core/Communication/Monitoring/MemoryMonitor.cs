@@ -1,4 +1,4 @@
-﻿namespace NPerf.Core.Monitoring
+﻿namespace NPerf.Core.Communication.Monitoring
 {
     using System.Diagnostics;
     using System;

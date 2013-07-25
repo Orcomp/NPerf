@@ -12,7 +12,7 @@
 
         public TestObserver(string boxName)
         {
-            this.mailBox = new ProcessMailBox(boxName);
+            this.mailBox = new ProcessMailBox(boxName, TimeSpan.FromSeconds(5));
         }
 
         public void OnCompleted()

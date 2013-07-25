@@ -2,7 +2,7 @@
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NPerf.Core.Monitoring;
+    using NPerf.Core.Communication.Monitoring;
 
     [TestClass]
     public class DisposableScopeTest
