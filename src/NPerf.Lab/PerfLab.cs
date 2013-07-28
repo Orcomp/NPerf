@@ -12,30 +12,36 @@
 
     public class PerfLab
     {
-        private readonly TestSuiteInfo[] testSuites;
+        private readonly List<TestSuiteInfo> testSuites = new List<TestSuiteInfo>();
 
-        private readonly IDictionary<Guid, TestInfo> tests;
+        private IDictionary<Guid, TestInfo> tests;
+
+        private List<Assembly> loadedAssemblies = new List<Assembly>();
 
         public PerfLab(Assembly fixtureLib, params Assembly[] testSubjects)
         {
             this.SystemInfo = SystemInfo.Instance;
 
             this.testSuites = (from tester in fixtureLib.TypesWith<PerfTesterAttribute>()
-                               select TestSuiteManager.GetTestSuiteInfo(tester, testSubjects.SelectMany(t => t.Types())
+                               select TestSuiteManager.GetTestSuiteInfo(tester, testSubjects.Distinct()
+                                                                                            .SelectMany(t => t.Types())
                                                                                             .Where(
                                                                                                 testedType =>
                                                                                                 IsTestableType(tester,
                                                                                                                testedType))))
-                .ToArray();
+                .ToList();
             this.tests = this.testSuites.SelectMany(suite => suite.Tests)
                              .ToDictionary(test => test.TestId, test => test);
+
+            loadedAssemblies.AddRange(testSubjects.Union(new[] {fixtureLib})
+                                                  .Distinct());
         }
 
         public PerfLab(params Assembly[] perfTestAssemblies)
         {
             this.SystemInfo = SystemInfo.Instance;
 
-            this.testSuites = (from assembly in perfTestAssemblies
+            this.testSuites = (from assembly in perfTestAssemblies.Distinct()
                                from tester in assembly.TypesWith<PerfTesterAttribute>()
                                select
                                    TestSuiteManager.GetTestSuiteInfo(tester,
@@ -44,8 +50,37 @@
                                                                                            testedType =>
                                                                                            IsTestableType(tester,
                                                                                                           testedType))))
-                .ToArray();
+                .ToList();
 
+            this.tests = this.testSuites.SelectMany(suite => suite.Tests)
+                             .ToDictionary(test => test.TestId, test => test);
+
+            loadedAssemblies.AddRange(perfTestAssemblies.Distinct());
+        }
+
+        public void AddAssemblies(params Assembly[] assemblies)
+        {
+            var newAssemblies = (from assembly in assemblies
+                                 where !loadedAssemblies.Contains(assembly)
+                                 select assembly).ToArray();
+
+            var allAssemblies = loadedAssemblies.Union(newAssemblies).Distinct().ToArray();
+
+            var newTestSuites = (from assembly in allAssemblies
+                                 from tester in assembly.TypesWith<PerfTesterAttribute>()
+                                 select
+                                     TestSuiteManager.GetTestSuiteInfo(tester, allAssemblies
+                                                                                   .SelectMany(t => t.Types())
+                                                                                   .Where(
+                                                                                       testedType =>
+                                                                                       IsTestableType(tester,
+                                                                                                      testedType)),
+                                                                       this.testSuites.ToArray()));
+
+
+            this.testSuites.AddRange(newTestSuites.Where(x => !testSuites.Contains(x)).ToArray());
+
+            loadedAssemblies.AddRange(newAssemblies);
             this.tests = this.testSuites.SelectMany(suite => suite.Tests)
                              .ToDictionary(test => test.TestId, test => test);
         }

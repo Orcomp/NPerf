@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO.MemoryMappedFiles;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// ProcessMailBox is an Inter-Process mailbox.
@@ -71,7 +72,7 @@
             {
                 this.view.Dispose();
                 this.file.Dispose();
-                this.mailBoxSync.Dispose();
+                Task.Factory.StartNew(() => this.mailBoxSync.Dispose());
             }
 
             this.view = null;

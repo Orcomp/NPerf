@@ -73,7 +73,10 @@
                     end);
 
             this.Run(waitForExit);
+            started = true;
         }
+
+
 
         public void Start(bool waitForExit = true)
         {
@@ -88,10 +91,18 @@
                     this.ChannelName);
             
             this.Run(waitForExit);
+            started = true;
         }
+
+        private bool started = false;
 
         public void Stop()
         {
+            if (!started)
+            {
+                return;
+            }
+
             if (!this.experimentProcess.HasExited)
             {
                 this.experimentProcess.Kill();

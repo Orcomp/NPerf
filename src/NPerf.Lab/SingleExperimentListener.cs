@@ -4,6 +4,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Subjects;
     using System.Threading;
+    using System.Threading.Tasks;
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
 
@@ -74,9 +75,7 @@
                 wh.WaitOne();
             }
 
-            var thread = new Thread(obj => this.Run((IObserver<PerfTestResult>)obj));
-            thread.Start(observer);
-            
+            var task = Task.Factory.StartNew(() => this.Run(observer));           
 
             return Disposable.Create(
                 () =>
@@ -85,6 +84,9 @@
                         {
                             wh.Set();
                         }
+
+                        task.Wait(TimeSpan.FromMilliseconds(10));
+                      //  task.Dispose();
                     });
         }
 

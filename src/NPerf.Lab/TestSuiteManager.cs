@@ -7,6 +7,7 @@
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Fasterflect;
     using NPerf.Core.Info;
     using NPerf.Core.PerfTestResults;
@@ -15,25 +16,25 @@
 
     internal class TestSuiteManager
     {
-        public static TestSuiteInfo GetTestSuiteInfo(Type testerType, IEnumerable<Type> testedTypes)
-        {
-            
+        public static TestSuiteInfo GetTestSuiteInfo(Type testerType, IEnumerable<Type> testedTypes, params TestSuiteInfo[] testSuitesForUpdate)
+        {            
             var testerAttribute = testerType.Attribute<PerfTesterAttribute>();
-            
-            var suiteInfo = new TestSuiteInfo
-                           {
-                               TesterType = testerType,
-                               DefaultTestCount = testerAttribute.TestCount,
-                               TestSuiteDescription = testerAttribute.Description,
-                               FeatureDescription = testerAttribute.FeatureDescription,
-                               TestedAbstraction = testerAttribute.TestedType
-                           };
+
+            var suiteInfo = testSuitesForUpdate.FirstOrDefault(x => x.TesterType == testerType) ?? new TestSuiteInfo
+                {
+                    TesterType = testerType,
+                    DefaultTestCount = testerAttribute.TestCount,
+                    TestSuiteDescription = testerAttribute.Description,
+                    FeatureDescription = testerAttribute.FeatureDescription,
+                    TestedAbstraction = testerAttribute.TestedType
+                };
 
             var tests = new List<TestInfo>();
             var ignoredTests = new List<TestInfoIgnored>();
 
             foreach (var test in from method in testerType.MethodsWith(Flags.AllMembers, typeof(PerfTestAttribute))
                                  from testedType in testedTypes
+                                 where suiteInfo.Tests == null || !suiteInfo.Tests.Any(x => x.TestedType == testedType)
                                  select GetTestInfo(Guid.NewGuid(), method, testerAttribute.TestedType, suiteInfo, testedType))
             {
                 var ignored = test as TestInfoIgnored;
@@ -52,7 +53,16 @@
                 throw new NotImplementedException("Unknown test information type.");
             }
 
+            if (suiteInfo.Tests != null)
+            {
+                tests.AddRange(suiteInfo.Tests);
+            }
             suiteInfo.Tests = tests.ToArray();
+
+            if (suiteInfo.IgnoredTests != null)
+            {
+                ignoredTests.AddRange(suiteInfo.IgnoredTests);
+            }
             suiteInfo.IgnoredTests = ignoredTests.ToArray();
 
             return suiteInfo;
@@ -134,7 +144,10 @@
             }
         }
 
-        private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo, Predicate<TestInfo> testFilter, Action<ExperimentProcess> startProcess, bool parallel = false)
+        private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo,
+                                                                       Predicate<TestInfo> testFilter,
+                                                                       Action<ExperimentProcess> startProcess,
+                                                                       bool parallel = false)
         {
             return Observable.Create<PerfTestResult>(
                 observer =>
@@ -160,14 +173,25 @@
                                        from result in new SingleExperimentListener(experiment, startProcess, parallel)
                                        select result;
 
-                        var subscription = listener.SubscribeSafe(observer);
+                        IDisposable subscription = null;
+
+                        Task task = Task.Factory.StartNew(() =>
+                            {
+                                subscription = listener.SubscribeSafe(observer);
+                            });
 
                         return Disposable.Create(
                             () =>
                                 {
-                                    subscription.Dispose();
+                                    if (subscription != null)
+                                    {
+                                        subscription.Dispose();
+                                        subscription = null;
+                                    }
+                                    task.Wait(TimeSpan.FromMilliseconds(10));
+
                                     processes.Dispose();
-                                    
+
                                     if (!string.IsNullOrEmpty(assemblyLocation))
                                     {
                                         File.Delete(assemblyLocation);
