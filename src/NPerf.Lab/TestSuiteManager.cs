@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Reactive.Disposables;
     using System.Reactive.Linq;
+    using System.Reactive.Subjects;
     using System.Reflection;
     using System.Threading.Tasks;
     using Fasterflect;
@@ -169,16 +170,26 @@
                                  testMethod.TestedType,
                                  testMethod.TestMethodName)).ToArray());
 
-                        var listener = from experiment in processes.Experiments.ToObservable()
-                                       from result in new SingleExperimentListener(experiment, startProcess, parallel)
-                                       select result;
+                        var listeners = Observable.Empty<PerfTestResult>();
+
+                        if (!parallel)
+                        {
+                            listeners = processes.Experiments.Aggregate(listeners,
+                                                                   (current, experiment) =>
+                                                                   current.Concat(
+                                                                       new SingleExperimentListener(experiment,
+                                                                                                    startProcess)));
+                        }
+                        else
+                        {
+                            listeners = from experiment in processes.Experiments.ToObservable()
+                                        from result in new SingleExperimentListener(experiment, startProcess)
+                                        select result;
+                        }
 
                         IDisposable subscription = null;
-
-                        Task task = Task.Factory.StartNew(() =>
-                            {
-                                subscription = listener.SubscribeSafe(observer);
-                            });
+                        
+                        subscription = listeners.SubscribeSafe(observer);
 
                         return Disposable.Create(
                             () =>
@@ -188,7 +199,6 @@
                                         subscription.Dispose();
                                         subscription = null;
                                     }
-                                    task.Wait(TimeSpan.FromMilliseconds(10));
 
                                     processes.Dispose();
 

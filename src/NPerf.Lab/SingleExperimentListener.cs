@@ -14,16 +14,11 @@
 
         private readonly ProcessMailBox mailBox;
 
-        private static EventWaitHandle wh = new AutoResetEvent(true);
-
-        private bool parallel;
-
         private readonly Action<ExperimentProcess> startProcess;
 
-        public SingleExperimentListener(ExperimentProcess experiment, Action<ExperimentProcess> startProcess, bool parallel = false)
+        public SingleExperimentListener(ExperimentProcess experiment, Action<ExperimentProcess> startProcess)
         {
-            this.startProcess = startProcess;
-            this.parallel = parallel;                   
+            this.startProcess = startProcess;                 
             this.experiment = experiment;
             this.mailBox = new ProcessMailBox(this.experiment.ChannelName, TimeSpan.FromMilliseconds(-1));
         }
@@ -47,7 +42,6 @@
                     if (message != null)
                     {
                         buff.OnNext((PerfTestResult)message);
-                        //observer.OnNext((PerfTestResult)message);
                     }
                 }
                 while (!(message is ExperimentError && ((PerfTestResult)message).Descriptor == -1)
@@ -70,23 +64,12 @@
 
         public IDisposable Subscribe(IObserver<PerfTestResult> observer)
         {
-            if (!this.parallel)
-            {
-                wh.WaitOne();
-            }
-
             var task = Task.Factory.StartNew(() => this.Run(observer));           
 
             return Disposable.Create(
                 () =>
                     {
-                        if (!this.parallel)
-                        {
-                            wh.Set();
-                        }
-
                         task.Wait(TimeSpan.FromMilliseconds(10));
-                      //  task.Dispose();
                     });
         }
 
