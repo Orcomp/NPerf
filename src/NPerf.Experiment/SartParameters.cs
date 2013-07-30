@@ -12,6 +12,7 @@
             this.ChannelName = arguments.ExtractValue("channelName");
             this.SuiteAssembly = arguments.ExtractValue("suiteLib");
             this.SuiteType = arguments.ExtractValue("suiteType");
+            this.TesterAssembly = arguments.ExtractValue("testerAssm");
             this.SubjectAssembly = arguments.ExtractValue("subjectAssm");
             this.SubjectType = arguments.ExtractValue("subjecType");
             this.TestMethod = arguments.ExtractValue("testMethod");
@@ -25,6 +26,8 @@
         public string SuiteAssembly { get; set; }
 
         public string SuiteType { get; set; }
+
+        public string TesterAssembly { get; set; }
 
         public string SubjectAssembly { get; set; }
 

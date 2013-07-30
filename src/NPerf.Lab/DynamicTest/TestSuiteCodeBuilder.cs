@@ -71,12 +71,7 @@
             var tester = Blocks.Field(MemberAttributes.Private, this.testerType, "tester");
             var testerReference = Expressions.This.FieldReference(tester.Name);
 
-           // var testedObject = Blocks.Field(MemberAttributes.Private, this.testedAbstraction, "testedObject");
-
-         //   var testedObjectReference = Expressions.This.FieldReference(testedObject.Name);
-
             dynamicTestSuiteClass.AddMember(tester);
-       //     dynamicTestSuiteClass.AddMember(testedObject);
 
             var tests = from test in this.testSuiteInfo.Tests
                         select
@@ -89,13 +84,10 @@
                             new CodeTypeOfExpression(test.TestedType));
 
             var testSuiteConstructor = Blocks.Constructor(MemberAttributes.Public)
-          //      .AddParameter(new CodeParameterDeclarationExpression(testSuiteInfo.TestedAbstraction, testedObject.Name))
                 .AddStatement(testerReference.Assign(this.testerType.CreateObject()))
-             //   .AddStatement(testedObjectReference.Assign(new CodeTypeReference(this.testSuiteInfo.TestedType).CreateObject()))
                 .AddStatement(PropertyReference<PerfTestSuite>(x => x.DefaultTestCount).Assign(this.testSuiteInfo.DefaultTestCount.Literal()))
                 .AddStatement(PropertyReference<PerfTestSuite>(x => x.TestSuiteDescription).Assign(this.testSuiteInfo.TestSuiteDescription.Literal()))
                 .AddStatement(PropertyReference<PerfTestSuite>(x => x.FeatureDescription).Assign(this.testSuiteInfo.FeatureDescription.Literal()))
-           //     .AddStatement(testedObjectReference.Assign(new CodeVariableReferenceExpression(testedObject.Name)))
                 .AddStatement(
                     PropertyReference<PerfTestSuite>(x => x.Tests)
                         .Assign(new CodeArrayCreateExpression(perfTestType, tests.Cast<CodeExpression>().ToArray())));

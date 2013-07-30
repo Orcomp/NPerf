@@ -8,15 +8,17 @@
     {
         private Process experimentProcess;
 
-        private readonly string suiteAssembly;
+        private readonly string suiteAssemblyLocation;
 
         private readonly string suiteTypeName;
         
         private readonly Type testedType;
 
+        private readonly Type testerType;
+
         private readonly string testName;
 
-        public ExperimentProcess(string channelName, string suiteAssembly, string suiteTypeName, Type testedType, string testName)
+        public ExperimentProcess(string channelName, string suiteAssemblyLocation, string suiteTypeName, Type testerType, Type testedType, string testName)
         {
             this.experimentProcess = new Process
                                          {
@@ -35,8 +37,9 @@
                                          };
 
             this.ChannelName = channelName;
-            this.suiteAssembly = suiteAssembly;
+            this.suiteAssemblyLocation = suiteAssemblyLocation;
             this.suiteTypeName = suiteTypeName;
+            this.testerType = testerType;
             this.testedType = testedType;
             this.testName = testName;
 
@@ -61,10 +64,11 @@
         {
             this.experimentProcess.StartInfo.Arguments =
                 string.Format(
-                    "-suiteLib {0} -suiteType {1} -testMethod {2} -subjectAssm {3} -subjecType {4} -channelName {5} -start {6} -step {7} -end {8}",
-                    this.suiteAssembly,
+                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6} -start {7} -step {8} -end {9}",
+                    this.suiteAssemblyLocation,
                     this.suiteTypeName,
                     this.testName,
+                    testerType.Assembly.Location,
                     this.testedType.Assembly.Location,
                     this.testedType.Name,
                     this.ChannelName,
@@ -82,10 +86,11 @@
         {
             this.experimentProcess.StartInfo.Arguments =
                 string.Format(
-                    "-suiteLib {0} -suiteType {1} -testMethod {2} -subjectAssm {3} -subjecType {4} -channelName {5}",
-                    this.suiteAssembly,
+                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6}",
+                    this.suiteAssemblyLocation,
                     this.suiteTypeName,
                     this.testName,
+                    testerType.Assembly.Location,
                     this.testedType.Assembly.Location,
                     this.testedType.Name,
                     this.ChannelName);

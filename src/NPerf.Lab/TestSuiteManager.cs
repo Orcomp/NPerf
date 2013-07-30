@@ -154,7 +154,7 @@
                 observer =>
                     {
                         var assemblyLocation = BuildTestSuiteAssembly(testSuiteInfo);
-
+                        
                         var processes = new MultiExperimentProcess(
                             (from testMethod in testSuiteInfo.Tests
                              where testFilter(testMethod)
@@ -167,6 +167,7 @@
                                      testMethod.TestedType.Name),
                                  assemblyLocation,
                                  TestSuiteCodeBuilder.TestSuiteClassName,
+                                 testSuiteInfo.TesterType,
                                  testMethod.TestedType,
                                  testMethod.TestMethodName)).ToArray());
 

@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+
+    using System.IO;
     using System.Linq;
     using System.Reactive.Linq;
     using System.Reflection;
@@ -39,8 +41,8 @@
 
         public PerfLab(params Assembly[] perfTestAssemblies)
         {
-            this.SystemInfo = SystemInfo.Instance;
-
+            this.SystemInfo = SystemInfo.Instance;            
+            
             this.testSuites = (from assembly in perfTestAssemblies.Distinct()
                                from tester in assembly.TypesWith<PerfTesterAttribute>()
                                select

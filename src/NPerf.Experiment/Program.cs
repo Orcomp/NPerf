@@ -2,9 +2,11 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Reflection;
 
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
+    using NPerf.Core.Tools;
 
     internal class Program
     {
@@ -13,14 +15,17 @@
         public static void Main(string[] args)
         {
 #if DEBUG
-        //    Debugger.Launch();
+          //  Debugger.Launch();
 #endif
-
+            AppDomain.CurrentDomain.AssemblyLoad += AssemblyResolver.Loaded;
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver.Resolve;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
             var startParameters = new SartParameters(args);
 
             channelName = startParameters.ChannelName;
+
+            Assembly.LoadFile(startParameters.TesterAssembly);
 
             if (string.IsNullOrEmpty(channelName))
             {
