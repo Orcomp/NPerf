@@ -11,6 +11,7 @@ namespace NPerf.Core.Tools
     public class AssemblyResolver
     {
         private static readonly IList<DirectoryInfo> directories = new List<DirectoryInfo>();
+        private static readonly IList<Assembly> loadedAssemblies = new List<Assembly>();
 
         static AssemblyResolver()
         {
@@ -19,6 +20,8 @@ namespace NPerf.Core.Tools
 
         public static void Loaded(object sender, AssemblyLoadEventArgs args)
         {
+            loadedAssemblies.Add(args.LoadedAssembly);
+
             var dir = new FileInfo(args.LoadedAssembly.Location).Directory;
             if (!directories.Contains(dir))
             {
@@ -30,13 +33,22 @@ namespace NPerf.Core.Tools
         {
             var assemblyName = new AssemblyName(args.Name);
 
+            var loaded = (from assembly in loadedAssemblies
+                          where assembly.FullName == assemblyName.FullName
+                          select assembly).FirstOrDefault();
+
+            if (loaded != null)
+            {
+                return loaded;
+            }
+
             var assemblyFiles = (from dir in directories
                                  from file in dir.GetFiles("*.dll")
                                  where file.Name == string.Format("{0}.dll", assemblyName.Name)
                                  select file).ToArray();
 
             if (assemblyFiles.Length == 0)
-            {                
+            {
                 return null;
             }
 
