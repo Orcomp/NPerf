@@ -1,103 +1,20 @@
-using System;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace NPerf.Core
 {
-	using NPerf.Core.Collections;
-	using NPerf.Framework;
+    public abstract class PerfTest
+    {
+        public string TestMethodName { get; protected set; }
 
-	/// <summary>
-	/// Summary description for PerfTest.
-	/// </summary>
-	[Serializable]
-	[XmlRoot("test")]
-	public class PerfTest
-	{
-		private bool ignored;
-		private string ignoredMessage;
-		private string name;
-		private PerfTestRunCollection runs;
+        public string TestDescription { get; protected set; }
 
-		public PerfTest()
-		{
-			this.name = null;
-			this.runs = new PerfTestRunCollection();
-			this.ignored = false;
-			this.ignoredMessage = null;
-		}
+        public Guid TestId { get; protected set; }
 
-		public PerfTest(MethodInfo mi)
-		{
-			if (mi==null)
-				throw new ArgumentNullException("mi");
-			
-			this.name = mi.Name;
-			this.runs = new PerfTestRunCollection();
-			
-			this.ignored = TypeHelper.HasCustomAttribute(mi, typeof(PerfIgnoreAttribute));
-			if (this.ignored)
-			{
-				PerfIgnoreAttribute attr = (PerfIgnoreAttribute)
-					TypeHelper.GetFirstCustomAttribute(mi,typeof(PerfIgnoreAttribute));
-				this.ignoredMessage=attr.Message;
-			}
-			else
-				this.ignoredMessage = null;
-		}
+        public abstract void Test(object testedObject);
 
-		[XmlAttribute("name")]
-		public string Name
-		{
-			get
-			{
-				return this.name;
-			}
-			set
-			{
-				this.name = value;
-			}
-		}
-		
-		[XmlAttribute("ignored")]
-		public bool IsIgnored
-		{
-			get
-			{
-				return this.ignored;
-			}
-			set
-			{
-				this.ignored = value;
-			}
-		}
-		
-		[XmlAttribute("ignored-message")]
-		public string IgnoredMessage		
-		{
-			get
-			{
-				return this.ignoredMessage;
-			}
-			set
-			{
-				this.ignoredMessage = value;
-			}			
-		}
-		
-		[XmlArrayItem(ElementName="run",Type=typeof(PerfTestRun))]
-		[XmlArray(ElementName="runs")]			
-		public PerfTestRunCollection Runs
-		{
-			get
-			{
-				return this.runs;
-			}
-			set
-			{
-				this.runs = value;
-			}
-		}		
-	}
+        public Type TestedType { get; set; }
+    }
 }

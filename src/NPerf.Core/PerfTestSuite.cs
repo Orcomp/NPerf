@@ -1,165 +1,33 @@
-using System;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace NPerf.Core
 {
-	using NPerf.Core.Collections;
-	/// <summary>
-	/// Summary description for PerfTestSuite.
-	/// </summary>
-	[Serializable]
-	[XmlRoot("test-suite")]
-	public class PerfTestSuite
-	{
-		private DateTime timeStamp;
-		private string name = null;
-		private string description = null;
-		private string featureDescription = null;
-		private PerfTestCollection tests;
-		private PerfMachine machine = null;
-		private PerfOs os = null;
+    public abstract class PerfTestSuite
+    {
+        public PerfTest[] Tests { get; protected set; }   
 
-		public PerfTestSuite()
-		{
-			this.timeStamp = DateTime.Now;
-			this.tests = new PerfTestCollection();
-		}
+        public int DefaultTestCount { get; protected set; }
 
-		public PerfTestSuite(Type testerType, string description, string featureDescription)
-		{
-			if (testerType==null)
-				throw new ArgumentNullException("testerType");
-			
-			this.timeStamp = DateTime.Now;
-			this.name = testerType.Name;
-			this.description = description;
-			this.featureDescription = featureDescription;
-			this.tests = new PerfTestCollection();
-			this.machine = PerfMachine.GetCurrent();
-			this.os = PerfOs.GetCurrent();
-		}
+        public string TestSuiteDescription { get; protected set; }
 
-		
-		[XmlAttribute("name")]
-		public string Name
-		{
-			get
-			{
-				return this.name;
-			}
-			set
-			{
-				this.name = value;
-			}
-		}
+        public string FeatureDescription { get; protected set; }
 
-		[XmlAttribute("description")]
-		public string Description
-		{
-			get
-			{
-				return this.description;
-			}
-			set
-			{
-				this.description = value;
-			}
-		}
+        public Type TestedAbstraction { get; protected set; }
 
+        public Func<int, double> DescriptorGetter { get; protected set; }
 
-		[XmlAttribute("feature-description")]
-		public string FeatureDescription
-		{
-			get
-			{
-				return this.featureDescription;
-			}
-			set
-			{
-				this.featureDescription = value;
-			}
-		}
+        public virtual double GetRunDescriptor(int iteration)
+        {
+            return this.DescriptorGetter != null
+                                            ? this.DescriptorGetter(iteration)
+                                            : iteration;
+        }
 
-		[XmlAttribute("time-stamp")]
-		public DateTime TimeStamp
-		{
-			get
-			{
-				return this.timeStamp;
-			}
-			set
-			{
-				this.timeStamp =value;
-			}
-		}
+        public abstract void SetUp(int iteration, object testedObject);
 
-		[XmlElement("machine", IsNullable=false)]
-		public PerfMachine Machine
-		{
-			get
-			{
-				return this.machine;
-			}
-			set
-			{
-				this.machine = value;
-			}
-		}
-
-		[XmlElement("os", IsNullable=false)]
-		public PerfOs Os
-		{
-			get
-			{
-				return this.os;
-			}
-			set
-			{
-				this.os = value;
-			}
-		}
-
-		[XmlArrayItem(ElementName="test",Type=typeof(PerfTest))]
-		[XmlArray(ElementName="tests")]			
-		public PerfTestCollection Tests
-		{
-			get
-			{
-				return this.tests;
-			}
-			set
-			{
-				this.tests = value;
-			}
-		}
-
-		public override String ToString()
-		{
-			StringWriter sw = new StringWriter();
-			ToXml(sw);
-			
-			return sw.ToString();
-		}
-		
-		public void ToXml(TextWriter writer)
-		{
-			if (writer==null)
-				throw new ArgumentNullException("writer");
-			
-			XmlTextWriter xmlWriter = new XmlTextWriter(writer);
-			xmlWriter.Formatting = Formatting.Indented;
-			Serializer.Serialize(xmlWriter,this);
-		}
-
-		[XmlIgnore]
-		public static XmlSerializer Serializer
-		{
-			get
-			{
-				return new XmlSerializer(typeof(PerfTestSuite),"http://www.parser.info");
-			}
-		}
-	}
+        public abstract void TearDown(object testedObject);
+    }
 }
