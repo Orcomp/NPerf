@@ -15,8 +15,6 @@ namespace NPerf.Core
 
         public string FeatureDescription { get; protected set; }
 
-        //public Type TestedType { get; protected set; }
-
         public Type TestedAbstraction { get; protected set; }
 
         public Func<int, double> DescriptorGetter { get; protected set; }

@@ -14,12 +14,14 @@
     using NPerf.Core.PerfTestResults;
     using NPerf.Framework;
     using NPerf.Lab.TestBuilder;
+    using Fasterflect;
 
     internal class TestSuiteManager
     {
         public static TestSuiteInfo GetTestSuiteInfo(Type testerType, IEnumerable<Type> testedTypes, params TestSuiteInfo[] testSuitesForUpdate)
         {            
             var testerAttribute = testerType.Attribute<PerfTesterAttribute>();
+            var descrGetter = testerType.MethodsWith(Flags.AllMembers, typeof(PerfRunDescriptorAttribute)).FirstOrDefault();
 
             var suiteInfo = testSuitesForUpdate.FirstOrDefault(x => x.TesterType == testerType) ?? new TestSuiteInfo
                 {
@@ -27,7 +29,8 @@
                     DefaultTestCount = testerAttribute.TestCount,
                     TestSuiteDescription = testerAttribute.Description,
                     FeatureDescription = testerAttribute.FeatureDescription,
-                    TestedAbstraction = testerAttribute.TestedType
+                    TestedAbstraction = testerAttribute.TestedType,
+                    GetDescriptoMethodName = descrGetter == null ? string.Empty : descrGetter.Name
                 };
 
             var tests = new List<TestInfo>();

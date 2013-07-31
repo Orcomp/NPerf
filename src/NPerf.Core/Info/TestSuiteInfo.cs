@@ -18,6 +18,8 @@
 
         public TestInfoIgnored[] IgnoredTests { get; set; }
 
+        public string GetDescriptoMethodName { get; set; }
+
         public override int GetHashCode()
         {
 
