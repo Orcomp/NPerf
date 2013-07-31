@@ -15,17 +15,17 @@
         public static void Main(string[] args)
         {
 #if DEBUG
-          //  Debugger.Launch();
+            //Debugger.Launch();
 #endif
-            AppDomain.CurrentDomain.AssemblyLoad += AssemblyResolver.Loaded;
-            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolver.Resolve;
+            AppDomain.CurrentDomain.AssemblyLoad += AssembliesManager.Loaded;
+            AppDomain.CurrentDomain.AssemblyResolve += AssembliesManager.Resolve;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
             var startParameters = new SartParameters(args);
 
             channelName = startParameters.ChannelName;
 
-            Assembly.LoadFile(startParameters.TesterAssembly);
+            AssembliesManager.LoadAssembly(startParameters.TesterAssembly);
 
             if (string.IsNullOrEmpty(channelName))
             {

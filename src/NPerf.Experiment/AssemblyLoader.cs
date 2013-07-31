@@ -4,6 +4,8 @@
     using System.Linq;
     using System.Reflection;
 
+    using NPerf.Core.Tools;
+
     internal class AssemblyLoader
     {
         public static T CreateInstance<T>(string suiteAssemblyName, string suiteTypeName)
@@ -34,7 +36,7 @@
                 throw new ArgumentNullException("typeName");
             }
 
-            var type = LoadType(assemblyName, typeName);
+            var type = AssembliesManager.LoadType(assemblyName, typeName);
             var instance = type == null ? null : Activator.CreateInstance(type);
             if (instance != null)
             {
@@ -46,24 +48,6 @@
             }
 
             return instance;
-        }
-
-        private static Type LoadType(string assemblyName, string typeName)
-        {
-            var assembly = Assembly.LoadFrom(assemblyName);
-            Console.WriteLine(@"Assembly {0} loaded", assembly);
-            var type = assembly.GetTypes().FirstOrDefault(t => t.Name.Equals(typeName));
-
-            if (type != null)
-            {
-                Console.WriteLine(@"Type {0} finded.", type);
-            }
-            else
-            {
-                Console.Error.WriteLine(@"Type with name {0} not found.", typeName);
-            }
-
-            return type;
-        }
+        }        
     }
 }

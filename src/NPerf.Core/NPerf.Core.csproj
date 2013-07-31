@@ -63,7 +63,7 @@
     <Compile Include="PerfTestResults\PerfTestResultFactory.cs" />
     <Compile Include="PerfTestSuite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\AssemblyResolver.cs" />
+    <Compile Include="Tools\AssembliesManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
