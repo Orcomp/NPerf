@@ -90,9 +90,15 @@
         private static bool IsTestableType(Type testerType, Type testedType)
         {
             var testerAttr = testerType.Attribute<PerfTesterAttribute>();
-            return testedType.IsPublic && !testedType.IsGenericTypeDefinition
-                   && testerAttr.TestedType.IsAssignableFrom(testedType) && !(testerAttr.TestedType == testedType)
-                   && !testedType.IsAbstract && !testedType.IsInterface;
+            var commonConditions = testedType.IsPublic && !(testerAttr.TestedType == testedType)
+                                   && !testedType.IsAbstract && !testedType.IsInterface;
+            var isTestableNonGeneric = !testedType.IsGenericTypeDefinition
+                   && testerAttr.TestedType.IsAssignableFrom(testedType);
+            var isTestableGeneric = testedType.IsGenericType && testerAttr.TestedType.IsGenericType &&
+                testedType.GetInterfaces().Any(x => x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == testerAttr.TestedType.GetGenericTypeDefinition());
+
+            return commonConditions && (isTestableGeneric || isTestableNonGeneric);
         }
 
         public SystemInfo SystemInfo { get; private set; }

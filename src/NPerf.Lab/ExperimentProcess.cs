@@ -70,7 +70,7 @@
                     this.testName,
                     testerType.Assembly.Location,
                     this.testedType.Assembly.Location,
-                    this.testedType.Name,
+                    this.testedType.FullName, // Is necesary to load generics to use FullName instead of Name
                     this.ChannelName,
                     start,
                     step,
@@ -92,7 +92,7 @@
                     this.testName,
                     testerType.Assembly.Location,
                     this.testedType.Assembly.Location,
-                    this.testedType.Name,
+                    this.testedType.FullName, // Is necesary to load generics to use FullName instead of Name
                     this.ChannelName);
             
             this.Run(waitForExit);
