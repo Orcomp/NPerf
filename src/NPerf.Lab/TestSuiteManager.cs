@@ -93,6 +93,15 @@
                 throw new ArgumentException("Incorrect parameter signature");
             }
 
+            if (testedType.IsGenericType)
+            {
+                // Fill the generic type arguments of the loaded generic type
+                // with the tested abstraction interface actual generic type arguments.
+                // Example: tested abstraction = IList<int>, tested type = List<T>
+                // This line converts List<T> in List<int>
+                testedType = testedType.MakeGenericType(testedAbstraction.GetGenericArguments());
+            }
+
             TestInfo result;
             var ignoreAttribute = method.Attribute<PerfIgnoreAttribute>();
             if (ignoreAttribute == null)
@@ -140,7 +149,9 @@
                 throw new ArgumentException("Tester type must be marked by PerfTesterAttribute", "testerType");
             }
 
-            if (!testerAttribute.TestedType.IsAssignableFrom(testedType))
+            if ((!testerAttribute.TestedType.IsAssignableFrom(testedType)) &&
+                (!testedType.GetInterfaces().Any(x => x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == testerAttribute.TestedType.GetGenericTypeDefinition())))
             {
                 throw new ArgumentException(
                     string.Format("Tester type {0} is not assignable from {1}", testerAttribute.TestedType, testedType),

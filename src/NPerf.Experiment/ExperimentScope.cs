@@ -14,7 +14,7 @@
                 var suite = AssemblyLoader.CreateInstance<PerfTestSuite>(
                     startParameters.SuiteAssembly, startParameters.SuiteType);
 
-                var subject = AssemblyLoader.CreateInstance(
+                var subject = AssemblyLoader.CreateInstanceFullyQualifiedName(
                     startParameters.SubjectAssembly, startParameters.SubjectType);
 
                 var start = startParameters.Start;
