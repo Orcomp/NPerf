@@ -119,24 +119,24 @@
             }
         }
 
-        public IObservable<PerfTestResult> Run(Guid[] tests, bool parallel = false)
+        public IObservable<PerfTestResult> Run(Guid[] tests, PerfTestConfiguration configuration, bool parallel = false)
         {
-            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), parallel);
+            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), configuration, parallel);
         }
 
-        public IObservable<PerfTestResult> Run(Guid[] tests, int start, int step, int end, bool parallel = false)
+        public IObservable<PerfTestResult> Run(Guid[] tests, int start, int step, int end, PerfTestConfiguration configuration, bool parallel = false)
         {
-            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), start, step, end, parallel);
+            return TestSuiteManager.Run(tests.Select(x => this.Tests[x]).ToArray(), start, step, end, configuration, parallel);
         }
 
-        public IObservable<PerfTestResult> Run(bool parallel = false)
+        public IObservable<PerfTestResult> Run(PerfTestConfiguration configuration, bool parallel = false)
         {
-            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, parallel));
+            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, configuration, parallel));
         }
 
-        public IObservable<PerfTestResult> Run(int start, int step, int end, bool parallel = false)
+        public IObservable<PerfTestResult> Run(int start, int step, int end, PerfTestConfiguration configuration, bool parallel = false)
         {
-            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, start, step, end, parallel));
+            return this.testSuites.ToObservable().SelectMany(suite => TestSuiteManager.Run(suite, start, step, end, configuration, parallel));
         }
     }
 }

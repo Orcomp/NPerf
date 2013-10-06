@@ -20,6 +20,10 @@
 
         private readonly int end;
 
+        private bool ignoreFirstRunDueToJITting { get; set; }
+
+        private bool triggerGCBeforeEachTest { get; set; }
+
         public TestRunner(
             Action<int> setUpMethod,
             Action testMethod,
@@ -27,7 +31,9 @@
             Func<int, double> descriptorMethod,
             int start,
             int step,
-            int end)
+            int end,
+            bool ignoreFirstRunDueToJITting,
+            bool triggerGCBeforeEachTest)
         {
             this.testMethod = testMethod;
             this.setUpMethod = setUpMethod;
@@ -36,10 +42,26 @@
             this.start = start;
             this.step = step;
             this.end = end;
+            this.ignoreFirstRunDueToJITting = ignoreFirstRunDueToJITting;
+            this.triggerGCBeforeEachTest = triggerGCBeforeEachTest;
         }
 
         public IDisposable Subscribe(IObserver<PerfTestResult> observer)
         {
+            if (ignoreFirstRunDueToJITting)
+            {
+                this.setUpMethod(this.start);
+                try
+                {
+                    this.testMethod();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                this.tearDownMethod();
+            }
+
             var time = new DurationMonitor();
             var memory = new MemoryMonitor();
 
@@ -51,9 +73,12 @@
                 this.setUpMethod(i);
 
                 // clean memory
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+                if (this.triggerGCBeforeEachTest)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();   
+                }
 
                 using (time.Observe())
                 using (memory.Observe())

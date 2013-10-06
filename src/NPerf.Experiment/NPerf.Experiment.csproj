@@ -46,7 +46,7 @@
     </Compile>
     <Compile Include="AssemblyLoader.cs" />
     <Compile Include="ExperimentScope.cs" />
-    <Compile Include="SartParameters.cs" />
+    <Compile Include="StartParameters.cs" />
     <Compile Include="TestObserver.cs" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="UsefulExtensions.cs" />

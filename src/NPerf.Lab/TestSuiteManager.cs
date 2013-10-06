@@ -162,6 +162,7 @@
         private static IObservable<PerfTestResult> CreateRunObservable(TestSuiteInfo testSuiteInfo,
                                                                        Predicate<TestInfo> testFilter,
                                                                        Action<ExperimentProcess> startProcess,
+                                                                       PerfTestConfiguration configuration,
                                                                        bool parallel = false)
         {
             return Observable.Create<PerfTestResult>(
@@ -183,7 +184,8 @@
                                  TestSuiteCodeBuilder.TestSuiteClassName,
                                  testSuiteInfo.TesterType,
                                  testMethod.TestedType,
-                                 testMethod.TestMethodName)).ToArray());
+                                 testMethod.TestMethodName,
+                                 configuration)).ToArray());
 
                         var listeners = Observable.Empty<PerfTestResult>();
 
@@ -225,7 +227,7 @@
                     });
         }
 
-        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, bool parallel = false)
+        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, PerfTestConfiguration configuration, bool parallel = false)
         {
             return testInfo.Select(x => x.Suite)
                            .Distinct()
@@ -235,25 +237,26 @@
                                                                     testInfo.FirstOrDefault(
                                                                         test => test.TestId.Equals(x.TestId)) != null,
                                                                     processes => processes.Start(!parallel),
+                                                                    configuration,
                                                                     parallel));
         }
 
-        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, bool parallel = false)
+        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, PerfTestConfiguration configuration, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo,  x => true, processes => processes.Start(!parallel), parallel);
+            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(!parallel), configuration, parallel);
         }
 
-        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, int start, int step, int end, bool parallel)
+        internal static IObservable<PerfTestResult> Run(TestInfo[] testInfo, int start, int step, int end, PerfTestConfiguration configuration, bool parallel)
         {
             return testInfo.Select(x => x.Suite).ToObservable().Distinct()
                .SelectMany(suite => CreateRunObservable(suite,
                    x => testInfo.FirstOrDefault(test => test.TestId.Equals(x.TestId)) != null,
-                   processes => processes.Start(start, step, end, !parallel), parallel));
+                   processes => processes.Start(start, step, end, !parallel), configuration, parallel));
         }
 
-        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, bool parallel = false)
+        public static IObservable<PerfTestResult> Run(TestSuiteInfo testSuiteInfo, int start, int step, int end, PerfTestConfiguration configuration, bool parallel = false)
         {
-            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel), parallel);
+            return CreateRunObservable(testSuiteInfo, x => true, processes => processes.Start(start, step, end, !parallel), configuration, parallel);
         }       
     }
 }

@@ -18,7 +18,9 @@
 
         private readonly string testName;
 
-        public ExperimentProcess(string channelName, string suiteAssemblyLocation, string suiteTypeName, Type testerType, Type testedType, string testName)
+        private readonly PerfTestConfiguration perfTestConfiguration;
+
+        public ExperimentProcess(string channelName, string suiteAssemblyLocation, string suiteTypeName, Type testerType, Type testedType, string testName, PerfTestConfiguration configuration)
         {
             this.experimentProcess = new Process
                                          {
@@ -42,6 +44,7 @@
             this.testerType = testerType;
             this.testedType = testedType;
             this.testName = testName;
+            this.perfTestConfiguration = configuration;
 
             this.experimentProcess.ErrorDataReceived += this.experimentProcess_ErrorDataReceived;
         }
@@ -64,7 +67,9 @@
         {
             this.experimentProcess.StartInfo.Arguments =
                 string.Format(
-                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6} -start {7} -step {8} -end {9}",
+                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6} -start {7} -step {8} -end {9}"
+                    + (this.perfTestConfiguration.IgnoreFirstRunDueToJITting ? " -ignoreFirstRun" : string.Empty)
+                    + (this.perfTestConfiguration.TriggerGCBeforeEachTest ? " -triggerGC" : string.Empty),
                     this.suiteAssemblyLocation,
                     this.suiteTypeName,
                     this.testName,
@@ -86,7 +91,9 @@
         {
             this.experimentProcess.StartInfo.Arguments =
                 string.Format(
-                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6}",
+                    "-suiteLib {0} -suiteType {1} -testMethod {2} -testerAssm {3} -subjectAssm {4} -subjecType {5} -channelName {6}"
+                        + (this.perfTestConfiguration.IgnoreFirstRunDueToJITting ? " -ignoreFirstRun" : string.Empty)
+                        + (this.perfTestConfiguration.TriggerGCBeforeEachTest ? " -triggerGC" : string.Empty),
                     this.suiteAssemblyLocation,
                     this.suiteTypeName,
                     this.testName,

@@ -7,7 +7,7 @@
 
     internal class ExperimentScope
     {
-        public static void Start(SartParameters startParameters)
+        public static void Start(StartParameters startParameters)
         {            
             using (var testObserver = new TestObserver(startParameters.ChannelName))
             {
@@ -34,7 +34,9 @@
                         delegate(int idx) { return suite.GetRunDescriptor(idx); },
                         string.IsNullOrEmpty(start) ? 0 : int.Parse(start),
                         string.IsNullOrEmpty(step) ? 1 : int.Parse(step),
-                        string.IsNullOrEmpty(end) ? suite.DefaultTestCount : int.Parse(end));
+                        string.IsNullOrEmpty(end) ? suite.DefaultTestCount : int.Parse(end),
+                        startParameters.IgnoreFirstRunDueToJITting,
+                        startParameters.TriggerGCBeforeEachTest);
 
                     runner.Subscribe(testObserver);
                     testObserver.OnCompleted();

@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Reflection;
+    using System.Threading;
 
     using NPerf.Core.Communication;
     using NPerf.Core.PerfTestResults;
@@ -17,11 +18,12 @@
 #if DEBUG
             //Debugger.Launch();
 #endif
+            Thread.Sleep(10000);
             AppDomain.CurrentDomain.AssemblyLoad += AssembliesManager.Loaded;
             AppDomain.CurrentDomain.AssemblyResolve += AssembliesManager.Resolve;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
 
-            var startParameters = new SartParameters(args);
+            var startParameters = new StartParameters(args);
 
             channelName = startParameters.ChannelName;
 

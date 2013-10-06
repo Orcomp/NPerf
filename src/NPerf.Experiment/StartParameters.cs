@@ -1,12 +1,14 @@
 ﻿namespace NPerf.Experiment
 {
-    internal class SartParameters
+    using System.Linq;
+
+    internal class StartParameters
     {
-        public SartParameters()
+        public StartParameters()
         { 
         }
 
-        public SartParameters(string[] args)
+        public StartParameters(string[] args)
         {
             var arguments = args.ConvertToArguments();
             this.ChannelName = arguments.ExtractValue("channelName");
@@ -19,6 +21,8 @@
             this.Start = arguments.ExtractValue("start");
             this.Step = arguments.ExtractValue("step");
             this.End = arguments.ExtractValue("end");
+            this.IgnoreFirstRunDueToJITting = arguments.Count(a => a.Name.Equals("ignoreFirstRun")) > 0;
+            this.TriggerGCBeforeEachTest = arguments.Count(a => a.Name.Equals("triggerGC")) > 0;
         }
 
         public string ChannelName { get; set; }
@@ -40,5 +44,9 @@
         public string Step { get; set; }
 
         public string End { get; set; }
+
+        public bool IgnoreFirstRunDueToJITting { get; set; }
+
+        public bool TriggerGCBeforeEachTest { get; set; }
     }
 }
