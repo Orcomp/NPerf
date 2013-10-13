@@ -57,10 +57,6 @@
                 throw new NotImplementedException("Unknown test information type.");
             }
 
-            if (suiteInfo.Tests != null)
-            {
-                tests.AddRange(suiteInfo.Tests);
-            }
             suiteInfo.Tests = tests.ToArray();
 
             if (suiteInfo.IgnoredTests != null)
