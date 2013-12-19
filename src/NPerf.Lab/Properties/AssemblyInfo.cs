@@ -10,7 +10,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-#if DEBUG
 [assembly: InternalsVisibleTo("NPerf.Test.Lab")]
 [assembly: InternalsVisibleTo("NPerf.Test.Helpers")]
-#endif
