@@ -16,7 +16,7 @@ namespace NPerf.ConsoleTester
         [STAThread]
         static void Main(string[] args)
         {
-            using (var context = new ExecutionContext())
+            using (var context = new ExecutionContext(new PerfTestConfiguration()))
             {
                 Application.Run(context);
             }            

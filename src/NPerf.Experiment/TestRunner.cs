@@ -32,8 +32,8 @@
             int start,
             int step,
             int end,
-            bool ignoreFirstRunDueToJITting,
-            bool triggerGCBeforeEachTest)
+            bool ignoreFirstRunDueToJITting = false,
+            bool triggerGCBeforeEachTest = false)
         {
             this.testMethod = testMethod;
             this.setUpMethod = setUpMethod;

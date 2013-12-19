@@ -23,7 +23,7 @@
                 "-end 10"
             };
 
-            var parameters = new SartParameters(args);
+            var parameters = new StartParameters(args);
             parameters.ChannelName.Should().Be("channel");
             parameters.SuiteAssembly.Should().Be("suiteAssembly");
             parameters.SuiteType.Should().Be("testerType");

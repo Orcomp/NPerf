@@ -14,22 +14,24 @@
 
         private readonly PerfLab lab;
 
-        public ExecutionContext()
+        private readonly PerfTestConfiguration perfTestConfiguration;
+
+        public ExecutionContext(PerfTestConfiguration configuration)
         {
             this.lab = new PerfLab(typeof(StringBuildingTester).Assembly, typeof(StringRunner).Assembly, typeof(Dictionary<,>).Assembly);
             this.RunTests();
             //this.RunSomeTests();
-            
+            this.perfTestConfiguration = configuration;
         }
 
         public void RunTests()
         {
-            this.lab.Run().Subscribe(this.OnNext, ex => { }, this.Completed);
+            this.lab.Run(this.perfTestConfiguration).Subscribe(this.OnNext, ex => { }, this.Completed);
         }
 
         public void RunSomeTests()
         {
-            this.lab.Run(new[] { this.lab.Tests.First().Key, this.lab.Tests.Last().Key }, false).Subscribe(this.OnNext, ex => { }, this.ExitThread);
+            this.lab.Run(new[] { this.lab.Tests.First().Key, this.lab.Tests.Last().Key }, this.perfTestConfiguration, false).Subscribe(this.OnNext, ex => { }, this.ExitThread);
         }
 
         void OnNext(PerfTestResult value)
