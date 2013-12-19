@@ -19,20 +19,20 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\NET40\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\NET40\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\NPerf.Lab.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Debug\NET40\NPerf.Lab.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\NET40\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\NET40\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\NPerf.Lab.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\Release\NET40\NPerf.Lab.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CodeDomUtilities.Extensions">
