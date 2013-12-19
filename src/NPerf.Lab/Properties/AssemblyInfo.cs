@@ -14,6 +14,3 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("NPerf.Test.Lab")]
 [assembly: InternalsVisibleTo("NPerf.Test.Helpers")]
 #endif
-
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
