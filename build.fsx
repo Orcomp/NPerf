@@ -28,7 +28,7 @@ let version = File.ReadAllText(@".\version.txt")
 
 let solutionAssemblyInfo = srcDir @@ "SilutionInfo.cs"
 let binProjectDependencies:^string list = ["CodeDomUtilities"; "fasterflect"; "Rx-Core"; "Rx-Interfaces"; "Rx-Linq"]
-let binProjects = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Experiment"; "NPerf.Lab"]
+let binProjects = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Lab"]
 
 let outputDir = @".\bin\"
 let outputReleaseDir = outputDir @@ "release" @@ netVersion
