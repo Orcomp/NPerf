@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>NPerf</id>
+    <version>@build.number@</version>
+	<title>NPerf</title>
+    <authors>Jonathan de Halleux</authors>
+    <owners>Jonathan de Halleux</owners>
+
+	<description>
+	  This is a flexible performance benchmark framework. The framework provides custom attributes that the user uses the tag benchmark classes and methods. Similar to the custom attributes NUnit provides.
+	</description>
+	<summary>
+	</summary>
+	
+	<tags>nunit perfomance</tags>
+	<language>en-US</language>
+	<projectUrl>https://github.com/Orcomp/NPerf</projectUrl>
+  </metadata>
+</package>
