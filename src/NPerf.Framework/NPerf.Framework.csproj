@@ -38,8 +38,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SilutionInfo.cs">
-      <Link>Properties\SilutionInfo.cs</Link>
+    <Compile Include="..\SolutionAssemblyInfo.cs">
+      <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="PerfIgnoreAttribute.cs" />
     <Compile Include="PerfRunDescriptorAttribute.cs" />
