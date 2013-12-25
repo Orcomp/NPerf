@@ -12,6 +12,9 @@
 	</description>
 	<summary>
 	</summary>
+	<references>
+	  <reference file="NPerf.Framework.dll" />
+	</references>
 	
 	<tags>nunit perfomance</tags>
 	<language>en-US</language>
