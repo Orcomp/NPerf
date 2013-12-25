@@ -3,17 +3,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D01B7135-0230-4161-A5B8-A051BEB6B530}</ProjectGuid>
+    <ProjectGuid>{EE369D7E-8A62-4100-A324-4AEEAE130440}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NPerf.Test.Experiment</RootNamespace>
-    <AssemblyName>NPerf.Test.Experiment</AssemblyName>
+    <RootNamespace>NPerf.Helpers.Tests</RootNamespace>
+    <AssemblyName>NPerf.Helpers.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -35,58 +33,37 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions">
-      <HintPath>..\..\packages\FluentAssertions.2.0.0.1\lib\net40\FluentAssertions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
-      <Visible>False</Visible>
-    </CodeAnalysisDependentAssemblyPaths>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SilutionInfo.cs">
       <Link>Properties\SilutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyLoaderTest.cs" />
+    <Compile Include="AttribitedFixtureSample.cs" />
+    <Compile Include="ITestedObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SartParametersTest.cs" />
-    <Compile Include="TestObserverTest.cs" />
-    <Compile Include="TestRunnerTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="SendReceiveLockHelper.cs" />
+    <Compile Include="SingleThreadAccessController.cs" />
+    <Compile Include="TestedObject.cs" />
+    <Compile Include="PerTestResultGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">
       <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
       <Name>NPerf.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NPerf.DevHelpers\NPerf.DevHelpers.csproj">
-      <Project>{1C52E23B-B597-48E4-AACA-61B2FE350873}</Project>
-      <Name>NPerf.DevHelpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NPerf.Experiment\NPerf.Experiment.csproj">
-      <Project>{D6C90823-9769-4DA2-9177-3B22739DF1FB}</Project>
-      <Name>NPerf.Experiment</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
       <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
       <Name>NPerf.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NPerf.Test.Helpers\NPerf.Test.Helpers.csproj">
-      <Project>{EE369D7E-8A62-4100-A324-4AEEAE130440}</Project>
-      <Name>NPerf.Test.Helpers</Name>
-    </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

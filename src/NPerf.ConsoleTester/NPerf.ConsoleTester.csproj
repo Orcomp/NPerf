@@ -83,11 +83,11 @@
       <Project>{7D998325-0A28-4A30-9D7C-C162C8F9B715}</Project>
       <Name>NPerf.Lab</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NPerf.Test.Core\NPerf.Test.Core.csproj">
+    <ProjectReference Include="..\NPerf.Core.Tests\NPerf.Core.Tests.csproj">
       <Project>{69CA5FFA-E0B7-4886-B453-8D47019774AC}</Project>
       <Name>NPerf.Test.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NPerf.Test.Helpers\NPerf.Test.Helpers.csproj">
+    <ProjectReference Include="..\NPerf.Helpers.Tests\NPerf.Helpers.Tests.csproj">
       <Project>{EE369D7E-8A62-4100-A324-4AEEAE130440}</Project>
       <Name>NPerf.Test.Helpers</Name>
     </ProjectReference>

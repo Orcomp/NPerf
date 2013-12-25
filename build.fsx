@@ -40,7 +40,7 @@ let ignoreBinFilesPattern = @"\**\" @@ ignoreBinFiles
 let outputBinFiles = !! (outputBinDir @@ @"\**\*.*")
                             -- ignoreBinFilesPattern
 
-let tests = srcDir @@ @"\**\*.Test.*.csproj" 
+let tests = srcDir @@ @"\**\*.Tests.csproj" 
 let allProjects = srcDir @@ @"\**\*.csproj" 
 
 let testProjects  = !! tests
@@ -99,7 +99,7 @@ Target "RunTests" (fun _ ->
     CleanDir testResultsDir
     CreateDir testResultsDir
 
-    !! (outputDir + @"\**\*.Test.*.dll") 
+    !! (outputDir + @"\**\*.Tests.dll") 
       |> MSTest (fun p ->
                   { p with
                      TimeOut = TimeSpan.FromMinutes 20.

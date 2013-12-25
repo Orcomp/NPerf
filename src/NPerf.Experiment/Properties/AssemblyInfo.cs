@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("NPerf.Experiment")]
 [assembly: AssemblyCulture("")]
 
-[assembly: InternalsVisibleTo("NPerf.Test.Experiment")]
-[assembly: InternalsVisibleTo("NPerf.Test.Helpers")]
+[assembly: InternalsVisibleTo("NPerf.Experiment.Tests")]
+[assembly: InternalsVisibleTo("NPerf.Helpers.Tests")]
 
 [assembly: ComVisible(false)]

@@ -29,11 +29,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Perf", "System.Perf\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Core", "NPerf.Core\NPerf.Core.csproj", "{37A29AA9-677B-466B-88F0-90D54E2361CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Test.Helpers", "NPerf.Helpers.Tests\NPerf.Test.Helpers.csproj", "{EE369D7E-8A62-4100-A324-4AEEAE130440}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Helpers.Tests", "NPerf.Helpers.Tests\NPerf.Helpers.Tests.csproj", "{EE369D7E-8A62-4100-A324-4AEEAE130440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Test.Core", "NPerf.Core.Tests\NPerf.Test.Core.csproj", "{69CA5FFA-E0B7-4886-B453-8D47019774AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Core.Tests", "NPerf.Core.Tests\NPerf.Core.Tests.csproj", "{69CA5FFA-E0B7-4886-B453-8D47019774AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Test.Experiment", "NPerf.Experiment.Tests\NPerf.Test.Experiment.csproj", "{D01B7135-0230-4161-A5B8-A051BEB6B530}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.Experiment.Tests", "NPerf.Experiment.Tests\NPerf.Experiment.Tests.csproj", "{D01B7135-0230-4161-A5B8-A051BEB6B530}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPerf.ConsoleTester", "NPerf.ConsoleTester\NPerf.ConsoleTester.csproj", "{880C99A4-23FB-4066-9443-CC1B0B808C2A}"
 EndProject
