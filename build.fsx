@@ -26,7 +26,7 @@ let nugetRepositoryDir = @".\packages\"
 let nugetAccessKey = if File.Exists(@".\Nuget.key") then File.ReadAllText(@".\Nuget.key") else ""
 let version = File.ReadAllText(@".\version.txt")
 
-let solutionAssemblyInfoPath = srcDir @@ "SilutionInfo.cs"
+let solutionAssemblyInfoPath = srcDir @@ "SolutionAssemblyInfo.cs"
 let projectsToPackageAssemblyNames = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Lab"]
 let projectsToPackageDependencies:^string list = ["CodeDomUtilities"; "fasterflect"; "Rx-Core"; "Rx-Interfaces"; "Rx-Linq"]
 

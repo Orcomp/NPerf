@@ -4,13 +4,17 @@
     <id>NPerf</id>
     <version>@build.number@</version>
 	<title>NPerf</title>
-    <authors>Jonathan de Halleux</authors>
-    <owners>Jonathan de Halleux</owners>
+    <authors>Maxim Khomutov, Ovidio Manteiga</authors>
+    <owners>OrchestraDevs</owners>
 
 	<description>
-	  This is a flexible performance benchmark framework. The framework provides custom attributes that the user uses the tag benchmark classes and methods. Similar to the custom attributes NUnit provides.
+	  This is a flexible performance benchmark framework. The framework provides custom attributes in order to tag benchmark classes and methods. NPerf uses attributes in much the same may as Nunit.
+	  This library is a complete re-write of Jonathan de Halleux's original Nperf framework http://www.codeproject.com/Articles/5945/NPerf-A-Performance-Benchmark-Framework-for-NET, and should be 100% backward compatible.
 	</description>
 	<summary>
+		Nperf is used to define performance fixtures (or benchmarks) that target a certain interface. This means the same performance benchmarks can be used against multiple different implementations.
+		NPerfRunner can be found at: https://github.com/Orcomp/NPerfRunner
+		And existing performance fixtures can be found at: https://github.com/Orcomp/NPerf.Fixtures
 	</summary>
 	<references>
 	  <reference file="NPerf.Framework.dll" />

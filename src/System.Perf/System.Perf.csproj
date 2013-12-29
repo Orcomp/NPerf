@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SilutionInfo.cs">
-      <Link>Properties\SilutionInfo.cs</Link>
+    <Compile Include="..\SolutionAssemblyInfo.cs">
+      <Link>Properties\SolutionAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DelegateInterface\DelegateInterfaceTester.cs" />
     <Compile Include="DelegateInterface\DelegateMethodCaller.cs" />
