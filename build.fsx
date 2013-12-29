@@ -30,7 +30,7 @@ let solutionAssemblyInfo = srcDir @@ "SilutionInfo.cs"
 let binProjectDependencies:^string list = ["CodeDomUtilities"; "fasterflect"; "Rx-Core"; "Rx-Interfaces"; "Rx-Linq"]
 let binProjects = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Lab"]
 
-let outputDir = @".\bin\"
+let outputDir = @".\output\"
 let outputReleaseDir = outputDir @@ "release" @@ netVersion
 let outputBinDir = outputReleaseDir
 let testResultsDir = srcDir @@ "TestResults"
