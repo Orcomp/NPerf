@@ -28,7 +28,7 @@ namespace NPerf.Core.Tools
                 return result;
             }
            
-            return Assembly.LoadFile(fileName);
+            return Assembly.LoadFrom(fileName);
         }
 
         public static Type LoadType(string fileName, string typeName)
