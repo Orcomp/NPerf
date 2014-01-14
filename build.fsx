@@ -12,7 +12,7 @@ open Fake.MSTest
 // Definitions
 
 let binProjectName = "NPerf"
-let netVersions = ["NET40"]
+let netVersions = ["NET45"]
 
 let srcDir  = @".\src\"
 let deploymentDir  = @".\deployment\"

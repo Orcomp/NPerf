@@ -16,9 +16,6 @@
 		NPerfRunner can be found at: https://github.com/Orcomp/NPerfRunner
 		And existing performance fixtures can be found at: https://github.com/Orcomp/NPerf.Fixtures
 	</summary>
-	<references>
-	  <reference file="NPerf.Framework.dll" />
-	</references>
 	
 	<tags>nunit perfomance</tags>
 	<language>en-US</language>
