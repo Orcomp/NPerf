@@ -6,7 +6,6 @@ using System.Text;
 namespace NPerf.Lab
 {
     using System.ComponentModel;
-    using NPerf.Experiment;
 
     public class PerfTestConfiguration
     {

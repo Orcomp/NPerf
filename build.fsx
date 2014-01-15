@@ -27,7 +27,7 @@ let nugetAccessKey = if File.Exists(@".\Nuget.key") then File.ReadAllText(@".\Nu
 let version = File.ReadAllText(@".\version.txt")
 
 let solutionAssemblyInfoPath = srcDir @@ "SolutionAssemblyInfo.cs"
-let projectsToPackageAssemblyNames = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Lab"]
+let projectsToPackageAssemblyNames = ["NPerf.Core"; "NPerf.Framework"; "NPerf.Lab"; "NPerf.Experiment"]
 let projectsToPackageDependencies:^string list = ["CodeDomUtilities"; "fasterflect"; "Rx-Core"; "Rx-Interfaces"; "Rx-Linq"]
 
 let outputDir = @".\output\"
@@ -119,7 +119,8 @@ Target "NuGet" (fun _ ->
     let nugetAccessPublishKey = getBuildParamOrDefault "nugetkey" nugetAccessKey
     let getOutputFile netVersion projectName ext = sprintf @"%s\%s.%s" (getProjectOutputBinDirs netVersion projectName) projectName ext
     let getBinProjectFiles netVersion projectName =  [(getOutputFile netVersion projectName "dll")
-                                                      (getOutputFile netVersion projectName "xml")]
+                                                      (getOutputFile netVersion projectName "xml")
+                                                      (getOutputFile netVersion projectName "exe")]
     let binProjectFiles netVersion = projectsToPackageAssemblyNames
                                        |> List.collect(fun d -> getBinProjectFiles netVersion d)
                                        |> List.filter(fun d -> File.Exists(d))

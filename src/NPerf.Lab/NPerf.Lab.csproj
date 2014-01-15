@@ -40,9 +40,6 @@
     <Reference Include="CodeDomUtilities.Extensions">
       <HintPath>..\..\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="CodeDomUtilities.Patterns">
-      <HintPath>..\..\packages\CodeDomUtilities.1.1.2.0\lib\net40\CodeDomUtilities.Patterns.dll</HintPath>
-    </Reference>
     <Reference Include="Fasterflect">
       <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
     </Reference>
@@ -78,10 +75,6 @@
     <ProjectReference Include="..\NPerf.Core\NPerf.Core.csproj">
       <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
       <Name>NPerf.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NPerf.Experiment\NPerf.Experiment.csproj">
-      <Project>{d6c90823-9769-4da2-9177-3b22739df1fb}</Project>
-      <Name>NPerf.Experiment</Name>
     </ProjectReference>
     <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
       <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>

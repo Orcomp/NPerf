@@ -62,10 +62,6 @@
       <Project>{37A29AA9-677B-466B-88F0-90D54E2361CF}</Project>
       <Name>NPerf.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NPerf.Framework\NPerf.Framework.csproj">
-      <Project>{9AE192A6-2C53-4765-8C73-BAD2C030EF0A}</Project>
-      <Name>NPerf.Framework</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
