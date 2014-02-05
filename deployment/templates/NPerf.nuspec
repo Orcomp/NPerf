@@ -20,5 +20,6 @@
 	<tags>nunit perfomance</tags>
 	<language>en-US</language>
 	<projectUrl>https://github.com/Orcomp/NPerf</projectUrl>
+	@dependencies@
   </metadata>
 </package>
