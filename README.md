@@ -1,3 +1,5 @@
+Deprecated: Please visit [NUnitBenchmarker](https://github.com/Orcomp/NUnitBenchmarker)
+
 NPerf
 =====
 
